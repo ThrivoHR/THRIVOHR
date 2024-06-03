@@ -2,15 +2,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 import Link from "next/link";
+import logo from "/public/thrivoHR-icon.png";
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundImage: 'url(https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-      <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-900">
-        <div className="space-y-4 text-center">
-          <h1 className="text-3xl font-bold">Welcome back</h1>
-          <p className="text-gray-500 dark:text-gray-400">
+    <div className="grid grid-cols-12 min-h-screen items-center justify-center">
+      <div className="col-span-7 flex items-center justify-center">
+        <Image src={logo} alt="Logo" width={300} height={300} />
+      </div>
+      <div className="col-span-5 w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-lg">
+        <div className="space-y-8 text-center">
+          <h1 className="text-3xl font-bold">ThrivoHR</h1>
+          <p className="text-gray-500">
             Enter your email and password to sign in.
           </p>
         </div>
@@ -22,7 +27,7 @@ export default function LoginPage() {
             <Input
               id="email"
               type="email"
-              placeholder="m@example.com"
+              placeholder="datsadboy@example.com"
               required
             />
           </div>
@@ -31,29 +36,19 @@ export default function LoginPage() {
               <Label htmlFor="password">Password</Label>
               <Link
                 href="#"
-                className="text-sm font-medium text-gray-900 hover:underline dark:text-gray-400"
+                className="text-sm font-medium text-gray-900 hover:underline"
                 prefetch={false}
               >
                 Forgot password?
               </Link>
             </div>
-            <Input id="password" type="password" required />
+            <Input id="password" type="password" required/>
           </div>
           <Separator className="my-6" />
-          <Button type="submit" className="w-full">
-            Sign in
+          <Button type="submit" className="w-full bg-blue-400 hover:bg-blue-300">
+            Login
           </Button>
         </form>
-        <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="#"
-            className="font-medium text-gray-900 hover:underline dark:text-gray-400"
-            prefetch={false}
-          >
-            Sign up
-          </Link>
-        </p>
       </div>
     </div>
   );
