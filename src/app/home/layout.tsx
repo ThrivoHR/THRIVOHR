@@ -9,7 +9,7 @@ export default function HomeLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="grid min-h-screen min-w-full overflow-hidden lg:grid-cols-[250px_1fr]">
+    <div className="grid min-h-screen min-w-full overflow-hidden lg:grid-cols-[255px_1fr]">
       <div>
         <Sidebar />
       </div>
