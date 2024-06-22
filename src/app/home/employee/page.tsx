@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { ThreeDots } from "@/components/icon";
@@ -25,7 +25,14 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { Dialog, DialogOverlay, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 type Employee = {
   id: string;
@@ -68,7 +75,9 @@ const employees: Employee[] = [
 ];
 
 export default function Employee() {
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+    null
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleViewClick = (employee: Employee) => {
@@ -81,24 +90,30 @@ export default function Employee() {
     setSelectedEmployee(null);
   };
 
+  const headerStyle = "text-black";
+
   return (
     <div className="border rounded-lg w-full h-[80vh] flex flex-col">
       <div className="flex-grow overflow-auto">
         <Table className="w-full">
-          <TableHeader>
+          <TableHeader className="bg-blue-200/40 rounded-t-lg">
             <TableRow>
-              <TableHead>Employee ID</TableHead>
-              <TableHead>Department</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Position</TableHead>
-              <TableHead>Department</TableHead>
-              <TableHead>Action</TableHead>
+              <TableHead className={headerStyle}>Employee ID</TableHead>
+              <TableHead className={headerStyle}>Department</TableHead>
+              <TableHead className={headerStyle}>Email</TableHead>
+              <TableHead className={headerStyle}>Phone</TableHead>
+              <TableHead className={headerStyle}>Position</TableHead>
+              <TableHead className={headerStyle}>Department</TableHead>
+              <TableHead className={headerStyle}>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {employees.map((employee) => (
-              <TableRow key={employee.id} className="cursor-pointer hover:bg-gray-100">
+              <TableRow
+                key={employee.id}
+                className="cursor-pointer hover:bg-gray-100"
+                onClick={() => handleViewClick(employee)}
+              >
                 <TableCell className="font-medium">{employee.id}</TableCell>
                 <TableCell>{employee.department}</TableCell>
                 <TableCell>{employee.email}</TableCell>
@@ -111,7 +126,7 @@ export default function Employee() {
                       <ThreeDots />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => handleViewClick(employee)}>View</DropdownMenuItem>
+                      <DropdownMenuItem>View</DropdownMenuItem>
                       <DropdownMenuItem>Edit</DropdownMenuItem>
                       <DropdownMenuItem>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
@@ -147,25 +162,44 @@ export default function Employee() {
         </Pagination>
       </div>
       {selectedEmployee && (
-        <Dialog open={isDialogOpen}>
-          <DialogOverlay />
+        <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
           <DialogContent>
-            <div className="p-4 bg-white shadow-md rounded-lg">
-              <h2 className="text-xl font-semibold mb-2">Employee Details</h2>
-              <p><strong>ID:</strong> {selectedEmployee.id}</p>
-              <p><strong>Department:</strong> {selectedEmployee.department}</p>
-              <p><strong>Email:</strong> {selectedEmployee.email}</p>
-              <p><strong>Phone:</strong> {selectedEmployee.phone}</p>
-              <p><strong>Position:</strong> {selectedEmployee.position}</p>
-              <p><strong>Reports To:</strong> {selectedEmployee.reportsTo}</p>
-              <p><strong>Full Department:</strong> {selectedEmployee.departmentFull}</p>
+            <DialogHeader>
+              <DialogTitle>Employee Details</DialogTitle>
+              <DialogClose />
+            </DialogHeader>
+            <div className="p-4 bg-white">
+              <p>
+                <strong>ID:</strong> {selectedEmployee.id}
+              </p>
+              <p>
+                <strong>Department:</strong> {selectedEmployee.department}
+              </p>
+              <p>
+                <strong>Email:</strong> {selectedEmployee.email}
+              </p>
+              <p>
+                <strong>Phone:</strong> {selectedEmployee.phone}
+              </p>
+              <p>
+                <strong>Position:</strong> {selectedEmployee.position}
+              </p>
+              <p>
+                <strong>Reports To:</strong> {selectedEmployee.reportsTo}
+              </p>
+              <p>
+                <strong>Full Department:</strong>{" "}
+                {selectedEmployee.departmentFull}
+              </p>
+            </div>
+            <DialogFooter>
               <button
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+                className="mt-4 px-4 py-2 bg-blue-300 text-white rounded"
                 onClick={closeDialog}
               >
                 Close
               </button>
-            </div>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       )}

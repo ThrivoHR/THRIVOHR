@@ -13,47 +13,35 @@ type TBreadCrumbProps = {
     capitalizeLinks?: boolean
 }
 
-const NextBreadcrumb = ({
-    homeElement,
-    separator,
-    containerClasses = "breadcrumb-container",
-    listClasses = "breadcrumb-item",
-    activeClasses = "active",
-    capitalizeLinks = true
-}: TBreadCrumbProps) => {
-
+const NextBreadcrumb = ({ homeElement, separator, containerClasses, listClasses, activeClasses, capitalizeLinks }: TBreadCrumbProps) => {
     const paths = usePathname()
-    const pathNames = paths.split('/').filter(path => path)
+    let pathNames = paths.split('/').filter(path => path)
 
-    if (pathNames.length === 0) {
-        return null; // Return null if there are no additional paths (i.e., only the root path)
+    // Remove the first "home" from the breadcrumb if it exists
+    if (pathNames[1] === 'home') {
+        pathNames = pathNames.slice(1)
     }
 
     return (
         <div>
             <ul className={containerClasses}>
-                {pathNames.length > 0 && (
-                    <React.Fragment>
-                        <li className={listClasses}>
-                            <Link href='/'>{homeElement}</Link>
-                        </li>
-                        {separator}
-                    </React.Fragment>
-                )}
-                {pathNames.map((link, index) => {
-                    const href = `/${pathNames.slice(0, index + 1).join('/')}`
-                    const itemClasses = paths === href ? `${listClasses} ${activeClasses}` : listClasses
-                    const itemLink = capitalizeLinks ? link.charAt(0).toUpperCase() + link.slice(1) : link
-
-                    return (
-                        <React.Fragment key={index}>
-                            <li className={itemClasses}>
-                                <Link href={href}>{itemLink}</Link>
-                            </li>
-                            {pathNames.length !== index + 1 && separator}
-                        </React.Fragment>
-                    )
-                })}
+                <li className={listClasses}><Link href={'/'}>{homeElement}</Link></li>
+                {pathNames.length > 0 && separator}
+                {
+                    pathNames.map((link, index) => {
+                        let href = `/${pathNames.slice(0, index + 1).join('/')}`
+                        let itemClasses = paths === href ? `${listClasses} ${activeClasses}` : listClasses
+                        let itemLink = capitalizeLinks ? link[0].toUpperCase() + link.slice(1, link.length) : link
+                        return (
+                            <React.Fragment key={index}>
+                                <li className={itemClasses}>
+                                    <Link href={href}>{itemLink}</Link>
+                                </li>
+                                {pathNames.length !== index + 1 && separator}
+                            </React.Fragment>
+                        )
+                    })
+                }
             </ul>
         </div>
     )

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import logo from "/public/thrivoHR-icon.png";
 import logo2 from "/public/thrivoHR-text.png";
-import { ContractIcon, UserIcon, WorkIcon } from "@/components/icon";
+import { Archive, ContractIcon, Salary, UserIcon, WorkIcon } from "@/components/icon";
 import { BookUser, CalendarClock, History } from "lucide-react";
 import {
   Accordion,
@@ -13,7 +13,7 @@ import {
 
 export default function Sidebar() {
   const linkClasses =
-    "block px-3 py-2 text-gray-900 hover:text-gray-700 hover:bg-gray-100 focus:bg-blue-200 focus:text-blue-800 pl-14";
+    "block px-3 py-2 text-gray-900 hover:text-gray-700 hover:bg-gray-100 focus:text-blue-800 pl-14";
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -33,34 +33,34 @@ export default function Sidebar() {
             <Accordion type="multiple">
               <Link
                 href="/home/employee"
-                className={`flex items-center gap-3 rounded-sm px-3 py-4 text-gray-900 transition-all hover:text-gray-700 hover:bg-gray-100 focus:bg-blue-200 focus:text-blue-800`}
+                className={`flex items-center gap-3 rounded-sm px-3 py-4 text-gray-900 transition-all hover:text-gray-700 hover:bg-gray-100 focus:text-blue-800`}
                 prefetch={false}
               >
                 <UserIcon className="w-3 h-3" />
-                Thông tin nhân viên
+                Information
               </Link>
 
               <AccordionItem value="contract">
                 <AccordionTrigger className="hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
                   <div className="flex items-center gap-3 rounded-sm px-3 text-gray-900 transition-all">
                     <BookUser className="w-4 h-4" />
-                    Hợp đồng lao động
+                    Contract
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
                   <Link
-                    href="/home/contract/details"
+                    href="/home/contract/longterm"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Hợp đồng dài hạn
+                    Long-term contract
                   </Link>
                   <Link
-                    href="/home/contract/new"
+                    href="/home/contract/shortterm"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Hợp đồng ngắn hạn
+                    Short-term contract
                   </Link>
                 </AccordionContent>
               </AccordionItem>
@@ -69,37 +69,37 @@ export default function Sidebar() {
                 <AccordionTrigger className="hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
                   <div className="flex items-center gap-3 rounded-sm px-3 text-gray-900 transition-all">
                     <History className="w-4 h-4" />
-                    Quản lý quá trình
+                    Career
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
                   <Link
-                    href="/home/history/view"
+                    href="/home/history/union"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Hoạt động công đoàn
+                    Union activities
                   </Link>
                   <Link
-                    href="/home/history/edit"
+                    href="history/workhistory"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Quá trình đào tạo
+                    Career history
                   </Link>
                   <Link
-                    href="/home/history/archive"
+                    href="/home/history/addition"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Quá trình khen thưởng
+                    Addition
                   </Link>
                   <Link
-                    href="/home/history/archive"
+                    href="/home/history/deduction"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Quá trình kỷ luật
+                    Deduction
                   </Link>
                 </AccordionContent>
               </AccordionItem>
@@ -108,30 +108,30 @@ export default function Sidebar() {
                 <AccordionTrigger className="hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
                   <div className="flex items-center gap-3 rounded-sm px-3 text-gray-900 transition-all">
                     <WorkIcon />
-                    Quản lý công tác làm việc
+                    Application 
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
                   <Link
-                    href="/home/application/view"
+                    href="/home/application/absent"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Đơn xin nghỉ
+                    Absence application
                   </Link>
                   <Link
-                    href="/home/application/new"
+                    href="/home/application/overtime"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Tăng ca
+                    Overtime
                   </Link>
                   <Link
-                    href="/home/application/edit"
+                    href="/home/application/workreport"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Báo cáo quá trình làm việc
+                    Work report
                   </Link>
                 </AccordionContent>
               </AccordionItem>
@@ -140,23 +140,23 @@ export default function Sidebar() {
                 <AccordionTrigger className="hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
                   <div className="flex items-center gap-3 rounded-lg px-3 text-gray-900 transition-all">
                     <CalendarClock className="w-4 h-4" />
-                    Quản lý tiến độ dự án
+                    Project management
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
                   <Link
-                    href="/home/progress"
+                    href="/home/progress/viewprogress"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Xem tiến độ
+                    View progress
                   </Link>
                   <Link
-                    href="/home/progress/report"
+                    href="/home/progress/reportprogress"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Báo cáo tiến độ
+                    Progress report
                   </Link>
                 </AccordionContent>
               </AccordionItem>
@@ -164,61 +164,63 @@ export default function Sidebar() {
               <AccordionItem value="salary">
                 <AccordionTrigger className="hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
                   <div className="flex items-center gap-3 rounded-lg px-3 text-gray-900 transition-all">
-                    <CalendarClock className="w-4 h-4" />
-                    Quản lý lương
+
+                    <Salary className="w-4 h-4" />
+                    Payroll
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
                   <Link
-                    href="/home/progress"
+                    href="/home/salary/coefficient"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Hệ số lương
+                    Coefficient
                   </Link>
                   <Link
-                    href="/home/progress/report"
+                    href="/home/salary/raise"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Khai báo tăng lương
+                    Raise
                   </Link>
                   <Link
-                    href="/home/progress/report"
+                    href="/home/salary/bonus"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Thưởng
+                    Bonus
                   </Link>
                   <Link
-                    href="/home/progress/report"
+                    href="/home/salary/overtimesalary"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Lương tăng ca
+                    Overtime salary
                   </Link>
                   <Link
-                    href="/home/progress/report"
+                    href="/home/salary/deductionreport"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Khai báo các khoản giảm trừ
+                    Deduction report
                   </Link>
                   <Link
-                    href="/home/progress/report"
+                    href="/home/salary/totalsalary"
                     prefetch={false}
                     className={linkClasses}
                   >
-                    Báo cáo tổng lương
+                    Total salary
                   </Link>
                 </AccordionContent>
               </AccordionItem>
               <Link
-                href="/home/employee"
+                href="/home/archive"
                 className={`flex items-center gap-3 rounded-sm px-3 py-4 text-gray-900 transition-all hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800`}
                 prefetch={false}
               >
-                Kho lưu trữ
+                <Archive className="w-3 h-3"/>
+                Archive
               </Link>
             </Accordion>
           </nav>
