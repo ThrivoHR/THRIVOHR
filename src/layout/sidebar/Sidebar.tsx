@@ -13,7 +13,7 @@ import {
 
 export default function Sidebar() {
   const linkClasses =
-    "block px-3 py-2 text-gray-900 hover:text-gray-700 hover:bg-gray-100 focus:text-blue-800 pl-14";
+    "block px-3 py-2 font-medium text-gray-900 hover:text-gray-700 hover:bg-gray-100 focus:text-blue-800 pl-14";
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -33,7 +33,7 @@ export default function Sidebar() {
             <Accordion type="multiple">
               <Link
                 href="/home/employee"
-                className={`flex items-center gap-3 rounded-sm px-3 py-4 text-gray-900 transition-all hover:text-gray-700 hover:bg-gray-100 focus:text-blue-800`}
+                className={`flex font-medium items-center gap-3 rounded-sm px-3 py-4 text-gray-900 transition-all hover:text-gray-700 hover:bg-gray-100 focus:text-blue-800`}
                 prefetch={false}
               >
                 <UserIcon className="w-3 h-3" />
@@ -41,7 +41,7 @@ export default function Sidebar() {
               </Link>
 
               <AccordionItem value="contract">
-                <AccordionTrigger className="hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
+                <AccordionTrigger className="font-medium hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
                   <div className="flex items-center gap-3 rounded-sm px-3 text-gray-900 transition-all">
                     <BookUser className="w-4 h-4" />
                     Contract
@@ -66,7 +66,7 @@ export default function Sidebar() {
               </AccordionItem>
 
               <AccordionItem value="history">
-                <AccordionTrigger className="hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
+                <AccordionTrigger className="font-medium hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
                   <div className="flex items-center gap-3 rounded-sm px-3 text-gray-900 transition-all">
                     <History className="w-4 h-4" />
                     Career
@@ -81,7 +81,7 @@ export default function Sidebar() {
                     Union activities
                   </Link>
                   <Link
-                    href="history/workhistory"
+                    href="/home/history/workhistory"
                     prefetch={false}
                     className={linkClasses}
                   >
@@ -105,7 +105,7 @@ export default function Sidebar() {
               </AccordionItem>
 
               <AccordionItem value="application">
-                <AccordionTrigger className="hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
+                <AccordionTrigger className="font-medium hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
                   <div className="flex items-center gap-3 rounded-sm px-3 text-gray-900 transition-all">
                     <WorkIcon />
                     Application 
@@ -137,7 +137,7 @@ export default function Sidebar() {
               </AccordionItem>
 
               <AccordionItem value="progress">
-                <AccordionTrigger className="hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
+                <AccordionTrigger className="font-medium hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
                   <div className="flex items-center gap-3 rounded-lg px-3 text-gray-900 transition-all">
                     <CalendarClock className="w-4 h-4" />
                     Project management
@@ -160,9 +160,8 @@ export default function Sidebar() {
                   </Link>
                 </AccordionContent>
               </AccordionItem>
-
               <AccordionItem value="salary">
-                <AccordionTrigger className="hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
+                <AccordionTrigger className="font-medium hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
                   <div className="flex items-center gap-3 rounded-lg px-3 text-gray-900 transition-all">
 
                     <Salary className="w-4 h-4" />
@@ -216,7 +215,7 @@ export default function Sidebar() {
               </AccordionItem>
               <Link
                 href="/home/archive"
-                className={`flex items-center gap-3 rounded-sm px-3 py-4 text-gray-900 transition-all hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800`}
+                className={`font-medium flex items-center gap-3 rounded-sm px-3 py-4 text-gray-900 transition-all hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800`}
                 prefetch={false}
               >
                 <Archive className="w-3 h-3"/>

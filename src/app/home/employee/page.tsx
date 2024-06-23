@@ -1,13 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ThreeDots } from "@/components/icon";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+import DataTable from "@/components/Table";
 import {
   Pagination,
   PaginationContent,
@@ -18,14 +12,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
-import {
   Dialog,
   DialogContent,
   DialogFooter,
@@ -33,6 +19,7 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 type Employee = {
   id: string;
@@ -43,6 +30,15 @@ type Employee = {
   reportsTo: string;
   departmentFull: string;
 };
+
+const columns = [
+  "Employee ID",
+  "Department",
+  "Email",
+  "Phone",
+  "Position",
+  "Department Full",
+];
 
 const employees: Employee[] = [
   {
@@ -72,71 +68,127 @@ const employees: Employee[] = [
     reportsTo: "Jane Doe",
     departmentFull: "HR",
   },
+  {
+    id: "EMP004",
+    department: "Marketing",
+    email: "alice.brown@example.com",
+    phone: "+1 (555) 555-5557",
+    position: "Marketing Specialist",
+    reportsTo: "Tom White",
+    departmentFull: "Marketing",
+  },
+  {
+    id: "EMP005",
+    department: "Sales",
+    email: "mike.jones@example.com",
+    phone: "+1 (555) 555-5558",
+    position: "Sales Manager",
+    reportsTo: "Sara Black",
+    departmentFull: "Sales",
+  },
+  {
+    id: "EMP006",
+    department: "Support",
+    email: "emma.watson@example.com",
+    phone: "+1 (555) 555-5559",
+    position: "Customer Support",
+    reportsTo: "Harry Brown",
+    departmentFull: "Customer Support",
+  },
+  {
+    id: "EMP007",
+    department: "Finance",
+    email: "will.smith@example.com",
+    phone: "+1 (555) 555-5560",
+    position: "Financial Analyst",
+    reportsTo: "Jane Smith",
+    departmentFull: "Accounting",
+  },
+  {
+    id: "EMP008",
+    department: "IT",
+    email: "kevin.malone@example.com",
+    phone: "+1 (555) 555-5561",
+    position: "Network Administrator",
+    reportsTo: "John Smith",
+    departmentFull: "IT",
+  },
+  {
+    id: "EMP009",
+    department: "HR",
+    email: "pam.beesly@example.com",
+    phone: "+1 (555) 555-5562",
+    position: "HR Manager",
+    reportsTo: "Jane Doe",
+    departmentFull: "HR",
+  },
+  {
+    id: "EMP010",
+    department: "Marketing",
+    email: "angela.martin@example.com",
+    phone: "+1 (555) 555-5563",
+    position: "Marketing Manager",
+    reportsTo: "Tom White",
+    departmentFull: "Marketing",
+  },
+  {
+    id: "EMP011",
+    department: "Sales",
+    email: "jim.halpert@example.com",
+    phone: "+1 (555) 555-5564",
+    position: "Sales Representative",
+    reportsTo: "Sara Black",
+    departmentFull: "Sales",
+  },
 ];
 
 export default function Employee() {
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
-    null
-  );
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogType, setDialogType] = useState<"edit" | "delete" | null>(null);
 
-  const handleViewClick = (employee: Employee) => {
+  const handleEditClick = (row: Record<string, React.ReactNode>) => {
+    const employee = employees.find((emp) => emp.id === row["Employee ID"])!;
     setSelectedEmployee(employee);
+    setDialogType("edit");
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteClick = (row: Record<string, React.ReactNode>) => {
+    const employee = employees.find((emp) => emp.id === row["Employee ID"])!;
+    setSelectedEmployee(employee);
+    setDialogType("delete");
     setIsDialogOpen(true);
   };
 
   const closeDialog = () => {
     setIsDialogOpen(false);
     setSelectedEmployee(null);
+    setDialogType(null);
   };
 
-  const headerStyle = "text-black";
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (selectedEmployee) {
+      const { name, value } = e.target;
+      setSelectedEmployee({ ...selectedEmployee, [name]: value });
+    }
+  };
 
   return (
     <div className="border rounded-lg w-full h-[80vh] flex flex-col">
-      <div className="flex-grow overflow-auto">
-        <Table className="w-full">
-          <TableHeader className="bg-blue-200/40 rounded-t-lg">
-            <TableRow>
-              <TableHead className={headerStyle}>Employee ID</TableHead>
-              <TableHead className={headerStyle}>Department</TableHead>
-              <TableHead className={headerStyle}>Email</TableHead>
-              <TableHead className={headerStyle}>Phone</TableHead>
-              <TableHead className={headerStyle}>Position</TableHead>
-              <TableHead className={headerStyle}>Department</TableHead>
-              <TableHead className={headerStyle}>Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {employees.map((employee) => (
-              <TableRow
-                key={employee.id}
-                className="cursor-pointer hover:bg-gray-100"
-                onClick={() => handleViewClick(employee)}
-              >
-                <TableCell className="font-medium">{employee.id}</TableCell>
-                <TableCell>{employee.department}</TableCell>
-                <TableCell>{employee.email}</TableCell>
-                <TableCell>{employee.phone}</TableCell>
-                <TableCell>{employee.position}</TableCell>
-                <TableCell>{employee.departmentFull}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <ThreeDots />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>View</DropdownMenuItem>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        columns={columns}
+        data={employees.map((employee) => ({
+          "Employee ID": employee.id,
+          "Department": employee.department,
+          "Email": employee.email,
+          "Phone": employee.phone,
+          "Position": employee.position,
+          "Department Full": employee.departmentFull,
+        }))}
+        onEditClick={handleEditClick}
+        onDeleteClick={handleDeleteClick}
+      />
       <div className="pagination">
         <Pagination>
           <PaginationContent>
@@ -163,34 +215,95 @@ export default function Employee() {
       </div>
       {selectedEmployee && (
         <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
-          <DialogContent>
+          <DialogContent className="w-full max-w-4xl h-auto">
             <DialogHeader>
-              <DialogTitle>Employee Details</DialogTitle>
+              <DialogTitle>
+                {dialogType === "edit" && "Edit Employee"}
+                {dialogType === "delete" && "Delete Employee"}
+              </DialogTitle>
               <DialogClose />
             </DialogHeader>
             <div className="p-4 bg-white">
-              <p>
-                <strong>ID:</strong> {selectedEmployee.id}
-              </p>
-              <p>
-                <strong>Department:</strong> {selectedEmployee.department}
-              </p>
-              <p>
-                <strong>Email:</strong> {selectedEmployee.email}
-              </p>
-              <p>
-                <strong>Phone:</strong> {selectedEmployee.phone}
-              </p>
-              <p>
-                <strong>Position:</strong> {selectedEmployee.position}
-              </p>
-              <p>
-                <strong>Reports To:</strong> {selectedEmployee.reportsTo}
-              </p>
-              <p>
-                <strong>Full Department:</strong>{" "}
-                {selectedEmployee.departmentFull}
-              </p>
+              {dialogType === "edit" && (
+                <form className="grid grid-cols-3 gap-4">
+                  <div className="flex flex-col">
+                    <label>ID:</label>
+                    <Input
+                      type="text"
+                      name="id"
+                      value={selectedEmployee.id}
+                      readOnly
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Department:</label>
+                    <Input
+                      type="text"
+                      name="department"
+                      value={selectedEmployee.department}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Email:</label>
+                    <Input
+                      type="email"
+                      name="email"
+                      value={selectedEmployee.email}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Phone:</label>
+                    <Input
+                      type="text"
+                      name="phone"
+                      value={selectedEmployee.phone}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Position:</label>
+                    <Input
+                      type="text"
+                      name="position"
+                      value={selectedEmployee.position}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Reports To:</label>
+                    <Input
+                      type="text"
+                      name="reportsTo"
+                      value={selectedEmployee.reportsTo}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Full Department:</label>
+                    <Input
+                      type="text"
+                      name="departmentFull"
+                      value={selectedEmployee.departmentFull}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                </form>
+              )}
+              {dialogType === "delete" && (
+                <p>
+                  Are you sure you want to delete employee {selectedEmployee.id}{" "}
+                  - {selectedEmployee.position}?
+                </p>
+              )}
             </div>
             <DialogFooter>
               <button
@@ -199,6 +312,16 @@ export default function Employee() {
               >
                 Close
               </button>
+              {dialogType === "edit" && (
+                <button className="mt-4 px-4 py-2 bg-green-500 text-white rounded">
+                  Save Changes
+                </button>
+              )}
+              {dialogType === "delete" && (
+                <button className="mt-4 px-4 py-2 bg-red-500 text-white rounded">
+                  Confirm Delete
+                </button>
+              )}
             </DialogFooter>
           </DialogContent>
         </Dialog>
