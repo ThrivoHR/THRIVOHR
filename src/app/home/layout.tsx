@@ -15,7 +15,7 @@ export default function HomeLayout({
       </div>
       <div>
         <Header />
-        <div>
+        {/* <div>
           <NextBreadcrumb
             homeElement={"Home"}
             separator={
@@ -42,7 +42,7 @@ export default function HomeLayout({
             listClasses="hover:text-gray-700 mx-3 text-sm"
             capitalizeLinks
           />
-        </div>
+        </div> */}
         <main className="flex-1 overflow-auto m-3">{children}</main>
       </div>
     </div>

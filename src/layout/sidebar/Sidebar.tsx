@@ -49,14 +49,14 @@ export default function Sidebar() {
                 </AccordionTrigger>
                 <AccordionContent>
                   <Link
-                    href="/home/contract/longterm"
+                    href="/home/contract/Long-term"
                     prefetch={false}
                     className={linkClasses}
                   >
                     Long-term contract
                   </Link>
                   <Link
-                    href="/home/contract/shortterm"
+                    href="/home/contract/Short-term"
                     prefetch={false}
                     className={linkClasses}
                   >
