@@ -24,35 +24,35 @@ import { Input } from "@/components/ui/input";
 type Employee = {
   id: string;
   fullName: string;
-  unionCode: string; // Changed from 'union' to 'unionCode'
-  joinDate: string;
+  total: number;
+  dateOfPay: string;
 };
 
 const columns = [
   "ID",
   "Full Name",
-  "Union",
-  "Join Date",
+  "Total salary",
+  "Date of pay",
 ];
 
 const employees: Employee[] = [
   {
     id: "EMP001",
     fullName: "John Doe",
-    unionCode: "SA",
-    joinDate: "2023-01-15",
+    total:10000,
+     dateOfPay: "2023-01-15",
   },
   {
     id: "EMP002",
     fullName: "Jane Doe",
-    unionCode: "SA",
-    joinDate: "2022-11-20",
+    total:10000,
+    dateOfPay: "2022-11-20",
   },
   {
     id: "EMP003",
     fullName: "Bob Smith",
-    unionCode: "SA",
-    joinDate: "2023-03-05",
+    total:10000,
+    dateOfPay: "2023-03-05",
   },
 ];
 
@@ -95,8 +95,8 @@ export default function Employee() {
         data={employees.map((employee) => ({
           "ID": employee.id,
           "Full Name": employee.fullName,
-          "Union": employee.unionCode,
-          "Join Date": employee.joinDate,
+          "Total salary": employee.total,
+          "Date of pay": employee.dateOfPay,
         }))}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
@@ -154,16 +154,6 @@ export default function Employee() {
                       type="text"
                       name="fullName"
                       value={selectedEmployee.fullName}
-                      onChange={handleInputChange}
-                      className="p-2 border rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label>Join Date:</label>
-                    <Input
-                      type="text"
-                      name="joinDate"
-                      value={selectedEmployee.joinDate}
                       onChange={handleInputChange}
                       className="p-2 border rounded"
                     />

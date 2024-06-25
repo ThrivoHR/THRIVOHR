@@ -24,35 +24,31 @@ import { Input } from "@/components/ui/input";
 type Employee = {
   id: string;
   fullName: string;
-  unionCode: string; // Changed from 'union' to 'unionCode'
-  joinDate: string;
+  raise:number;
+
 };
 
 const columns = [
   "ID",
   "Full Name",
-  "Union",
-  "Join Date",
+  "Raise"
 ];
 
 const employees: Employee[] = [
   {
     id: "EMP001",
     fullName: "John Doe",
-    unionCode: "SA",
-    joinDate: "2023-01-15",
+    raise:4000
   },
   {
     id: "EMP002",
     fullName: "Jane Doe",
-    unionCode: "SA",
-    joinDate: "2022-11-20",
+    raise:4000
   },
   {
     id: "EMP003",
     fullName: "Bob Smith",
-    unionCode: "SA",
-    joinDate: "2023-03-05",
+    raise:4000
   },
 ];
 
@@ -95,8 +91,7 @@ export default function Employee() {
         data={employees.map((employee) => ({
           "ID": employee.id,
           "Full Name": employee.fullName,
-          "Union": employee.unionCode,
-          "Join Date": employee.joinDate,
+          "Raise": employee.raise
         }))}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
@@ -159,11 +154,11 @@ export default function Employee() {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label>Join Date:</label>
+                    <label>Raise:</label>
                     <Input
                       type="text"
                       name="joinDate"
-                      value={selectedEmployee.joinDate}
+                      value={selectedEmployee.raise}
                       onChange={handleInputChange}
                       className="p-2 border rounded"
                     />

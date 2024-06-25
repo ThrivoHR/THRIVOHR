@@ -28,7 +28,6 @@ type Employee = {
   phone: string;
   position: string;
   reportsTo: string;
-  departmentFull: string;
 };
 
 const columns = [
@@ -37,7 +36,6 @@ const columns = [
   "Email",
   "Phone",
   "Position",
-  "Department Full",
 ];
 
 const employees: Employee[] = [
@@ -48,7 +46,6 @@ const employees: Employee[] = [
     phone: "+1 (555) 555-5555",
     position: "Accountant",
     reportsTo: "Jane Smith",
-    departmentFull: "Accounting",
   },
   {
     id: "EMP002",
@@ -57,7 +54,6 @@ const employees: Employee[] = [
     phone: "+1 (555) 555-5556",
     position: "IT Specialist",
     reportsTo: "John Smith",
-    departmentFull: "IT",
   },
   {
     id: "EMP003",
@@ -66,7 +62,6 @@ const employees: Employee[] = [
     phone: "+84 947 1363 27",
     position: "HR Specialist",
     reportsTo: "Jane Doe",
-    departmentFull: "HR",
   },
   {
     id: "EMP004",
@@ -75,7 +70,6 @@ const employees: Employee[] = [
     phone: "+1 (555) 555-5557",
     position: "Marketing Specialist",
     reportsTo: "Tom White",
-    departmentFull: "Marketing",
   },
   {
     id: "EMP005",
@@ -84,7 +78,6 @@ const employees: Employee[] = [
     phone: "+1 (555) 555-5558",
     position: "Sales Manager",
     reportsTo: "Sara Black",
-    departmentFull: "Sales",
   },
   {
     id: "EMP006",
@@ -93,7 +86,6 @@ const employees: Employee[] = [
     phone: "+1 (555) 555-5559",
     position: "Customer Support",
     reportsTo: "Harry Brown",
-    departmentFull: "Customer Support",
   },
   {
     id: "EMP007",
@@ -102,7 +94,6 @@ const employees: Employee[] = [
     phone: "+1 (555) 555-5560",
     position: "Financial Analyst",
     reportsTo: "Jane Smith",
-    departmentFull: "Accounting",
   },
   {
     id: "EMP008",
@@ -111,7 +102,6 @@ const employees: Employee[] = [
     phone: "+1 (555) 555-5561",
     position: "Network Administrator",
     reportsTo: "John Smith",
-    departmentFull: "IT",
   },
   {
     id: "EMP009",
@@ -120,7 +110,6 @@ const employees: Employee[] = [
     phone: "+1 (555) 555-5562",
     position: "HR Manager",
     reportsTo: "Jane Doe",
-    departmentFull: "HR",
   },
   {
     id: "EMP010",
@@ -129,7 +118,6 @@ const employees: Employee[] = [
     phone: "+1 (555) 555-5563",
     position: "Marketing Manager",
     reportsTo: "Tom White",
-    departmentFull: "Marketing",
   },
   {
     id: "EMP011",
@@ -138,7 +126,6 @@ const employees: Employee[] = [
     phone: "+1 (555) 555-5564",
     position: "Sales Representative",
     reportsTo: "Sara Black",
-    departmentFull: "Sales",
   },
 ];
 
@@ -184,7 +171,6 @@ export default function Employee() {
           "Email": employee.email,
           "Phone": employee.phone,
           "Position": employee.position,
-          "Department Full": employee.departmentFull,
         }))}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
@@ -282,16 +268,6 @@ export default function Employee() {
                       type="text"
                       name="reportsTo"
                       value={selectedEmployee.reportsTo}
-                      onChange={handleInputChange}
-                      className="p-2 border rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label>Full Department:</label>
-                    <Input
-                      type="text"
-                      name="departmentFull"
-                      value={selectedEmployee.departmentFull}
                       onChange={handleInputChange}
                       className="p-2 border rounded"
                     />

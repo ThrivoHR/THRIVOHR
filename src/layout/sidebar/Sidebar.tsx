@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import logo from "/public/thrivoHR-icon.png";
 import logo2 from "/public/thrivoHR-text.png";
-import { Archive, ContractIcon, Salary, Skill, UserIcon, WorkIcon } from "@/components/icon";
+import { Archive, Salary, Skill, UserIcon, WorkIcon } from "@/components/icon";
 import { BookUser, CalendarClock, History } from "lucide-react";
 import {
   Accordion,
@@ -16,7 +16,7 @@ import {
 
 export default function Sidebar() {
   const router = useRouter();
-  const [activeLink, setActiveLink] = useState(""); // State to track the active link
+  const [activeLink, setActiveLink] = useState("");
 
   const linkClasses = (path: string) =>
     `block px-3 py-2 font-medium pl-14 cursor-pointer transition-all ${
@@ -24,7 +24,7 @@ export default function Sidebar() {
     }`;
 
   const handleNavigation = (path: string) => {
-    setActiveLink(path); // Set the active link
+    setActiveLink(path);
     router.push(path);
   };
 

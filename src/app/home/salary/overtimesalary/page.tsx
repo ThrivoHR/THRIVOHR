@@ -24,35 +24,35 @@ import { Input } from "@/components/ui/input";
 type Employee = {
   id: string;
   fullName: string;
-  unionCode: string; // Changed from 'union' to 'unionCode'
-  joinDate: string;
+  hoursOfOT: number;
+  OTCoefficient: number;
 };
 
 const columns = [
   "ID",
   "Full Name",
-  "Union",
-  "Join Date",
+  "Hours of overtime",
+  "Overtime coefficient"
 ];
 
 const employees: Employee[] = [
   {
     id: "EMP001",
     fullName: "John Doe",
-    unionCode: "SA",
-    joinDate: "2023-01-15",
+    hoursOfOT:20,
+    OTCoefficient:3
   },
   {
     id: "EMP002",
     fullName: "Jane Doe",
-    unionCode: "SA",
-    joinDate: "2022-11-20",
+    hoursOfOT:20,
+    OTCoefficient:3
   },
   {
     id: "EMP003",
     fullName: "Bob Smith",
-    unionCode: "SA",
-    joinDate: "2023-03-05",
+    hoursOfOT:20,
+    OTCoefficient:3
   },
 ];
 
@@ -95,8 +95,8 @@ export default function Employee() {
         data={employees.map((employee) => ({
           "ID": employee.id,
           "Full Name": employee.fullName,
-          "Union": employee.unionCode,
-          "Join Date": employee.joinDate,
+          "Hours of overtime": employee.hoursOfOT,
+          "Overtime coefficient": employee.OTCoefficient,
         }))}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
@@ -159,11 +159,21 @@ export default function Employee() {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label>Join Date:</label>
+                    <label>Hours of overtime:</label>
                     <Input
                       type="text"
-                      name="joinDate"
-                      value={selectedEmployee.joinDate}
+                      name="fullName"
+                      value={selectedEmployee.hoursOfOT}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Coefficient:</label>
+                    <Input
+                      type="text"
+                      name="fullName"
+                      value={selectedEmployee.OTCoefficient}
                       onChange={handleInputChange}
                       className="p-2 border rounded"
                     />

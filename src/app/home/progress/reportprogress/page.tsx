@@ -24,35 +24,35 @@ import { Input } from "@/components/ui/input";
 type Employee = {
   id: string;
   fullName: string;
-  unionCode: string; // Changed from 'union' to 'unionCode'
-  joinDate: string;
+  workFinished: number;
+  workUnfinish: number;
 };
 
 const columns = [
   "ID",
   "Full Name",
-  "Union",
-  "Join Date",
+  "Work Finished",
+  "Work Unfinish"
 ];
 
 const employees: Employee[] = [
   {
     id: "EMP001",
     fullName: "John Doe",
-    unionCode: "SA",
-    joinDate: "2023-01-15",
+    workFinished: 12,
+    workUnfinish:3
   },
   {
     id: "EMP002",
     fullName: "Jane Doe",
-    unionCode: "SA",
-    joinDate: "2022-11-20",
+    workFinished:5,
+    workUnfinish:2,
   },
   {
     id: "EMP003",
     fullName: "Bob Smith",
-    unionCode: "SA",
-    joinDate: "2023-03-05",
+    workFinished:20,
+    workUnfinish:4,
   },
 ];
 
@@ -95,8 +95,8 @@ export default function Employee() {
         data={employees.map((employee) => ({
           "ID": employee.id,
           "Full Name": employee.fullName,
-          "Union": employee.unionCode,
-          "Join Date": employee.joinDate,
+          "Work Finished": employee.workFinished,
+          "Work Unfinish": employee.workUnfinish,
         }))}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
@@ -154,16 +154,6 @@ export default function Employee() {
                       type="text"
                       name="fullName"
                       value={selectedEmployee.fullName}
-                      onChange={handleInputChange}
-                      className="p-2 border rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label>Join Date:</label>
-                    <Input
-                      type="text"
-                      name="joinDate"
-                      value={selectedEmployee.joinDate}
                       onChange={handleInputChange}
                       className="p-2 border rounded"
                     />

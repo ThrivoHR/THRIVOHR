@@ -24,40 +24,37 @@ import { Input } from "@/components/ui/input";
 type Employee = {
   id: string;
   fullName: string;
-  unionCode: string; // Changed from 'union' to 'unionCode'
   joinDate: string;
+  lastDate: string;
 };
 
-const columns = [
-  "ID",
-  "Full Name",
-  "Union",
-  "Join Date",
-];
+const columns = ["ID", "Full Name", "Join Date", "Last Date"];
 
 const employees: Employee[] = [
   {
     id: "EMP001",
     fullName: "John Doe",
-    unionCode: "SA",
     joinDate: "2023-01-15",
+    lastDate: "2024-03-15",
   },
   {
     id: "EMP002",
     fullName: "Jane Doe",
-    unionCode: "SA",
     joinDate: "2022-11-20",
+    lastDate: "2024-03-15",
   },
   {
     id: "EMP003",
     fullName: "Bob Smith",
-    unionCode: "SA",
     joinDate: "2023-03-05",
+    lastDate: "2024-03-15",
   },
 ];
 
 export default function Employee() {
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+    null
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<"edit" | "delete" | null>(null);
 
@@ -93,10 +90,10 @@ export default function Employee() {
       <DataTable
         columns={columns}
         data={employees.map((employee) => ({
-          "ID": employee.id,
+          ID: employee.id,
           "Full Name": employee.fullName,
-          "Union": employee.unionCode,
           "Join Date": employee.joinDate,
+          "Last Date": employee.lastDate
         }))}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
@@ -172,8 +169,8 @@ export default function Employee() {
               )}
               {dialogType === "delete" && (
                 <p>
-                  Are you sure you want to delete employee {selectedEmployee.fullName}{" "}
-                  with ID {selectedEmployee.id}?
+                  Are you sure you want to delete employee{" "}
+                  {selectedEmployee.fullName} with ID {selectedEmployee.id}?
                 </p>
               )}
             </div>
