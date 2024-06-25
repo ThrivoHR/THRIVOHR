@@ -20,44 +20,50 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardFooter,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
+// import { Progress } from "@/components/ui/progress";
 
 type Employee = {
   id: string;
   fullName: string;
-  unionCode: string; // Changed from 'union' to 'unionCode'
-  joinDate: string;
+  reason:string;
+  dateOfAbsence:string;
 };
 
-const columns = [
-  "ID",
-  "Full Name",
-  "Union",
-  "Join Date",
-];
+const columns = ["ID", "Full Name", "Reason", "Date of absence"];
 
 const employees: Employee[] = [
   {
     id: "EMP001",
     fullName: "John Doe",
-    unionCode: "SA",
-    joinDate: "2023-01-15",
+    reason: "Personal",
+    dateOfAbsence: "2023-01-15",
   },
   {
     id: "EMP002",
     fullName: "Jane Doe",
-    unionCode: "SA",
-    joinDate: "2022-11-20",
+    reason: "Sickness",
+    dateOfAbsence: "2022-11-20",
   },
   {
     id: "EMP003",
     fullName: "Bob Smith",
-    unionCode: "SA",
-    joinDate: "2023-03-05",
+    reason: "Unknown",
+    dateOfAbsence: "2023-03-05",
   },
 ];
 
 export default function Employee() {
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+    null
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<"edit" | "delete" | null>(null);
 
@@ -89,14 +95,14 @@ export default function Employee() {
   };
 
   return (
-    <div className="border rounded-lg w-full h-[80vh] flex flex-col">
+    <div className="rounded-lg w-full h-[80vh]">
       <DataTable
         columns={columns}
         data={employees.map((employee) => ({
-          "ID": employee.id,
+          ID: employee.id,
           "Full Name": employee.fullName,
-          "Union": employee.unionCode,
-          "Join Date": employee.joinDate,
+          "Reason": employee.reason,
+          "Date of absence": employee.dateOfAbsence,
         }))}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
@@ -163,7 +169,7 @@ export default function Employee() {
                     <Input
                       type="text"
                       name="joinDate"
-                      value={selectedEmployee.joinDate}
+                      value={selectedEmployee.dateOfAbsence}
                       onChange={handleInputChange}
                       className="p-2 border rounded"
                     />
@@ -172,8 +178,8 @@ export default function Employee() {
               )}
               {dialogType === "delete" && (
                 <p>
-                  Are you sure you want to delete employee {selectedEmployee.fullName}{" "}
-                  with ID {selectedEmployee.id}?
+                  Are you sure you want to delete employee{" "}
+                  {selectedEmployee.fullName} with ID {selectedEmployee.id}?
                 </p>
               )}
             </div>

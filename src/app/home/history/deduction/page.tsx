@@ -24,40 +24,37 @@ import { Input } from "@/components/ui/input";
 type Employee = {
   id: string;
   fullName: string;
-  unionCode: string; // Changed from 'union' to 'unionCode'
-  joinDate: string;
+  deductionDate: string;
+  reason: string;
 };
 
-const columns = [
-  "ID",
-  "Full Name",
-  "Union",
-  "Join Date",
-];
+const columns = ["ID", "Full Name", "Deduction Date", "Reason"];
 
 const employees: Employee[] = [
   {
     id: "EMP001",
     fullName: "John Doe",
-    unionCode: "SA",
-    joinDate: "2023-01-15",
+    deductionDate: "2023-05-10",
+    reason: "Training upgrade",
   },
   {
     id: "EMP002",
     fullName: "Jane Doe",
-    unionCode: "SA",
-    joinDate: "2022-11-20",
+    deductionDate: "2023-04-15",
+    reason: "New skill acquisition",
   },
   {
     id: "EMP003",
     fullName: "Bob Smith",
-    unionCode: "SA",
-    joinDate: "2023-03-05",
+    deductionDate: "2023-06-20",
+    reason: "Professional development",
   },
 ];
 
 export default function Employee() {
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+    null
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<"edit" | "delete" | null>(null);
 
@@ -93,10 +90,10 @@ export default function Employee() {
       <DataTable
         columns={columns}
         data={employees.map((employee) => ({
-          "ID": employee.id,
+          ID: employee.id,
           "Full Name": employee.fullName,
-          "Union": employee.unionCode,
-          "Join Date": employee.joinDate,
+          "Deduction Date": employee.deductionDate,
+          Reason: employee.reason,
         }))}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
@@ -159,21 +156,32 @@ export default function Employee() {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label>Join Date:</label>
+                    <label>Decuction Date:</label>
                     <Input
                       type="text"
-                      name="joinDate"
-                      value={selectedEmployee.joinDate}
+                      name="additionalDate"
+                      value={selectedEmployee.deductionDate}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Reason:</label>
+                    <Input
+                      type="text"
+                      name="reason"
+                      value={selectedEmployee.reason}
                       onChange={handleInputChange}
                       className="p-2 border rounded"
                     />
                   </div>
                 </form>
               )}
+
               {dialogType === "delete" && (
                 <p>
-                  Are you sure you want to delete employee {selectedEmployee.fullName}{" "}
-                  with ID {selectedEmployee.id}?
+                  Are you sure you want to delete employee{" "}
+                  {selectedEmployee.fullName} with ID {selectedEmployee.id}?
                 </p>
               )}
             </div>

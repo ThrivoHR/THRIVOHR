@@ -24,40 +24,42 @@ import { Input } from "@/components/ui/input";
 type Employee = {
   id: string;
   fullName: string;
-  unionCode: string; // Changed from 'union' to 'unionCode'
-  joinDate: string;
+  workshopJoined: string; // Replace unionCode with workshopJoined
+  specializedClassJoined: string; // Replace joinDate with specializedClassJoined
 };
 
 const columns = [
   "ID",
   "Full Name",
-  "Union",
-  "Join Date",
+  "Workshop Joined",
+  "Specialized Class Joined",
 ];
 
 const employees: Employee[] = [
   {
     id: "EMP001",
     fullName: "John Doe",
-    unionCode: "SA",
-    joinDate: "2023-01-15",
+    workshopJoined: "Workshop A",
+    specializedClassJoined: "Class X",
   },
   {
     id: "EMP002",
     fullName: "Jane Doe",
-    unionCode: "SA",
-    joinDate: "2022-11-20",
+    workshopJoined: "Workshop B",
+    specializedClassJoined: "Class Y",
   },
   {
     id: "EMP003",
     fullName: "Bob Smith",
-    unionCode: "SA",
-    joinDate: "2023-03-05",
+    workshopJoined: "Workshop C",
+    specializedClassJoined: "Class Z",
   },
 ];
 
 export default function Employee() {
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+    null
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<"edit" | "delete" | null>(null);
 
@@ -93,14 +95,15 @@ export default function Employee() {
       <DataTable
         columns={columns}
         data={employees.map((employee) => ({
-          "ID": employee.id,
+          ID: employee.id,
           "Full Name": employee.fullName,
-          "Union": employee.unionCode,
-          "Join Date": employee.joinDate,
+          "Workshop Joined": employee.workshopJoined,
+          "Specialized Class Joined": employee.specializedClassJoined,
         }))}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
       />
+
       <div className="pagination">
         <Pagination>
           <PaginationContent>
@@ -159,21 +162,32 @@ export default function Employee() {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label>Join Date:</label>
+                    <label>Workshop Joined:</label>
                     <Input
                       type="text"
-                      name="joinDate"
-                      value={selectedEmployee.joinDate}
+                      name="workshopJoined"
+                      value={selectedEmployee.workshopJoined}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Specialized Class Joined:</label>
+                    <Input
+                      type="text"
+                      name="specializedClassJoined"
+                      value={selectedEmployee.specializedClassJoined}
                       onChange={handleInputChange}
                       className="p-2 border rounded"
                     />
                   </div>
                 </form>
               )}
+
               {dialogType === "delete" && (
                 <p>
-                  Are you sure you want to delete employee {selectedEmployee.fullName}{" "}
-                  with ID {selectedEmployee.id}?
+                  Are you sure you want to delete employee{" "}
+                  {selectedEmployee.fullName} with ID {selectedEmployee.id}?
                 </p>
               )}
             </div>

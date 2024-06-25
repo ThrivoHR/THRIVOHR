@@ -24,35 +24,35 @@ import { Input } from "@/components/ui/input";
 type Employee = {
   id: string;
   fullName: string;
-  unionCode: string; // Changed from 'union' to 'unionCode'
-  joinDate: string;
+  extraHours: number;
+  overtimeDate: string;
 };
 
 const columns = [
   "ID",
   "Full Name",
-  "Union",
-  "Join Date",
+  "Number of Extra Hours",
+  "Overtime Date",
 ];
 
 const employees: Employee[] = [
   {
     id: "EMP001",
     fullName: "John Doe",
-    unionCode: "SA",
-    joinDate: "2023-01-15",
+    extraHours: 10,
+    overtimeDate: "2023-06-15",
   },
   {
     id: "EMP002",
     fullName: "Jane Doe",
-    unionCode: "SA",
-    joinDate: "2022-11-20",
+    extraHours: 15,
+    overtimeDate: "2023-06-20",
   },
   {
     id: "EMP003",
     fullName: "Bob Smith",
-    unionCode: "SA",
-    joinDate: "2023-03-05",
+    extraHours: 8,
+    overtimeDate: "2023-06-25",
   },
 ];
 
@@ -95,8 +95,8 @@ export default function Employee() {
         data={employees.map((employee) => ({
           "ID": employee.id,
           "Full Name": employee.fullName,
-          "Union": employee.unionCode,
-          "Join Date": employee.joinDate,
+          "Number of Extra Hours": employee.extraHours,
+          "Overtime Date": employee.overtimeDate,
         }))}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
@@ -159,11 +159,21 @@ export default function Employee() {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label>Join Date:</label>
+                    <label>Number of Extra Hours:</label>
+                    <Input
+                      type="number"
+                      name="extraHours"
+                      value={selectedEmployee.extraHours}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Overtime Date:</label>
                     <Input
                       type="text"
-                      name="joinDate"
-                      value={selectedEmployee.joinDate}
+                      name="overtimeDate"
+                      value={selectedEmployee.overtimeDate}
                       onChange={handleInputChange}
                       className="p-2 border rounded"
                     />
