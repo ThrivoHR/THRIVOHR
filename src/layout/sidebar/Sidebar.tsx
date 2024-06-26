@@ -29,7 +29,7 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="flex flex-col w-full h-screen">
+    <div className="flex flex-col w-full h-full">
       <div className="hidden lg:flex flex-col h-full border-r bg-white">
         <div className="flex h-[55px] items-center border-b px-6">
           <div

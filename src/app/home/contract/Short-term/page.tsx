@@ -20,6 +20,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import Filter from "@/components/Filter";
 
 type Contract = {
   id: string;
@@ -30,8 +31,7 @@ type Contract = {
   contractDuration?: string;
   position: string;
   department: string;
-  basicSalary: string;
-  salaryCoefficient: string;
+  basicSalary: number;
 };
 
 const columns = [
@@ -41,7 +41,6 @@ const columns = [
   "End date",
   "Duration",
   "Base salary",
-  "Coefficient",
 ];
 
 const employees: Contract[] = [
@@ -54,8 +53,7 @@ const employees: Contract[] = [
     contractDuration: "1 năm",
     position: "Nhân viên Kế toán",
     department: "Kế toán",
-    basicSalary: "15,000,000 VND",
-    salaryCoefficient: "2.5",
+    basicSalary: 2900,
   },
   {
     id: "EMP002",
@@ -64,8 +62,7 @@ const employees: Contract[] = [
     startDate: "2023-03-15",
     position: "Nhân viên IT",
     department: "IT",
-    basicSalary: "20,000,000 VND",
-    salaryCoefficient: "3.0",
+    basicSalary: 1000,
   },
   {
     id: "EMP003",
@@ -74,8 +71,7 @@ const employees: Contract[] = [
     startDate: "2023-05-01",
     position: "Nhân viên Nhân sự",
     department: "Nhân sự",
-    basicSalary: "18,000,000 VND",
-    salaryCoefficient: "2.8",
+    basicSalary: 2000,
   },
   {
     id: "EMP004",
@@ -86,8 +82,7 @@ const employees: Contract[] = [
     contractDuration: "1 năm",
     position: "Nhân viên Marketing",
     department: "Marketing",
-    basicSalary: "17,000,000 VND",
-    salaryCoefficient: "2.7",
+    basicSalary: 1200,
   },
   {
     id: "EMP005",
@@ -96,13 +91,14 @@ const employees: Contract[] = [
     startDate: "2023-07-01",
     position: "Nhân viên Kinh doanh",
     department: "Kinh doanh",
-    basicSalary: "22,000,000 VND",
-    salaryCoefficient: "3.2",
+    basicSalary: 1500,
   },
 ];
 
 export default function Employee() {
-  const [selectedEmployee, setSelectedEmployee] = useState<Contract | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Contract | null>(
+    null
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<"edit" | "delete" | null>(null);
 
@@ -138,189 +134,185 @@ export default function Employee() {
   };
 
   return (
-    <div className="border rounded-lg w-full h-[80vh] flex flex-col">
-      <DataTable
-        columns={columns}
-        data={employees.map((employee) => ({
-          "Full name": employee.fullName,
-          "Work place": employee.workplace,
-          "Start date": employee.startDate,
-          "End date": employee.endDate || "",
-          "Duration": employee.contractDuration || "",
-          "Position": employee.position,
-          "Depart": employee.department,
-          "Base salary": employee.basicSalary,
-          "Coefficient": employee.salaryCoefficient,
-        }))}
-        onEditClick={handleEditClick}
-        onDeleteClick={handleDeleteClick}
-      />
-      <div className="pagination">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href="#" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink>1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink>2</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink>3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+    <div>
+      <div>
+        <Filter/>
       </div>
-      {selectedEmployee && (
-        <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
-          <DialogContent className="w-full max-w-4xl h-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {dialogType === "edit" && "Edit Employee Information"}
-                {dialogType === "delete" && "Delete Employee"}
-              </DialogTitle>
-              <DialogClose />
-            </DialogHeader>
-            <div className="p-4 bg-white">
-              {dialogType === "edit" && (
-                <form className="grid grid-cols-3 gap-4">
-                  <div className="flex flex-col">
-                    <label>ID:</label>
-                    <Input
-                      type="text"
-                      name="id"
-                      value={selectedEmployee.id}
-                      readOnly
-                      className="p-2 border rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label>Họ tên:</label>
-                    <Input
-                      type="text"
-                      name="fullName"
-                      value={selectedEmployee.fullName}
-                      onChange={handleInputChange}
-                      className="p-2 border rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label>Địa điểm làm việc:</label>
-                    <Input
-                      type="text"
-                      name="workplace"
-                      value={selectedEmployee.workplace}
-                      onChange={handleInputChange}
-                      className="p-2 border rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label>Ngày ký:</label>
-                    <Input
-                      type="text"
-                      name="startDate"
-                      value={selectedEmployee.startDate}
-                      onChange={handleInputChange}
-                      className="p-2 border rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label>Ngày kết thúc:</label>
-                    <Input
-                      type="text"
-                      name="endDate"
-                      value={selectedEmployee.endDate || ""}
-                      onChange={handleInputChange}
-                      className="p-2 border rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label>Thời hạn hợp đồng:</label>
-                    <Input
-                      type="text"
-                      name="contractDuration"
-                      value={selectedEmployee.contractDuration || ""}
-                      onChange={handleInputChange}
-                      className="p-2 border rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label>Chức vụ:</label>
-                    <Input
-                      type="text"
-                      name="position"
-                      value={selectedEmployee.position}
-                      onChange={handleInputChange}
-                      className="p-2 border rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label>Phòng ban:</label>
-                    <Input
-                      type="text"
-                      name="department"
-                      value={selectedEmployee.department}
-                      onChange={handleInputChange}
-                      className="p-2 border rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label>Lương cơ bản:</label>
-                    <Input
-                      type="text"
-                      name="basicSalary"
-                      value={selectedEmployee.basicSalary}
-                      onChange={handleInputChange}
-                      className="p-2 border rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label>Hệ số lương:</label>
-                    <Input
-                      type="text"
-                      name="salaryCoefficient"
-                      value={selectedEmployee.salaryCoefficient}
-                      onChange={handleInputChange}
-                      className="p-2 border rounded"
-                    />
-                  </div>
-                </form>
-              )}
-              {dialogType === "delete" && (
-                <p>
-                  Bạn có chắc chắn muốn xóa nhân viên {selectedEmployee.fullName} - {selectedEmployee.position} không?
-                </p>
-              )}
-            </div>
-            <DialogFooter>
-              <button
-                className="mt-4 px-4 py-2 bg-blue-300 text-white rounded"
-                onClick={closeDialog}
-              >
-                Đóng
-              </button>
-              {dialogType === "edit" && (
-                <button className="mt-4 px-4 py-2 bg-green-500 text-white rounded">
-                  Lưu thay đổi
+      <div className="border rounded-lg w-full h-[80vh] flex flex-col">
+        <DataTable
+          columns={columns}
+          data={employees.map((employee) => ({
+            "Full name": employee.fullName,
+            "Work place": employee.workplace,
+            "Start date": employee.startDate,
+            "End date": employee.endDate || "",
+            Duration: employee.contractDuration || "",
+            Position: employee.position,
+            Depart: employee.department,
+            "Base salary": employee.basicSalary,
+          }))}
+          onEditClick={handleEditClick}
+          onDeleteClick={handleDeleteClick}
+        />
+        <div className="pagination">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious href="#" />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink>1</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink>2</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink>3</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext href="#" />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+        {selectedEmployee && (
+          <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
+            <DialogContent className="w-full max-w-4xl h-auto">
+              <DialogHeader>
+                <DialogTitle>
+                  {dialogType === "edit" && "Edit Employee Information"}
+                  {dialogType === "delete" && "Delete Employee"}
+                </DialogTitle>
+                <DialogClose />
+              </DialogHeader>
+              <div className="p-4 bg-white">
+                {dialogType === "edit" && (
+                  <form className="grid grid-cols-3 gap-4">
+                    <div className="flex flex-col">
+                      <label>ID:</label>
+                      <Input
+                        type="text"
+                        name="id"
+                        value={selectedEmployee.id}
+                        readOnly
+                        className="p-2 border rounded"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label>Họ tên:</label>
+                      <Input
+                        type="text"
+                        name="fullName"
+                        value={selectedEmployee.fullName}
+                        onChange={handleInputChange}
+                        className="p-2 border rounded"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label>Địa điểm làm việc:</label>
+                      <Input
+                        type="text"
+                        name="workplace"
+                        value={selectedEmployee.workplace}
+                        onChange={handleInputChange}
+                        className="p-2 border rounded"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label>Ngày ký:</label>
+                      <Input
+                        type="text"
+                        name="startDate"
+                        value={selectedEmployee.startDate}
+                        onChange={handleInputChange}
+                        className="p-2 border rounded"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label>Ngày kết thúc:</label>
+                      <Input
+                        type="text"
+                        name="endDate"
+                        value={selectedEmployee.endDate || ""}
+                        onChange={handleInputChange}
+                        className="p-2 border rounded"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label>Thời hạn hợp đồng:</label>
+                      <Input
+                        type="text"
+                        name="contractDuration"
+                        value={selectedEmployee.contractDuration || ""}
+                        onChange={handleInputChange}
+                        className="p-2 border rounded"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label>Chức vụ:</label>
+                      <Input
+                        type="text"
+                        name="position"
+                        value={selectedEmployee.position}
+                        onChange={handleInputChange}
+                        className="p-2 border rounded"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label>Phòng ban:</label>
+                      <Input
+                        type="text"
+                        name="department"
+                        value={selectedEmployee.department}
+                        onChange={handleInputChange}
+                        className="p-2 border rounded"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label>Lương cơ bản:</label>
+                      <Input
+                        type="text"
+                        name="basicSalary"
+                        value={selectedEmployee.basicSalary}
+                        onChange={handleInputChange}
+                        className="p-2 border rounded"
+                      />
+                    </div>
+                  </form>
+                )}
+                {dialogType === "delete" && (
+                  <p>
+                    Bạn có chắc chắn muốn xóa nhân viên{" "}
+                    {selectedEmployee.fullName} - {selectedEmployee.position}{" "}
+                    không?
+                  </p>
+                )}
+              </div>
+              <DialogFooter>
+                <button
+                  className="mt-4 px-4 py-2 bg-blue-300 text-white rounded"
+                  onClick={closeDialog}
+                >
+                  Đóng
                 </button>
-              )}
-              {dialogType === "delete" && (
-                <button className="mt-4 px-4 py-2 bg-red-500 text-white rounded">
-                  Xác nhận xóa
-                </button>
-              )}
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
+                {dialogType === "edit" && (
+                  <button className="mt-4 px-4 py-2 bg-green-500 text-white rounded">
+                    Lưu thay đổi
+                  </button>
+                )}
+                {dialogType === "delete" && (
+                  <button className="mt-4 px-4 py-2 bg-red-500 text-white rounded">
+                    Xác nhận xóa
+                  </button>
+                )}
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </div>
     </div>
   );
 }

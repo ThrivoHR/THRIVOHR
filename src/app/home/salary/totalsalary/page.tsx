@@ -20,6 +20,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import Filter from "@/components/Filter";
 
 type Employee = {
   id: string;
@@ -89,7 +90,11 @@ export default function Employee() {
   };
 
   return (
-    <div className="border rounded-lg w-full h-[80vh] flex flex-col">
+<div>
+  <div>
+    <Filter/>
+  </div>
+<div className="border rounded-lg w-full h-[80vh] flex flex-col">
       <DataTable
         columns={columns}
         data={employees.map((employee) => ({
@@ -189,5 +194,6 @@ export default function Employee() {
         </Dialog>
       )}
     </div>
+</div>
   );
 }
