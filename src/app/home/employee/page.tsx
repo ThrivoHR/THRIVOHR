@@ -95,38 +95,6 @@ const employees: Employee[] = [
     position: "Financial Analyst",
     reportsTo: "Jane Smith",
   },
-  {
-    id: "EMP008",
-    department: "IT",
-    email: "kevin.malone@example.com",
-    phone: "+1 (555) 555-5561",
-    position: "Network Administrator",
-    reportsTo: "John Smith",
-  },
-  {
-    id: "EMP009",
-    department: "HR",
-    email: "pam.beesly@example.com",
-    phone: "+1 (555) 555-5562",
-    position: "HR Manager",
-    reportsTo: "Jane Doe",
-  },
-  {
-    id: "EMP010",
-    department: "Marketing",
-    email: "angela.martin@example.com",
-    phone: "+1 (555) 555-5563",
-    position: "Marketing Manager",
-    reportsTo: "Tom White",
-  },
-  {
-    id: "EMP011",
-    department: "Sales",
-    email: "jim.halpert@example.com",
-    phone: "+1 (555) 555-5564",
-    position: "Sales Representative",
-    reportsTo: "Sara Black",
-  },
 ];
 
 export default function Employee() {
