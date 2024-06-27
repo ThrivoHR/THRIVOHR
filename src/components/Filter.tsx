@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Col, Collapse, Form, Input, Row } from "antd";
+import { ExportOutlined, ImportOutlined } from '@ant-design/icons';
 
 export default function Filter() {
   const { Panel } = Collapse;
@@ -14,34 +15,33 @@ export default function Filter() {
           <div style={{ padding: "10px 0" }}>
             <Form layout="vertical">
               <Row gutter={[16, 16]}>
-                <Col span={6}>
+                <Col span={8}>
                   <Form.Item name="">
-                    <Input/>
+                    <Input placeholder="Employee ID"/>
                   </Form.Item>
                 </Col>
 
-                <Col span={6}>
+                <Col span={8}>
                   <Form.Item name="">
-                    <Input/>
+                    <Input placeholder="Department"/>
                   </Form.Item>
                 </Col>
 
-                <Col span={6}>
+                <Col span={8}>
                   <Form.Item name="">
-                    <Input/>
+                    <Input placeholder="Position"/>
                   </Form.Item>
                 </Col>
-
-                <Col span={6}>
-                  <Form.Item>
-                    <Input/>
-                  </Form.Item>
-                </Col>
-
-                <Col span={24} style={{ textAlign: "left" }}>
+                <Col span={12} style={{ textAlign: "left" }}>
                   <Button style={{ marginRight: "10px" }}>Clean Filter</Button>
                   <Button type="primary" htmlType="submit">
                     Search
+                  </Button>
+                </Col>
+                <Col span={12} style={{ textAlign: "right" }}>
+                  <Button type="primary" icon={<ImportOutlined />} className="mr-3 bg-green-400 hover:!bg-green-300">Import</Button>
+                  <Button icon={<ExportOutlined />} type="primary" htmlType="submit" className="bg-orange-400 hover:!bg-orange-300">
+                    Export
                   </Button>
                 </Col>
               </Row>
