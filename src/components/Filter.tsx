@@ -12,23 +12,23 @@ export default function Filter() {
         style={{ width: "100%", marginBottom: "10px" }}
       >
         <Panel header="Search Information" key="1">
-          <div style={{ padding: "10px 0" }}>
+          <div style={{ padding: "6px 0" }}>
             <Form layout="vertical">
               <Row gutter={[16, 16]}>
                 <Col span={8}>
-                  <Form.Item name="">
+                  <Form.Item name="1">
                     <Input placeholder="Employee ID"/>
                   </Form.Item>
                 </Col>
 
                 <Col span={8}>
-                  <Form.Item name="">
+                  <Form.Item name="2">
                     <Input placeholder="Department"/>
                   </Form.Item>
                 </Col>
 
                 <Col span={8}>
-                  <Form.Item name="">
+                  <Form.Item name="3">
                     <Input placeholder="Position"/>
                   </Form.Item>
                 </Col>
