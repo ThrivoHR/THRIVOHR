@@ -17,7 +17,7 @@ export default function Header() {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem asChild>
-              <Link href="/profile">
+              <Link href="/home/profile">
                 Profile
               </Link>
             </DropdownMenuItem>

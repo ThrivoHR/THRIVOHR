@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { Separator } from "@/components/ui/separator";
@@ -17,7 +16,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import authApiRequest from "@/apiRequest/auth";
@@ -38,8 +36,9 @@ export default function LoginForm() {
   async function onSubmit(values: LoginBodyType) {
     setLoading(true);
     try {
-      await authApiRequest.login(values);
-      router.push("/welcome");
+      const result = await authApiRequest.login(values);
+      router.push("/home");
+      console.log(result)
     } catch (error: any) {
       handleErrorApi({
         error,
@@ -48,6 +47,7 @@ export default function LoginForm() {
     } finally {
       setLoading(false);
     }
+    
   }
 
   return (
@@ -60,7 +60,7 @@ export default function LoginForm() {
       </header>
       <div className="flex flex-1 lg:grid lg:grid-cols-2">
         <div className="flex items-center justify-center lg:min-h-full">
-          <div className="flex justify-center items-center w-full h-full">
+          <div className="flex justify-center items-center ">
             <Image
               src="https://i.pinimg.com/564x/d1/64/26/d16426da270979ed4715325f6c972f42.jpg"
               alt="Left Image"
@@ -83,9 +83,9 @@ export default function LoginForm() {
                     name="employeeCode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Employee ID</FormLabel>
+                        <label>Employee ID</label>
                         <FormControl>
-                          <Input placeholder="shadcn" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -96,9 +96,9 @@ export default function LoginForm() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <label>Password</label>
                         <FormControl>
-                          <Input type="password" placeholder="Password" {...field} />
+                          <Input type="password" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

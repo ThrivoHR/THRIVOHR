@@ -1,4 +1,4 @@
-import { EntityError } from "@/lib/https";
+import { EntityError, HttpError } from "@/lib/https";
 import { type ClassValue, clsx } from "clsx";
 import { UseFormSetError } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
@@ -22,6 +22,23 @@ export const handleErrorApi = ({
         message: item.message,
       });
     });
+  } else if (error instanceof HttpError && setError) {
+    const { status, payload } = error;
+    if (status === 400 && payload.detail) {
+      setError("password", {
+        type: "server",
+        message: payload.detail,
+      });
+    } else if (status === 404) {
+      setError("employeeCode", {
+        type: "server",
+        message: payload.detail,
+      });
+    } else {
+      console.error("Unexpected error:", payload.message);
+    }
+  } else {
+    console.error("Unexpected error:", error);
   }
 };
 

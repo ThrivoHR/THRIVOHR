@@ -38,7 +38,7 @@ export default function Sidebar() {
         <div className="flex-1 py-2 overflow-y-auto">
           <nav className="text-sm">
             <Accordion type="multiple">
-              <Link href="/employee" className={`flex font-medium items-center gap-3 rounded-sm px-3 !pl-3  py-4 cursor-pointer ${linkClasses("/employee")}`} onClick={() => handleNavigation("/employee")}>
+              <Link href="/home/employee" className={`flex font-medium items-center gap-3 rounded-sm px-3 !pl-3  py-4 cursor-pointer ${linkClasses("/employee")}`} onClick={() => handleNavigation("/employee")}>
                 <UserIcon className="w-3 h-3" />
                 Information
               </Link>
@@ -51,10 +51,10 @@ export default function Sidebar() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Link href="/contract/Long-term" className={linkClasses("/contract/Long-term")} onClick={() => handleNavigation("/contract/Long-term")}>
+                  <Link href="/home/contract/Long-term" className={linkClasses("/home/contract/Long-term")} onClick={() => handleNavigation("/contract/Long-term")}>
                     Long-term contract
                   </Link>
-                  <Link href="/contract/Short-term" className={linkClasses("/contract/Short-term")} onClick={() => handleNavigation("/contract/Short-term")}>
+                  <Link href="/home/contract/Short-term" className={linkClasses("/home/contract/Short-term")} onClick={() => handleNavigation("/contract/Short-term")}>
                     Short-term contract
                   </Link>
                 </AccordionContent>
@@ -68,16 +68,16 @@ export default function Sidebar() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Link href="/history/union" className={linkClasses("/history/union")} onClick={() => handleNavigation("/history/union")}>
+                  <Link href="/home/history/union" className={linkClasses("/home/history/union")} onClick={() => handleNavigation("/history/union")}>
                     Union activities
                   </Link>
-                  <Link href="/history/workhistory" className={linkClasses("/history/workhistory")} onClick={() => handleNavigation("/history/workhistory")}>
+                  <Link href="/home/history/workhistory" className={linkClasses("/home/history/workhistory")} onClick={() => handleNavigation("/history/workhistory")}>
                     Career history
                   </Link>
-                  <Link href="/history/addition" className={linkClasses("/history/addition")} onClick={() => handleNavigation("/history/addition")}>
+                  <Link href="/home/history/addition" className={linkClasses("/home/history/addition")} onClick={() => handleNavigation("/history/addition")}>
                     Addition
                   </Link>
-                  <Link href="/history/deduction" className={linkClasses("/history/deduction")} onClick={() => handleNavigation("/history/deduction")}>
+                  <Link href="/home/history/deduction" className={linkClasses("/home/history/deduction")} onClick={() => handleNavigation("/history/deduction")}>
                     Deduction
                   </Link>
                 </AccordionContent>
@@ -91,13 +91,13 @@ export default function Sidebar() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Link href="/application/absent" className={linkClasses("/application/absent")} onClick={() => handleNavigation("/application/absent")}>
+                  <Link href="/home/application/absent" className={linkClasses("/home/application/absent")} onClick={() => handleNavigation("/application/absent")}>
                     Absence application
                   </Link>
-                  <Link href="/application/overtime" className={linkClasses("/application/overtime")} onClick={() => handleNavigation("/application/overtime")}>
+                  <Link href="/home/application/overtime" className={linkClasses("/home/application/overtime")} onClick={() => handleNavigation("/application/overtime")}>
                     Overtime
                   </Link>
-                  <Link href="/application/workreport" className={linkClasses("/application/workreport")} onClick={() => handleNavigation("/application/workreport")}>
+                  <Link href="/home/application/workreport" className={linkClasses("/home/application/workreport")} onClick={() => handleNavigation("/application/workreport")}>
                     Work report
                   </Link>
                 </AccordionContent>
@@ -111,10 +111,10 @@ export default function Sidebar() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Link href="/progress/viewprogress" className={linkClasses("/progress/viewprogress")} onClick={() => handleNavigation("/progress/viewprogress")}>
+                  <Link href="/home/progress/viewprogress" className={linkClasses("/home/progress/viewprogress")} onClick={() => handleNavigation("/progress/viewprogress")}>
                     View progress
                   </Link>
-                  <Link href="/progress/reportprogress" className={linkClasses("/progress/reportprogress")} onClick={() => handleNavigation("/progress/reportprogress")}>
+                  <Link href="/home/progress/reportprogress" className={linkClasses("/home/progress/reportprogress")} onClick={() => handleNavigation("/progress/reportprogress")}>
                     Progress report
                   </Link>
                 </AccordionContent>
@@ -127,22 +127,22 @@ export default function Sidebar() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Link href="/salary/coefficient" className={linkClasses("/salary/coefficient")} onClick={() => handleNavigation("/salary/coefficient")}>
+                  <Link href="/home/salary/coefficient" className={linkClasses("/home/salary/coefficient")} onClick={() => handleNavigation("/salary/coefficient")}>
                     Coefficient
                   </Link>
-                  <Link href="/salary/raise" className={linkClasses("/salary/raise")} onClick={() => handleNavigation("/salary/raise")}>
+                  <Link href="/home/salary/raise" className={linkClasses("/home/salary/raise")} onClick={() => handleNavigation("/salary/raise")}>
                     Raise
                   </Link>
-                  <Link href="/salary/bonus" className={linkClasses("/salary/bonus")} onClick={() => handleNavigation("/salary/bonus")}>
+                  <Link href="/home/salary/bonus" className={linkClasses("/home/salary/bonus")} onClick={() => handleNavigation("/salary/bonus")}>
                     Bonus
                   </Link>
-                  <Link href="/salary/overtimesalary" className={linkClasses("/salary/overtimesalary")} onClick={() => handleNavigation("/salary/overtimesalary")}>
+                  <Link href="/home/salary/overtimesalary" className={linkClasses("/home/salary/overtimesalary")} onClick={() => handleNavigation("/salary/overtimesalary")}>
                     Overtime salary
                   </Link>
-                  <Link href="/salary/deductionreport" className={linkClasses("/salary/deductionreport")} onClick={() => handleNavigation("/salary/deductionreport")}>
+                  <Link href="/home/salary/deductionreport" className={linkClasses("/home/salary/deductionreport")} onClick={() => handleNavigation("/salary/deductionreport")}>
                     Deduction report
                   </Link>
-                  <Link href="/salary/totalsalary" className={linkClasses("/salary/totalsalary")} onClick={() => handleNavigation("/salary/totalsalary")}>
+                  <Link href="/home/salary/totalsalary" className={linkClasses("/home/salary/totalsalary")} onClick={() => handleNavigation("/salary/totalsalary")}>
                     Total salary
                   </Link>
                 </AccordionContent>
