@@ -1,6 +1,5 @@
 "use client";
 
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
@@ -11,6 +10,7 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import logo from "/public/thrivoHR-icon.png";
+import { LoginBody, LoginBodyType } from "@/schemaValidation/auth.schema";
 import {
   Form,
   FormControl,
@@ -25,35 +25,25 @@ import { Input } from "@/components/ui/input";
 export default function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const forbiddenChars = /^[^a-zA-Z]*$/;
-
-  const formSchema = z.object({
-    employeeCode: z.string()
-      .length(6, "Employee Code must be 6 characters")
-      .refine(value => forbiddenChars.test(value), {
-        message: "Employee Code must not contain special characters",
-      }),
-    password: z.string().nonempty("Password is required"),
-  });
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<LoginBodyType>({
+    resolver: zodResolver(LoginBody),
     defaultValues: {
       employeeCode: "",
       password: "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: LoginBodyType) {
     setLoading(true);
     try {
       const result = await authApiRequest.login(values);
-      if (result.payload.value.token) {
+      if(result.payload.value.token){
         await authApiRequest.auth({
           sessionToken: result.payload.value.token,
         });
-        localStorage.setItem("sessionToken", result.payload.value.token)
+        localStorage.setItem("sessionToken",result.payload.value.token)
         router.push("/home");
-        console.log(result)
+      console.log(result)
       }
 
     } catch (error: any) {
@@ -64,13 +54,13 @@ export default function LoginForm() {
     } finally {
       setLoading(false);
     }
-
+    
   }
 
   return (
     <div className="flex flex-col h-screen">
-      <header className="bg-white shadow-md py-3">
-        <div className="container flex items-center justify-between">
+      <header className="bg-white shadow-md p-3">
+        <div className="container mx-auto flex items-center justify-between">
           <Image src={logo} alt="Logo" width={50} height={50} />
           <h1 className="text-xl font-bold">ThrivoHR</h1>
         </div>
@@ -86,9 +76,9 @@ export default function LoginForm() {
             />
           </div>
         </div>
-        <div className="flex items-center justify-center space-y-3 h-full w-f">
-          <Card className="w-full max-w-[600px] mx-auto">
-            <CardHeader className="flex items-center justify-center">
+        <div className="flex items-center justify-center space-y-3 h-full">
+          <Card className="w-full max-w-[400px] mx-auto">
+            <CardHeader>
               <h1 className="text-3xl font-bold">ThrivoHR</h1>
               <p className="text-lg">Where HR Thrives</p>
             </CardHeader>
@@ -102,8 +92,7 @@ export default function LoginForm() {
                       <FormItem>
                         <label>Employee ID</label>
                         <FormControl>
-                          <Input {...field} placeholder="000000" />
-
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
