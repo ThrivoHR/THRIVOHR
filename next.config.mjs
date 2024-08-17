@@ -1,15 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-      remotePatterns: [
-          {
-              protocol: 'https',
-              hostname: 'i.pinimg.com',
-              port: '', // Optional but can be included for clarity
-              pathname: '/**', // Matches all paths
-          },
-      ],
-  },
+    images: {
+        domains: ['i.pinimg.com'], //Domain of image host
+      },
 };
 
 export default nextConfig;
