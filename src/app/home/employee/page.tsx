@@ -113,13 +113,16 @@ export default function EmployeeTable() {
   };
 
   return (
-    <div className="border border-t-0 rounded-lg">
-      <DataTable
-        columns={columns}
-        data={data}
-        onEditClick={handleEditClick}
-        onDeleteClick={handleDeleteClick}
-      />
+    <div className="border border-t-0 rounded-lg ">
+      <div className="text-center">
+        <DataTable
+          columns={columns}
+          data={data}
+          onEditClick={handleEditClick}
+          onDeleteClick={handleDeleteClick}
+          
+        />
+      </div>
       {selectedEmployee && (
         <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
           <DialogContent className="w-full max-w-4xl h-auto">
