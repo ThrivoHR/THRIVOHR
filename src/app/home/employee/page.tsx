@@ -1,16 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import apiEmployeeRequest from "@/apiRequest/employee";
+import { EmployeeSchemaType } from "@/schemaValidation/employee.schema";
 import DataTable from "@/components/Table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import {
   Dialog,
   DialogContent,
@@ -20,97 +13,60 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import Filter from "@/components/Filter";
 
-type Employee = {
-  id: string;
-  department: string;
-  email: string;
-  phone: string;
-  position: string;
-  reportsTo: string;
-};
-
-const columns = ["Employee ID", "Department", "Email", "Phone", "Position"];
-
-const employees: Employee[] = [
-  {
-    id: "EMP001",
-    department: "Finance",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 555-5555",
-    position: "Accountant",
-    reportsTo: "Jane Smith",
-  },
-  {
-    id: "EMP002",
-    department: "IT",
-    email: "jane.doe@example.com",
-    phone: "+1 (555) 555-5556",
-    position: "IT Specialist",
-    reportsTo: "John Smith",
-  },
-  {
-    id: "EMP003",
-    department: "HR",
-    email: "bob.smith@example.com",
-    phone: "+84 947 1363 27",
-    position: "HR Specialist",
-    reportsTo: "Jane Doe",
-  },
-  {
-    id: "EMP004",
-    department: "Marketing",
-    email: "alice.brown@example.com",
-    phone: "+1 (555) 555-5557",
-    position: "Marketing Specialist",
-    reportsTo: "Tom White",
-  },
-  {
-    id: "EMP005",
-    department: "Sales",
-    email: "mike.jones@example.com",
-    phone: "+1 (555) 555-5558",
-    position: "Sales Manager",
-    reportsTo: "Sara Black",
-  },
-  {
-    id: "EMP006",
-    department: "Support",
-    email: "emma.watson@example.com",
-    phone: "+1 (555) 555-5559",
-    position: "Customer Support",
-    reportsTo: "Harry Brown",
-  },
-  {
-    id: "EMP007",
-    department: "Finance",
-    email: "will.smith@example.com",
-    phone: "+1 (555) 555-5560",
-    position: "Financial Analyst",
-    reportsTo: "Jane Smith",
-  },
-];
-
-export default function Employee() {
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
-    null
-  );
+export default function EmployeeTable() {
+  const [loading, setLoading] = useState(true);
+  const [employees, setEmployees] = useState<EmployeeSchemaType[]>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeSchemaType | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<"edit" | "delete" | null>(null);
 
+  useEffect(() => {
+    setLoading(true);
+    const fetchData = async () => {
+      try {
+        const payload = await apiEmployeeRequest.getListEmployee(1, 10, {});
+        setEmployees(payload.payload.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  const columns = ["Employee Code", "Full Name", "Email", "Address", "Position", "Department"];
+
+  const data = employees.map((employee) => ({
+    "Employee Code": employee.employeeCode,
+    "Full Name": employee.fullName,
+    Email: employee.email || "N/A",
+    Address: employee.address?.fullAddress || "N/A",
+    Position: employee.position.name,
+    Department: employee.department.name,
+  }));
+
   const handleEditClick = (row: Record<string, React.ReactNode>) => {
-    const employee = employees.find((emp) => emp.id === row["Employee ID"])!;
-    setSelectedEmployee(employee);
-    setDialogType("edit");
-    setIsDialogOpen(true);
+    const employee = employees.find((emp) => emp.employeeCode === row["Employee Code"]);
+    if (employee) {
+      setSelectedEmployee(employee);
+      setDialogType("edit");
+      setIsDialogOpen(true);
+    }
   };
 
   const handleDeleteClick = (row: Record<string, React.ReactNode>) => {
-    const employee = employees.find((emp) => emp.id === row["Employee ID"])!;
-    setSelectedEmployee(employee);
-    setDialogType("delete");
-    setIsDialogOpen(true);
+    const employee = employees.find((emp) => emp.employeeCode === row["Employee Code"]);
+    if (employee) {
+      setSelectedEmployee(employee);
+      setDialogType("delete");
+      setIsDialogOpen(true);
+    }
   };
 
   const closeDialog = () => {
@@ -126,152 +82,143 @@ export default function Employee() {
     }
   };
 
+  const handleSaveChanges = async () => {
+    if (selectedEmployee && dialogType === "edit") {
+      try {
+        // await apiEmployeeRequest.updateEmployee(selectedEmployee.employeeCode, selectedEmployee);
+        setEmployees((prev) =>
+          prev.map((emp) =>
+            emp.employeeCode === selectedEmployee.employeeCode ? selectedEmployee : emp
+          )
+        );
+        closeDialog();
+      } catch (error) {
+        console.error("Error updating employee:", error);
+      }
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedEmployee && dialogType === "delete") {
+      try {
+        await apiEmployeeRequest.deleteEmployee(selectedEmployee.employeeCode);
+        setEmployees((prev) =>
+          prev.filter((emp) => emp.employeeCode !== selectedEmployee.employeeCode)
+        );
+        closeDialog();
+      } catch (error) {
+        console.error("Error deleting employee:", error);
+      }
+    }
+  };
+
   return (
-    <div>
-      <div>
-      <Filter />
-      </div>
-      <div className="border rounded-lg w-full h-[80vh]">
-        <DataTable
-          columns={columns}
-          data={employees.map((employee) => ({
-            "Employee ID": employee.id,
-            Department: employee.department,
-            Email: employee.email,
-            Phone: employee.phone,
-            Position: employee.position,
-          }))}
-          onEditClick={handleEditClick}
-          onDeleteClick={handleDeleteClick}
-        />
-        <div className="pagination">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-        {selectedEmployee && (
-          <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
-            <DialogContent className="w-full max-w-4xl h-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {dialogType === "edit" && "Edit Employee"}
-                  {dialogType === "delete" && "Delete Employee"}
-                </DialogTitle>
-                <DialogClose />
-              </DialogHeader>
-              <div className="p-4 bg-white">
-                {dialogType === "edit" && (
-                  <form className="grid grid-cols-3 gap-4">
-                    <div className="flex flex-col">
-                      <label>ID:</label>
-                      <Input
-                        type="text"
-                        name="id"
-                        value={selectedEmployee.id}
-                        readOnly
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Department:</label>
-                      <Input
-                        type="text"
-                        name="department"
-                        value={selectedEmployee.department}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Email:</label>
-                      <Input
-                        type="email"
-                        name="email"
-                        value={selectedEmployee.email}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Phone:</label>
-                      <Input
-                        type="text"
-                        name="phone"
-                        value={selectedEmployee.phone}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Position:</label>
-                      <Input
-                        type="text"
-                        name="position"
-                        value={selectedEmployee.position}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Reports To:</label>
-                      <Input
-                        type="text"
-                        name="reportsTo"
-                        value={selectedEmployee.reportsTo}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                  </form>
-                )}
-                {dialogType === "delete" && (
-                  <p>
-                    Are you sure you want to delete employee{" "}
-                    {selectedEmployee.id} - {selectedEmployee.position}?
-                  </p>
-                )}
-              </div>
-              <DialogFooter>
+    <div className="border border-t-0 rounded-lg">
+      <DataTable
+        columns={columns}
+        data={data}
+        onEditClick={handleEditClick}
+        onDeleteClick={handleDeleteClick}
+      />
+      {selectedEmployee && (
+        <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
+          <DialogContent className="w-full max-w-4xl h-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {dialogType === "edit" && "Edit Employee Information"}
+                {dialogType === "delete" && "Delete Employee"}
+              </DialogTitle>
+              <DialogClose />
+            </DialogHeader>
+            <div className="p-4 bg-white">
+              {dialogType === "edit" && (
+                <form className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col">
+                    <label>Full Name:</label>
+                    <Input
+                      type="text"
+                      name="fullName"
+                      value={selectedEmployee.fullName}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Email:</label>
+                    <Input
+                      type="email"
+                      name="email"
+                      value={selectedEmployee.email}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Address:</label>
+                    <Input
+                      type="text"
+                      name="address.fullAddress"
+                      value={selectedEmployee.address?.fullAddress || ""}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Position:</label>
+                    <Input
+                      type="text"
+                      name="position.name"
+                      value={selectedEmployee.position.name}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Department:</label>
+                    <Input
+                      type="text"
+                      name="department.name"
+                      value={selectedEmployee.department.name}
+                      onChange={handleInputChange}
+                      className="p-2 border rounded"
+                    />
+                  </div>
+                </form>
+              )}
+              {dialogType === "delete" && (
+                <p>
+                  Are you sure you want to delete employee {selectedEmployee.fullName} -
+                  {selectedEmployee.position.name}?
+                </p>
+              )}
+            </div>
+            <DialogFooter>
+              <button
+                className="mt-4 px-4 py-2 bg-blue-300 text-white rounded"
+                onClick={closeDialog}
+              >
+                Close
+              </button>
+              {dialogType === "edit" && (
                 <button
-                  className="mt-4 px-4 py-2 bg-blue-300 text-white rounded"
-                  onClick={closeDialog}
+                  className="mt-4 px-4 py-2 bg-green-500 text-white rounded"
+                  onClick={handleSaveChanges}
                 >
-                  Close
+                  Save Changes
                 </button>
-                {dialogType === "edit" && (
-                  <button className="mt-4 px-4 py-2 bg-green-500 text-white rounded">
-                    Save Changes
-                  </button>
-                )}
-                {dialogType === "delete" && (
-                  <button className="mt-4 px-4 py-2 bg-red-500 text-white rounded">
-                    Confirm Delete
-                  </button>
-                )}
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
+              )}
+              {dialogType === "delete" && (
+                <button
+                  className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+                  onClick={handleConfirmDelete}
+                >
+                  Confirm Delete
+                </button>
+              )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

@@ -37,8 +37,15 @@ export default function LoginForm() {
     setLoading(true);
     try {
       const result = await authApiRequest.login(values);
-      router.push("/home");
+      if(result.payload.value.token){
+        await authApiRequest.auth({
+          sessionToken: result.payload.value.token,
+        });
+        localStorage.setItem("sessionToken",result.payload.value.token)
+        router.push("/home");
       console.log(result)
+      }
+
     } catch (error: any) {
       handleErrorApi({
         error,

@@ -10,14 +10,14 @@ export const LoginBody = z
 export type LoginBodyType = z.TypeOf<typeof LoginBody>
 
 export const LoginRes = z.object({
-  data: z.object({
+  value: z.object({
     token: z.string(),
     expiresAt: z.string(),
-    account: z.object({
-      id: z.number(),
-      name: z.string(),
-      email: z.string()
-    })
+    // account: z.object({
+    //   id: z.number(),
+    //   name: z.string(),
+    //   email: z.string()
+    // })
   }),
   message: z.string()
 })

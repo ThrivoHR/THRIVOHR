@@ -147,11 +147,11 @@ export default function Sidebar() {
                   </Link>
                 </AccordionContent>
               </AccordionItem>
-              <Link href="/skill_inventory" className={`flex font-medium items-center gap-3 rounded-sm !pl-3 py-4 cursor-pointer ${linkClasses("/skill_inventory")}`} onClick={() => handleNavigation("/skill_inventory")}>
+              <Link href="/home/skill_inventory" className={`flex font-medium items-center gap-3 rounded-sm !pl-3 py-4 cursor-pointer ${linkClasses("/skill_inventory")}`} onClick={() => handleNavigation("/skill_inventory")}>
                 <Skill className="w-3 h-3"/>
                 Training program
               </Link>
-              <Link href="/archive" className={`flex font-medium items-center gap-3 rounded-sm !pl-3 py-4 cursor-pointer ${linkClasses("/archive")}`} onClick={() => handleNavigation("/archive")}>
+              <Link href="/home/archive" className={`flex font-medium items-center gap-3 rounded-sm !pl-3 py-4 cursor-pointer ${linkClasses("/archive")}`} onClick={() => handleNavigation("/archive")}>
                 <Archive className="w-3 h-3"/>
                 Archive
               </Link>

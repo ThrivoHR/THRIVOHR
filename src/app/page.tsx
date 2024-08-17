@@ -1,18 +1,7 @@
-import { redirect } from "next/navigation";
+import React from 'react'
 
-function isAuthenticated() {
-  return false;
-}
-
-export default function Home() {
-  const authenticated = isAuthenticated();
-  if (!authenticated) {
-    redirect("/login");
-  }
+export default function page() {
   return (
-    <div>
-      <h1>Hello</h1>
-    </div>
-  );
+    <div>page</div>
+  )
 }
-

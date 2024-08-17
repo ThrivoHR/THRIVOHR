@@ -62,11 +62,13 @@ const request = async <Response>(
   }
   const baseHeaders: {
     [key: string]: string;
+
   } =
     body instanceof FormData
       ? {}
       : {
           "Content-Type": "application/json",
+           'ngrok-skip-browser-warning': 'true'
         };
   if (isClient()) {
     const sessionToken = localStorage.getItem("sessionToken");
@@ -154,15 +156,16 @@ const request = async <Response>(
   // Đảm bảo logic dưới đây chỉ chạy ở phía client (browser)
   if (isClient()) {
     if (
-      ["api/v1/login", "api/v1/auth/login-google"].some(
+      ["api/v1/authenticate"].some(
         (item) => item === normalizePath(url)
       )
     ) {
-      const { token } = (payload as LoginResType).data;
+      const { token } = (payload as LoginResType).value;
       localStorage.setItem("sessionToken", token);
-    } else if ("auth/logout" === normalizePath(url)) {
-      localStorage.removeItem("sessionToken");
-    }
+    } 
+    // else if ("auth/logout" === normalizePath(url)) {
+    //   localStorage.removeItem("sessionToken");
+    // }
   }
 
   return data;

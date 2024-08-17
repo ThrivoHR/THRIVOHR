@@ -8,12 +8,10 @@ import {
 const authApiRequest = {
   login: (body: LoginBodyType) =>
     http.post<LoginResType>("/api/v1/authentication", body),
-//   register: (body: RegisterBodyType) =>
-//     http.post<RegisterResType>("/auth/register", body),
-  // auth: (body: { sessionToken: string }) =>
-  //   http.post("/api/auth", body, {
-  //     baseUrl: "",
-  //   }),
+  auth: (body: { sessionToken: string }) =>
+    http.post("/api/auth", body, {
+      baseUrl: "",
+    }),
 };
 
 export default authApiRequest;

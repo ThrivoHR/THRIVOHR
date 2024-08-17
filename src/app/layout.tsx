@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import logo from "/public/thrivoHR-icon.png";
+import { redirect } from 'next/navigation'
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
