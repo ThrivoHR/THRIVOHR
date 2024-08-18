@@ -7,6 +7,7 @@ import {
   EmployeeSchemaType,
   UpdateEmployeeResType,
   UpdateEmployeeType,
+  DeleteEmployeeType,
 } from "@/schemaValidation/employee.schema";
 
 const apiEmployeeRequest = {
@@ -34,8 +35,8 @@ const apiEmployeeRequest = {
   updateEmployee: (employeeCode: string | undefined, body: UpdateEmployeeType) =>
     http.put<UpdateEmployeeResType>(`/api/v1/employee/${employeeCode}`, body),
 
-  deleteEmployee: (employeeCode: string) =>
-    http.delete<CreateEmployeeResType>(`/api/v1/employee/${employeeCode}`),
+  deleteEmployee: (body:any) =>
+    http.delete<CreateEmployeeResType>(`/api/v1/employee`,body),
 };
 
 export default apiEmployeeRequest;

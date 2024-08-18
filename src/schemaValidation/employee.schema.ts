@@ -58,7 +58,9 @@ export const EmployeeFilterSchema = z.object({
 export const EmployeeListRes = z.object({
   paging: EmployeePageSchema,
   filter: EmployeeFilterSchema,
-  data: z.array(EmployeeSchema),
+  value: z.object({
+    data: z.array(EmployeeSchema),
+  }),
   status: z.number(),
 });
 
@@ -121,6 +123,14 @@ export const UpdateEmployeeRes = z.object({
   message: z.string(),
 });
 
+export const DeleteEmployee = z.object({
+  employeeCode: z.string()
+})
+
+export const DeleteEmployeeRes = z.object({
+  status: z.number(),
+  message: z.string(),
+});
 
 export type EmployeeSchemaType = z.TypeOf<typeof EmployeeSchema>;
 export type EmployeeListResType = z.TypeOf<typeof EmployeeListRes>;
@@ -129,3 +139,7 @@ export type CreateEmployeeResType = z.TypeOf<typeof CreateEmployeeRes>;
 export type CreateEmployeeType = z.TypeOf<typeof CreateEmployee>;
 export type UpdateEmployeeResType = z.TypeOf<typeof UpdateEmployeeRes>;
 export type UpdateEmployeeType = z.TypeOf<typeof UpdateEmployee>;
+
+export type DeleteEmployeeResType = z.TypeOf<typeof DeleteEmployeeRes>;
+export type DeleteEmployeeType = z.TypeOf<typeof DeleteEmployee>;
+

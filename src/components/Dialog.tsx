@@ -4,10 +4,13 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button"
+
 
 interface CustomDialogProps {
   trigger: ReactNode;
@@ -26,11 +29,11 @@ export function CustomDialog({ trigger, title, description, children }: CustomDi
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         {children}
+        <DialogFooter>
         <DialogClose asChild>
-          <button className="absolute top-4 right-4">
-            {/* You can add an icon or text for the close button here */}
-          </button>
+          <Button>kkk</Button>
         </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

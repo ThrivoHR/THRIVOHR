@@ -163,9 +163,9 @@ const request = async <Response>(
       const { token } = (payload as LoginResType).value;
       localStorage.setItem("sessionToken", token);
     } 
-    // else if ("auth/logout" === normalizePath(url)) {
-    //   localStorage.removeItem("sessionToken");
-    // }
+    else if ("auth/logout" === normalizePath(url)) {
+      localStorage.removeItem("sessionToken");
+    }
   }
 
   return data;
@@ -194,9 +194,10 @@ const http = {
   },
   delete<Response>(
     url: string,
+    body:any,
     options?: Omit<CustomOptions, "body"> | undefined
   ) {
-    return request<Response>("DELETE", url, { ...options });
+    return request<Response>("DELETE", url, { ...options,body });
   },
   patch<Response>(
     url: string,
