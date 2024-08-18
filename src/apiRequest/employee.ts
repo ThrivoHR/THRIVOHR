@@ -38,4 +38,5 @@ const apiEmployeeRequest = {
     http.delete<CreateEmployeeResType>(`/api/v1/employee/${employeeCode}`),
 };
 
+
 export default apiEmployeeRequest;

@@ -1,4 +1,6 @@
 import z from "zod";
+import { BaseResponse } from "./baseResponse.schema";
+import { Employee } from "../../new-types";
 
 export const EmployeeSchema = z.object({
   employeeCode: z.string(),
@@ -30,6 +32,7 @@ export const EmployeeSchema = z.object({
     description: z.string(),
   }),
   dateOfBirth: z.string(),
+  manager: z.string(),
 });
 
 export const EmployeePageSchema = z.object({
@@ -55,11 +58,15 @@ export const EmployeeFilterSchema = z.object({
   PositionId: z.number().optional(),
 });
 
+// export const EmployeeListRes = z.object({
+//   paging: EmployeePageSchema,
+//   filter: EmployeeFilterSchema,
+//   data: z.array(EmployeeSchema),
+//   status: z.number(),
+// });
+
 export const EmployeeListRes = z.object({
-  paging: EmployeePageSchema,
-  filter: EmployeeFilterSchema,
-  data: z.array(EmployeeSchema),
-  status: z.number(),
+  BaseResponse: BaseResponse,
 });
 
 export const CreateEmployee = z.object({
