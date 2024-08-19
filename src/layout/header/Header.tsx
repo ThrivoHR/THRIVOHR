@@ -7,6 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogAction, AlertDialogCancel, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -49,9 +50,23 @@ export default function Header() {
               </Button>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Button onClick={handleLogout} variant="ghost" className="w-full">
-                Logout
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" className="w-full">
+                    Logout
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Logging out</AlertDialogTitle>
+                    <p>Are you sure you want to logout?</p>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleLogout} className="bg-blue-400 hover:bg-blue-500">OK</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
