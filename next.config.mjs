@@ -8,6 +8,7 @@ const nextConfig = {
               port: '', // Optional but can be included for clarity
               pathname: '/**', // Matches all paths
           },
+         
       ],
   },
 };
