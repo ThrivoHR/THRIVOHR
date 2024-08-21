@@ -161,6 +161,7 @@ const request = async <Response>(
       )
     ) {
       const { token } = (payload as LoginResType).value;
+      console.log("zzz",token)
       localStorage.setItem("sessionToken", token);
     } 
     else if ("auth/logout" === normalizePath(url)) {
