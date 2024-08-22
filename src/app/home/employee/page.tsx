@@ -59,12 +59,11 @@ export default function EmployeeTable() {
   }
 
   return (
-    <div className="border border-t-0 rounded-lg">
+    <div className="border border-t-0 rounded-lg ">
       <DataTable
         columns={columns(handleDelete)}
         data={employees}
       />
-
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

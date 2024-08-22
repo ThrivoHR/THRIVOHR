@@ -71,19 +71,19 @@ export function DataTable<TData, TValue>({
         <Button className="ml-auto">Add new employee</Button>
       </div>
       <div className="rounded-md border">
-        <Table>
+        <Table className="text-center bg-slate-100">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} >
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="text-center">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
@@ -108,10 +108,10 @@ export function DataTable<TData, TValue>({
                 </TableRow>
               ))
             ) : (
-              <TableRow>
+              <TableRow >
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  
                 >
                   No results.
                 </TableCell>
