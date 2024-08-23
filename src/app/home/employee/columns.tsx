@@ -10,34 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowUpDown } from "lucide-react";
 
 export const columns = (
   handleDelete: (employee: EmployeeSchemaType) => void
 ): ColumnDef<EmployeeSchemaType>[] => [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: "employeeCode",
     header: ({ column }) => (
@@ -52,42 +29,55 @@ export const columns = (
   },
   {
     accessorKey: "fullName",
-    header: "Full Name",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Full Name
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
   },
   {
     accessorKey: "email",
     header: "Email",
   },
-  {
-    accessorKey: "phoneNumber",
-    header: "Phone Number",
-  },
-  {
-    accessorKey: "taxCode",
-    header: "Tax Code",
-  },
-  {
-    accessorKey: "bankAccount",
-    header: "Bank Account",
-  },
+  // {
+  //   accessorKey: "phoneNumber",
+  //   header: "Phone Number",
+  // },
+  // {
+  //   accessorKey: "taxCode",
+  //   header: "Tax Code",
+  // },
+  // {
+  //   accessorKey: "bankAccount",
+  //   header: "Bank Account",
+  // },
   {
     accessorKey: "address.fullAddress",
     header: "Full Address",
   },
   {
-    accessorKey: "department.name",
+    accessorKey: "department",
     header: "Department",
   },
   {
-    accessorKey: "position.name",
+    accessorKey: "position",
     header: "Position",
   },
+  // {
+  //   accessorKey: "dateOfBirth",
+  //   header: "Date of Birth",
+  // },
   {
-    accessorKey: "dateOfBirth",
-    header: "Date of Birth",
+    accessorKey: "manager",
+    header: "Manager",
   },
   {
     id: "actions",
+    header: "Actions",
     cell: ({ row }) => {
       const employeeData = row.original;
       return (

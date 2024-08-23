@@ -36,7 +36,7 @@ const apiEmployeeRequest = {
     http.put<UpdateEmployeeResType>(`/api/v1/employee/${employeeCode}`, body),
 
   deleteEmployee: (body:any) =>
-    http.delete<CreateEmployeeResType>(`/api/v1/employee`,body),
+    http.delete<DeleteEmployeeType>(`/api/v1/employee`,{"employeeCode":body}),
 };
 
 export default apiEmployeeRequest;

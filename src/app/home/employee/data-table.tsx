@@ -23,6 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React from "react";
+import { AddEmployeeModal } from "./addEmployee";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -38,6 +39,7 @@ export function DataTable<TData, TValue>({
     []
   );
   const [rowSelection, setRowSelection] = React.useState({});
+  const [isModalOpen, setModalOpen] = React.useState(false);
   const table = useReactTable({
     data,
     columns,
@@ -55,6 +57,14 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
   return (
     <>
       <div className="flex items-center py-3 mx-3">
@@ -68,7 +78,7 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <Button className="ml-auto">Add new employee</Button>
+        <Button className="ml-auto" onClick={openModal}>Add new employee</Button>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -138,6 +148,7 @@ export function DataTable<TData, TValue>({
           Next
         </Button>
       </div>
+      <AddEmployeeModal isOpen={isModalOpen} onClose={closeModal} />
     </>
   );
 }

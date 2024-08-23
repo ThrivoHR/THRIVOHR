@@ -75,7 +75,6 @@ export const CreateEmployee = z.object({
   taxCode: z.string(),
   bankAccount: z.string(),
   address: z.object({
-    id: z.number(),
     addressLine: z.string(),
     ward: z.string(),
     district: z.string(),
@@ -83,7 +82,7 @@ export const CreateEmployee = z.object({
     country: z.string(),
     fullAddress: z.string(),
   }),
-  dateOfBirth: z.date(),
+  dateOfBirth: z.string(),
   departmentId: z.number(),
   positionId: z.number(),
 });

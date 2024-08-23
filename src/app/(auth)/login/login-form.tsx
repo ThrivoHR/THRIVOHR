@@ -87,10 +87,10 @@ export default function LoginForm() {
           </div>
         </div>
         <div className="flex items-center justify-center space-y-3 h-full w-f">
-          <Card className="w-full max-w-[600px] mx-auto">
+          <Card className="w-full max-w-[420px] mx-auto">
             <CardHeader className="flex items-center justify-center">
               <h1 className="text-3xl font-bold">ThrivoHR</h1>
-              <p className="text-lg">Where HR Thrives</p>
+              <p className="text-lg">Where HR Thrives !</p>
             </CardHeader>
             <CardContent>
               <Form {...form}>
