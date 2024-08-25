@@ -30,7 +30,7 @@ const apiEmployeeRequest = {
     ),
 
   createEmployee: (body: CreateEmployeeType) =>
-    http.post<CreateEmployeeResType>("/api/v1/employee", body),
+    http.post<CreateEmployeeResType>("/api/v1/employee",{"employee":body}),
 
   updateEmployee: (employeeCode: string | undefined, body: UpdateEmployeeType) =>
     http.put<UpdateEmployeeResType>(`/api/v1/employee/${employeeCode}`, body),

@@ -65,7 +65,6 @@ export const EmployeeListRes = z.object({
 });
 
 export const CreateEmployee = z.object({
-  employeeCode: z.string(),
   firstName: z.string(),
   lastName: z.string(),
   fullName: z.string(),
@@ -80,11 +79,8 @@ export const CreateEmployee = z.object({
     district: z.string(),
     city: z.string(),
     country: z.string(),
-    fullAddress: z.string(),
   }),
   dateOfBirth: z.string(),
-  departmentId: z.number(),
-  positionId: z.number(),
 });
 
 export const CreateEmployeeRes = z.object({

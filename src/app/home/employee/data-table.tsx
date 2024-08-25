@@ -81,7 +81,7 @@ export function DataTable<TData, TValue>({
         <Button className="ml-auto" onClick={openModal}>Add new employee</Button>
       </div>
       <div className="rounded-md border">
-        <Table className="text-center bg-slate-100">
+        <Table className="text-center">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} >
