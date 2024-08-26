@@ -24,7 +24,7 @@ const apiEmployeeRequest = {
       }${filter?.TaxCode ? `&taxCode=${filter.TaxCode}` : ""}${
         filter?.BankAccount ? `&bankAccount=${filter.BankAccount}` : ""
       }${filter?.Address ? `&address=${filter.Address}` : ""}${
-        filter?.DateOfBirth ? `&dateOfBirth=${filter.DateOfBirth.toISOString()}` : ""
+        filter?.DateOfBirth ? `&dateOfBirth=${filter.DateOfBirth}` : ""
       }${filter?.DepartmentId ? `&departmentId=${filter.DepartmentId}` : ""}${
         filter?.PositionId ? `&positionId=${filter.PositionId}` : ""}`
     ),

@@ -50,7 +50,7 @@ export const EmployeeFilterSchema = z.object({
   TaxCode: z.string().optional(),
   BankAccount: z.string().optional(),
   Address: z.string().optional(),
-  DateOfBirth: z.date().optional(),
+  DateOfBirth: z.string().optional(),
   DepartmentId: z.number().optional(),
   PositionId: z.number().optional(),
 });
