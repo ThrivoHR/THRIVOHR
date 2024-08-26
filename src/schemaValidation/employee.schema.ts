@@ -30,6 +30,7 @@ export const EmployeeSchema = z.object({
     description: z.string(),
   }),
   dateOfBirth: z.string(),
+  manager: z.string(),
 });
 
 export const EmployeePageSchema = z.object({
@@ -53,6 +54,7 @@ export const EmployeeFilterSchema = z.object({
   DateOfBirth: z.string().optional(),
   DepartmentId: z.number().optional(),
   PositionId: z.number().optional(),
+  Manager: z.string().optional(),
 });
 
 export const EmployeeListRes = z.object({
