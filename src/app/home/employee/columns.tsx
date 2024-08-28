@@ -13,7 +13,8 @@ import {
 import { ArrowUpDown } from "lucide-react";
 
 export const columns = (
-  handleDelete: (employee: EmployeeSchemaType) => void
+  handleDelete: (employee: EmployeeSchemaType) => void,
+  handleEdit: (employee: EmployeeSchemaType) => void
 ): ColumnDef<EmployeeSchemaType>[] => [
   {
     accessorKey: "employeeCode",
@@ -90,7 +91,7 @@ export const columns = (
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleEdit(employeeData)}>Edit</DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleDelete(employeeData)}>
               Delete
             </DropdownMenuItem>

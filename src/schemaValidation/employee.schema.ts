@@ -92,28 +92,28 @@ export const CreateEmployeeRes = z.object({
 });
 
 export const UpdateEmployee = z.object({
-  employeeCode: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  fullName: z.string(),
-  email: z.string(),
-  identityNumber: z.string(),
-  phoneNumber: z.string(),
-  taxCode: z.string(),
-  bankAccount: z.string(),
-  address: z.object({
-    id: z.number(),
-    addressLine: z.string(),
-    ward: z.string(),
-    district: z.string(),
-    city: z.string(),
-    country: z.string(),
-    fullAddress: z.string(),
-  }),
-  dateOfBirth: z.date(),
-  departmentId: z.number(),
-  positionId: z.number(),
+  employeeModel: z.object({
+    firstName: z.string(),
+    lastName: z.string(),
+    fullName: z.string(),
+    identityNumber: z.string(),
+    dateOfBirth: z.string(), // Assuming the date is still a string in the format YYYY-MM-DD
+    phoneNumber: z.string(),
+    taxCode: z.string(),
+    bankAccount: z.string(),
+    email: z.string(),
+    address: z.object({
+      addressLine: z.string(),
+      ward: z.string(),
+      district: z.string(),
+      city: z.string(),
+      country: z.string(),
+    }),
+    employeeCode: z.string(), // Moved inside employeeModel
+  })
 });
+
+
 
 export const UpdateEmployeeRes = z.object({
   status: z.number(),

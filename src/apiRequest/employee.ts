@@ -32,11 +32,15 @@ const apiEmployeeRequest = {
   createEmployee: (body: CreateEmployeeType) =>
     http.post<CreateEmployeeResType>("/api/v1/employee",{"employee":body}),
 
-  updateEmployee: (employeeCode: string | undefined, body: UpdateEmployeeType) =>
-    http.put<UpdateEmployeeResType>(`/api/v1/employee/${employeeCode}`, body),
-
   deleteEmployee: (body:any) =>
     http.delete<DeleteEmployeeType>(`/api/v1/employee`,{"employeeCode":body}),
+
+  updateEmployee: (employeeCode: string | undefined, body: UpdateEmployeeType) =>
+    http.put<UpdateEmployeeResType>(
+      `/api/v1/employee?EmployeeCode=${employeeCode}`, 
+      body
+    ),
+  
 };
 
 export default apiEmployeeRequest;

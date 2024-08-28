@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 import apiEmployeeRequest from "@/apiRequest/employee";
-import { EmployeeFilterType, EmployeeSchemaType } from "@/schemaValidation/employee.schema";
+import {
+  EmployeeFilterType,
+  EmployeeSchemaType,
+  UpdateEmployeeType,
+} from "@/schemaValidation/employee.schema";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import {
@@ -16,6 +20,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import EmployeeFilter from "./filterEmployee";
+import { EditEmployeeModal } from "./editEmployee";
 
 export default function EmployeeTable() {
   const [loading, setLoading] = useState(true);
@@ -23,10 +28,13 @@ export default function EmployeeTable() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] =
     useState<EmployeeSchemaType | null>(null);
-
-    const [filter, setFilter] = useState<EmployeeFilterType | null>(null);
+  const [filter, setFilter] = useState<EmployeeFilterType | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [employeeData, setEmployeeData] = useState<UpdateEmployeeType | null>(
+    null
+  );
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
 
   const handleFilterChange = (newFilter: EmployeeFilterType) => {
     setFilter(newFilter);
@@ -37,7 +45,11 @@ export default function EmployeeTable() {
     const fetchEmployees = async () => {
       setLoading(true);
       try {
-        const data = await apiEmployeeRequest.getListEmployee(page, pageSize, filter);
+        const data = await apiEmployeeRequest.getListEmployee(
+          page,
+          pageSize,
+          filter
+        );
         setEmployees(data.payload.value.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -47,7 +59,7 @@ export default function EmployeeTable() {
     };
 
     fetchEmployees();
-  }, [page, pageSize, filter]);;
+  }, [page, pageSize, filter]);
 
   const handleDelete = (employee: EmployeeSchemaType) => {
     setSelectedEmployee({
@@ -62,7 +74,6 @@ export default function EmployeeTable() {
       try {
         const employeeCodeString = selectedEmployee.employeeCode.toString();
         await apiEmployeeRequest.deleteEmployee(employeeCodeString);
-
         setEmployees((prev) =>
           prev.filter((emp) => emp.employeeCode !== employeeCodeString)
         );
@@ -85,6 +96,38 @@ export default function EmployeeTable() {
     setPage(1);
   };
 
+  const transformRowToUpdateEmployee = (
+    rowData: EmployeeSchemaType
+  ): UpdateEmployeeType => {
+    return {
+      employeeModel: {
+        employeeCode: rowData.employeeCode.toString(),
+        firstName: rowData.firstName,
+        lastName: rowData.lastName,
+        fullName: rowData.fullName,
+        identityNumber: rowData.identityNumber,
+        dateOfBirth: rowData.dateOfBirth,
+        phoneNumber: rowData.phoneNumber,
+        taxCode: rowData.taxCode ?? "",
+        bankAccount: rowData.bankAccount ?? "",
+        email: rowData.email,
+        address: {
+          addressLine: rowData.address.addressLine,
+          ward: rowData.address.ward,
+          district: rowData.address.district,
+          city: rowData.address.city,
+          country: rowData.address.country,
+        },
+      },
+    };
+  };
+
+  const handleEdit = (rowData: EmployeeSchemaType) => {
+    const transformedData = transformRowToUpdateEmployee(rowData);
+    setEmployeeData(transformedData);
+    setEditModalOpen(true);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -92,7 +135,7 @@ export default function EmployeeTable() {
   return (
     <div className="">
       <EmployeeFilter onFilter={handleFilterChange} />
-      <DataTable columns={columns(handleDelete)} data={employees} />
+      <DataTable columns={columns(handleDelete, handleEdit)} data={employees} />
       <div className="flex justify-between items-center p-4">
         <div>
           <select
@@ -121,7 +164,6 @@ export default function EmployeeTable() {
           </button>
         </div>
       </div>
-
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -139,6 +181,16 @@ export default function EmployeeTable() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      {employeeData && (
+        <EditEmployeeModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setEditModalOpen(false);
+          }}
+          employeeData={employeeData}
+          employeeCode={employeeData.employeeModel.employeeCode}
+        />
+      )}
     </div>
   );
 }

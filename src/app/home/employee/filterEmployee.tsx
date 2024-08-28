@@ -28,6 +28,7 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
     FullName: "",
     IdentityNumber: "",
     TaxCode: "",
+    DateOfBirth: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,6 +57,7 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
       FullName: "",
       IdentityNumber: "",
       TaxCode: "",
+      DateOfBirth: "",
     });
     onFilter({
       EmployeeCode: "",
@@ -70,13 +72,16 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
       FullName: "",
       IdentityNumber: "",
       TaxCode: "",
+      DateOfBirth: "",
     });
   };
 
   return (
     <Collapsible>
       <CollapsibleTrigger className="w-full">
-        <Button variant="outline" className="w-full">Filter</Button>
+        <Button variant="outline" className="w-full">
+          Filter
+        </Button>
       </CollapsibleTrigger>
       <CollapsibleContent>
         <div className="flex flex-col space-y-4 mb-6 p-4 border rounded-lg shadow-sm">
@@ -139,6 +144,14 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
               placeholder="Tax Code"
               name="TaxCode"
               value={filters.TaxCode}
+              onChange={handleChange}
+            />
+
+            <Input
+              placeholder="Date of Birth"
+              type="date"
+              name="DateOfBirth"
+              value={filters.DateOfBirth}
               onChange={handleChange}
             />
           </div>
