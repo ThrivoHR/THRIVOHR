@@ -38,6 +38,10 @@ export default function ProfilePage() {
               <Label htmlFor="department" className="w-1/3">Department</Label>
               <Input id="department" value="Human Resources" readOnly className="flex-1" />
             </div>
+            <div className="flex items-center gap-4">
+              <Label htmlFor="department" className="w-1/3">Position</Label>
+              <Input id="department" value="Head Master" readOnly className="flex-1" />
+            </div>
           </div>
         </CardContent>
         <CardFooter>

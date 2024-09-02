@@ -73,7 +73,7 @@ export default function EmployeeTable() {
     if (selectedEmployee) {
       try {
         const employeeCodeString = selectedEmployee.employeeCode.toString();
-        await apiEmployeeRequest.deleteEmployee(employeeCodeString);
+        await apiEmployeeRequest.deleteEmployee(employeeCodeString,employeeCodeString);
         setEmployees((prev) =>
           prev.filter((emp) => emp.employeeCode !== employeeCodeString)
         );
@@ -133,7 +133,7 @@ export default function EmployeeTable() {
   }
 
   return (
-    <div className="">
+    <div>
       <EmployeeFilter onFilter={handleFilterChange} />
       <DataTable columns={columns(handleDelete, handleEdit)} data={employees} />
       <div className="flex justify-between items-center p-4">

@@ -32,8 +32,8 @@ const apiEmployeeRequest = {
   createEmployee: (body: CreateEmployeeType) =>
     http.post<CreateEmployeeResType>("/api/v1/employee",{"employee":body}),
 
-  deleteEmployee: (body:any) =>
-    http.delete<DeleteEmployeeType>(`/api/v1/employee`,{"employeeCode":body}),
+  deleteEmployee: (employeeCode: string | undefined,body:any) =>
+    http.delete<DeleteEmployeeType>(`/api/v1/employee?EmployeeCode=${employeeCode}`,{"employeeCode":body}),
 
   updateEmployee: (employeeCode: string | undefined, body: UpdateEmployeeType) =>
     http.put<UpdateEmployeeResType>(

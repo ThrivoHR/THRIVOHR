@@ -25,7 +25,13 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { handleErrorApi } from "@/lib/utils";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface EditEmployeeModalProps {
   isOpen: boolean;
@@ -76,7 +82,6 @@ export function EditEmployeeModal({
   const [wards, setWards] = useState<Geo[]>([]);
   const [selectedProvinceCode, setSelectedProvinceCode] = useState<string>("");
   const [selectedDistrictCode, setSelectedDistrictCode] = useState<string>("");
-  
 
   useEffect(() => {
     // Fetch provinces when component mounts
@@ -131,7 +136,10 @@ export function EditEmployeeModal({
 
   const handleEdit = async (data: UpdateEmployeeType) => {
     try {
-      const result = await apiEmployeeRequest.updateEmployee(employeeCode, data);
+      const result = await apiEmployeeRequest.updateEmployee(
+        employeeCode,
+        data
+      );
       console.log(result);
       onClose();
     } catch (error: any) {
@@ -141,10 +149,10 @@ export function EditEmployeeModal({
       });
     }
   };
-  
+
   const handleClose = () => {
     form.reset(); // Reset form state
-    onClose();    // Close modal
+    onClose(); // Close modal
   };
 
   useEffect(() => {
@@ -152,7 +160,6 @@ export function EditEmployeeModal({
       form.reset(employeeData);
     }
   }, [isOpen, employeeData, form]);
-  
 
   return (
     <AlertDialog open={isOpen} onOpenChange={handleClose}>
@@ -189,7 +196,9 @@ export function EditEmployeeModal({
                   className="border rounded-md px-3 py-2 w-full"
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage>
+                {form.formState.errors.employeeModel?.firstName?.message}
+              </FormMessage>
             </FormItem>
 
             <FormItem>
@@ -201,7 +210,7 @@ export function EditEmployeeModal({
                 />
               </FormControl>
               <FormMessage>
-                {/* {form.formState.errors.employeeModel.lastName?.message} */}
+                {form.formState.errors.employeeModel?.lastName?.message}
               </FormMessage>
             </FormItem>
 
@@ -214,7 +223,7 @@ export function EditEmployeeModal({
                 />
               </FormControl>
               <FormMessage>
-                {/* {form.formState.errors.email?.message} */}
+                {form.formState.errors.employeeModel?.email?.message}
               </FormMessage>
             </FormItem>
 
@@ -227,7 +236,7 @@ export function EditEmployeeModal({
                 />
               </FormControl>
               <FormMessage>
-                {/* {form.formState.errors.phoneNumber?.message} */}
+                {form.formState.errors.employeeModel?.phoneNumber?.message}
               </FormMessage>
             </FormItem>
 
@@ -241,7 +250,7 @@ export function EditEmployeeModal({
                 />
               </FormControl>
               <FormMessage>
-                {/* {form.formState.errors.dateOfBirth?.message} */}
+                {form.formState.errors.employeeModel?.dateOfBirth?.message}
               </FormMessage>
             </FormItem>
 
@@ -254,7 +263,7 @@ export function EditEmployeeModal({
                 />
               </FormControl>
               <FormMessage>
-                {/* {form.formState.errors.identityNumber?.message} */}
+                {form.formState.errors.employeeModel?.identityNumber?.message}
               </FormMessage>
             </FormItem>
 
@@ -267,7 +276,7 @@ export function EditEmployeeModal({
                 />
               </FormControl>
               <FormMessage>
-                {/* {form.formState.errors.taxCode?.message} */}
+                {form.formState.errors.employeeModel?.taxCode?.message}
               </FormMessage>
             </FormItem>
 
@@ -280,7 +289,7 @@ export function EditEmployeeModal({
                 />
               </FormControl>
               <FormMessage>
-                {/* {form.formState.errors.bankAccount?.message} */}
+                {form.formState.errors.employeeModel?.bankAccount?.message}
               </FormMessage>
             </FormItem>
 
@@ -294,7 +303,10 @@ export function EditEmployeeModal({
                 />
               </FormControl>
               <FormMessage>
-                {/* {form.formState.errors.address?.addressLine?.message} */}
+                {
+                  form.formState.errors.employeeModel?.address?.addressLine
+                    ?.message
+                }
               </FormMessage>
             </FormItem>
 
@@ -312,7 +324,9 @@ export function EditEmployeeModal({
                   }}
                   value={
                     form.watch("employeeModel.address.city")
-                      ? `${selectedProvinceCode}|${form.watch("employeeModel.address.city")}`
+                      ? `${selectedProvinceCode}|${form.watch(
+                          "employeeModel.address.city"
+                        )}`
                       : undefined
                   }
                 >
@@ -332,7 +346,7 @@ export function EditEmployeeModal({
                 </Select>
               </FormControl>
               <FormMessage>
-                {/* {form.formState.errors.address?.city?.message} */}
+                {form.formState.errors.employeeModel?.address?.city?.message}
               </FormMessage>
             </FormItem>
 
@@ -344,13 +358,13 @@ export function EditEmployeeModal({
                     const [code, name] = value.split("|");
                     form.setValue("employeeModel.address.district", name);
                     setSelectedDistrictCode(code);
-                    // Reset ward when district changes
                     form.setValue("employeeModel.address.ward", "");
                   }}
                   value={
                     districts.find(
                       (district) =>
-                        district.name === form.watch("employeeModel.address.district")
+                        district.name ===
+                        form.watch("employeeModel.address.district")
                     )
                       ? `${selectedDistrictCode}|${form.watch(
                           "employeeModel.address.district"
@@ -375,7 +389,10 @@ export function EditEmployeeModal({
                 </Select>
               </FormControl>
               <FormMessage>
-                {/* {form.formState.errors.address?.district?.message} */}
+                {
+                  form.formState.errors.employeeModel?.address?.district
+                    ?.message
+                }
               </FormMessage>
             </FormItem>
 
@@ -389,11 +406,14 @@ export function EditEmployeeModal({
                   }}
                   value={
                     wards.find(
-                      (ward) => ward.name === form.watch("employeeModel.address.ward")
+                      (ward) =>
+                        ward.name === form.watch("employeeModel.address.ward")
                     )
                       ? `${
                           wards.find(
-                            (ward) => ward.name === form.watch("employeeModel.address.ward")
+                            (ward) =>
+                              ward.name ===
+                              form.watch("employeeModel.address.ward")
                           )?.code
                         }|${form.watch("employeeModel.address.ward")}`
                       : ""
@@ -416,7 +436,7 @@ export function EditEmployeeModal({
                 </Select>
               </FormControl>
               <FormMessage>
-                {/* {form.formState.errors.address?.ward?.message} */}
+                {form.formState.errors.employeeModel?.address?.ward?.message}
               </FormMessage>
             </FormItem>
 
@@ -429,7 +449,7 @@ export function EditEmployeeModal({
                 />
               </FormControl>
               <FormMessage>
-                {/* {form.formState.errors.address?.country?.message} */}
+                {form.formState.errors.employeeModel?.address?.country?.message}
               </FormMessage>
             </FormItem>
 

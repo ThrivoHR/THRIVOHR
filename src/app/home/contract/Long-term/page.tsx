@@ -1,320 +1,211 @@
 "use client";
 
-import { useState } from "react";
-import DataTable from "@/components/Table";
+import React, { useEffect, useState } from "react";
+import apiContractRequest from "@/apiRequest/contract";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+  ContractFilterType,
+  ContractSchemaType,
+  UpdateContractType,
+} from "@/schemaValidation/contract.schema";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
+import ContractFilter from "./filterContract";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import Filter from "@/components/Filter";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { EditContractModal } from "./editContract";
 
-type Contract = {
-  id: string;
-  fullName: string;
-  workplace: string;
-  startDate: string;
-  endDate?: string;
-  contractDuration?: string;
-  position: string;
-  department: string;
-  basicSalary: number;
-};
-
-const columns = [
-  "Full Name",
-  "Workplace",
-  "Start Date",
-  "End Date",
-  "Contract Duration",
-  "Position",
-  "Department",
-  "Basic Salary",
-];
-
-const employees: Contract[] = [
-  {
-    id: "EMP001",
-    fullName: "Nguyễn Văn A",
-    workplace: "Hà Nội",
-    startDate: "2023-01-01",
-    // endDate: "2024-01-01",
-    contractDuration: "1 year",
-    position: "Accountant",
-    department: "Accounting",
-    basicSalary: 2000,
-  },
-  {
-    id: "EMP002",
-    fullName: "Trần Thị B",
-    workplace: "TP Hồ Chí Minh",
-    startDate: "2023-03-15",
-    position: "IT Staff",
-    department: "IT",
-    basicSalary: 3000,
-  },
-  {
-    id: "EMP003",
-    fullName: "Lê Văn C",
-    workplace: "Đà Nẵng",
-    startDate: "2023-05-01",
-    position: "HR Staff",
-    department: "Human Resources",
-    basicSalary: 1900,
-  },
-  {
-    id: "EMP004",
-    fullName: "Phạm Thị D",
-    workplace: "Hải Phòng",
-    startDate: "2022-12-01",
-    // endDate: "2023-12-01",
-    contractDuration: "1 year",
-    position: "Marketing Staff",
-    department: "Marketing",
-    basicSalary: 1000,
-  },
-  {
-    id: "EMP005",
-    fullName: "Hoàng Văn E",
-    workplace: "Cần Thơ",
-    startDate: "2023-07-01",
-    position: "Sales Staff",
-    department: "Sales",
-    basicSalary: 2000,
-  },
-];
-
-export default function Longterm() {
-  const [selectedEmployee, setSelectedEmployee] = useState<Contract | null>(
+export default function Contract() {
+  const [loading, setLoading] = useState(true);
+  const [contract, setContract] = useState<ContractSchemaType[]>([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [filter, setFilter] = useState<ContractFilterType | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedContract, setSelectedContract] =
+    useState<ContractSchemaType | null>(null);
+  const [contractData, setContractData] = useState<UpdateContractType | null>(
     null
   );
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dialogType, setDialogType] = useState<"edit" | "delete" | null>(null);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
 
-  const handleEditClick = (row: Record<string, React.ReactNode>) => {
-    const employee = employees.find((emp) => emp.fullName === row["Full Name"]);
-    if (employee) {
-      setSelectedEmployee(employee);
-      setDialogType("edit");
-      setIsDialogOpen(true);
+  const handleFilterChange = (newFilter: ContractFilterType) => {
+    setFilter(newFilter);
+    setPage(1); // Reset to page 1 when filters change
+  };
+
+  const handleDelete = (contract: ContractSchemaType) => {
+    setSelectedContract(contract);
+    setDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedContract) {
+      try {
+        const contractCodeString = selectedContract.id.toString();
+        await apiContractRequest.deleteContract(
+          contractCodeString,
+          contractCodeString
+        );
+        setContract((prev) => prev.filter((c) => c.id !== contractCodeString));
+        console.log("Deleted contract:", contractCodeString);
+      } catch (error) {
+        console.error("Error deleting contract:", error);
+      } finally {
+        setDialogOpen(false);
+        setSelectedContract(null);
+      }
     }
   };
 
-  const handleDeleteClick = (row: Record<string, React.ReactNode>) => {
-    const employee = employees.find((emp) => emp.fullName === row["Full Name"]);
-    if (employee) {
-      setSelectedEmployee(employee);
-      setDialogType("delete");
-      setIsDialogOpen(true);
-    }
+  const defaultDepartmentId = 0;
+  const defaultPositionId = 0;
+
+  const departmentMap: { [key: string]: number } = {
+    Admin: 1,
+    IT: 2,
+    Sale: 3,
+    Accounting: 4,
+    Marketing: 5,
   };
 
-  const closeDialog = () => {
-    setIsDialogOpen(false);
-    setSelectedEmployee(null);
-    setDialogType(null);
+  const positionMap: { [key: string]: number } = {
+    Manager: 1,
+    Admin: 2,
+    Intern: 3,
+    Staff: 4,
+    Supervisor: 5,
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (selectedEmployee) {
-      const { name, value } = e.target;
-      setSelectedEmployee({ ...selectedEmployee, [name]: value });
-    }
+  const getDepartmentId = (
+    departmentName: string | undefined
+  ): number | undefined => {
+    return departmentMap[departmentName ?? ""] ?? defaultDepartmentId;
   };
+
+  const getPositionId = (
+    positionName: string | undefined
+  ): number | undefined => {
+    return positionMap[positionName ?? ""] ?? defaultPositionId;
+  };
+
+  const handleEdit = (contract: ContractSchemaType) => {
+    const departmentId = getDepartmentId(contract.department);
+    const positionId = getPositionId(contract.position);
+    setContractData({
+      employeeContractModel: {
+        contractId: contract.id,
+        startDate: contract.startDate,
+        endDate: contract.endDate,
+        notes: contract.notes,
+        salary: contract.salary,
+        departmentId: departmentId ?? defaultDepartmentId,
+        positionId: positionId ?? defaultPositionId,
+      },
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangePageSize = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setPage(1);
+  };
+
+  useEffect(() => {
+    const fetchContract = async () => {
+      setLoading(true);
+      try {
+        const data = await apiContractRequest.getListContract(
+          page,
+          pageSize,
+          filter
+        );
+        console.log(data.payload.value.data);
+        setContract(data.payload.value.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContract();
+  }, [page, pageSize, filter]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
-      <div>
-        <Filter/>
-      </div>
-      <div className="border rounded-lg w-full h-[80vh] flex flex-col">
-        <DataTable
-          columns={columns}
-          data={employees.map((employee) => ({
-            "Full Name": employee.fullName,
-            Workplace: employee.workplace,
-            "Start Date": employee.startDate,
-            "End Date": employee.endDate || "",
-            "Contract Duration": employee.contractDuration || "",
-            Position: employee.position,
-            Department: employee.department,
-            "Basic Salary": employee.basicSalary,
-          }))}
-          onEditClick={handleEditClick}
-          onDeleteClick={handleDeleteClick}
-        />
-        <div className="pagination">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+      <ContractFilter onFilter={handleFilterChange} />
+      <DataTable columns={columns(handleDelete, handleEdit)} data={contract} />
+      <div className="flex justify-between items-center p-4">
+        <div>
+          <select
+            value={pageSize}
+            onChange={(e) => handleChangePageSize(Number(e.target.value))}
+            className="px-4 py-2 border rounded-lg"
+          >
+            <option value={5}>5 rows</option>
+            <option value={10}>10 rows</option>
+          </select>
         </div>
-        {selectedEmployee && (
-          <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
-            <DialogContent className="w-full max-w-4xl h-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {dialogType === "edit" && "Edit Employee Information"}
-                  {dialogType === "delete" && "Delete Employee"}
-                </DialogTitle>
-                <DialogClose />
-              </DialogHeader>
-              <div className="p-4 bg-white">
-                {dialogType === "edit" && (
-                  <form className="grid grid-cols-3 gap-4">
-                    <div className="flex flex-col">
-                      <label>ID:</label>
-                      <Input
-                        type="text"
-                        name="id"
-                        value={selectedEmployee.id}
-                        readOnly
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Full Name:</label>
-                      <Input
-                        type="text"
-                        name="fullName"
-                        value={selectedEmployee.fullName}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Workplace:</label>
-                      <Input
-                        type="text"
-                        name="workplace"
-                        value={selectedEmployee.workplace}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Start Date:</label>
-                      <Input
-                        type="text"
-                        name="startDate"
-                        value={selectedEmployee.startDate}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>End Date:</label>
-                      <Input
-                        type="text"
-                        name="endDate"
-                        value={selectedEmployee.endDate || ""}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Contract Duration:</label>
-                      <Input
-                        type="text"
-                        name="contractDuration"
-                        value={selectedEmployee.contractDuration || ""}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Position:</label>
-                      <Input
-                        type="text"
-                        name="position"
-                        value={selectedEmployee.position}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Department:</label>
-                      <Input
-                        type="text"
-                        name="department"
-                        value={selectedEmployee.department}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Basic Salary:</label>
-                      <Input
-                        type="text"
-                        name="basicSalary"
-                        value={selectedEmployee.basicSalary}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                  </form>
-                )}
-                {dialogType === "delete" && (
-                  <p>
-                    Bạn có chắc chắn muốn xóa nhân viên{" "}
-                    {selectedEmployee.fullName} - {selectedEmployee.position}{" "}
-                    không?
-                  </p>
-                )}
-              </div>
-              <DialogFooter>
-                <button
-                  className="mt-4 px-4 py-2 bg-blue-300 text-white rounded"
-                  onClick={closeDialog}
-                >
-                  Đóng
-                </button>
-                {dialogType === "edit" && (
-                  <button className="mt-4 px-4 py-2 bg-green-500 text-white rounded">
-                    Lưu thay đổi
-                  </button>
-                )}
-                {dialogType === "delete" && (
-                  <button className="mt-4 px-4 py-2 bg-red-500 text-white rounded">
-                    Xác nhận xóa
-                  </button>
-                )}
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
+        <div>
+          <button
+            onClick={() => handleChangePage(Math.max(page - 1, 1))}
+            disabled={page === 1}
+            className="px-4 py-2 border rounded-lg"
+          >
+            Previous
+          </button>
+          <span className="mx-4">Page {page}</span>
+          <button
+            onClick={() => handleChangePage(page + 1)}
+            className="px-4 py-2 border rounded-lg"
+          >
+            Next
+          </button>
+        </div>
       </div>
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the contract? This action cannot
+              be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDialogOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      {contractData && (
+        <EditContractModal
+          isOpen={isEditModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          contractData={contractData}
+          contractId={contractData.employeeContractModel.contractId}
+        />
+      )}
     </div>
   );
 }

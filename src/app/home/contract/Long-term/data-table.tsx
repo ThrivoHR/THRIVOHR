@@ -23,7 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React from "react";
-import { AddEmployeeModal } from "./addEmployee";
+import { AddContractModal } from "./addContract";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -68,7 +68,7 @@ export function DataTable<TData, TValue>({
   return (
     <>
       <div className="flex items-center py-3 mx-3">
-        <Button className="ml-auto" onClick={openModal}>Add new employee</Button>
+        <Button className="ml-auto" onClick={openModal}>Add new contract</Button>
       </div>
       <div className="rounded-md border">
         <Table className="text-center">
@@ -120,7 +120,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <AddEmployeeModal isOpen={isModalOpen} onClose={closeModal} />
+      <AddContractModal isOpen={isModalOpen} onClose={closeModal} />
     </>
   );
 }

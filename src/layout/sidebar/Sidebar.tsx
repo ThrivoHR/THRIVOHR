@@ -32,7 +32,7 @@ export default function Sidebar() {
         <div className="flex h-[55px] items-center border-b px-6">
           <Link href="#" onClick={() => handleNavigation("#")} className="flex items-center gap-2 font-semibold cursor-pointer">
             <Image src={logo} alt="Logo" width={50} height={50} />
-            <Image src={logo2} alt="Logo" width={140} height={140} />
+            <Image src={logo2} alt="Logo" width={140} height={140} className="mt-2" />
           </Link>
         </div>
         <div className="flex-1 py-2 overflow-y-auto">
