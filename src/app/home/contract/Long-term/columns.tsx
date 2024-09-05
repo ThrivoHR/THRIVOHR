@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ContractSchemaType } from "@/schemaValidation/contract.schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, ArrowUpDown } from "lucide-react";
@@ -10,10 +11,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import apiContractRequest from "@/apiRequest/contract";
+import { Badge } from "@/components/ui/badge";
 
-export const columns = (
+export const Columns = (
   handleDelete: (contract: ContractSchemaType) => void,
-  handleEdit: (contract: ContractSchemaType) => void
+  handleEdit: (contract: ContractSchemaType) => void,
+  handleOpenModal: (contract: ContractSchemaType) => void,
 ): ColumnDef<ContractSchemaType>[] => [
   {
     accessorKey: "employeeCode",
@@ -65,7 +70,15 @@ export const columns = (
   },
   {
     accessorKey: "isNoExpiry",
-    header: "Expired",
+    header: "Expiry",
+    cell: ({ row }) => {
+      const isExpired = row.original.isNoExpiry;
+      return isExpired ? (
+        <Badge variant="destructive">Expired</Badge>
+      ) : (
+        <Badge variant="outline">Available</Badge>
+      );
+    },
   },
   {
     id: "actions",
@@ -73,24 +86,29 @@ export const columns = (
     cell: ({ row }) => {
       const contractData = row.original;
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleEdit(contractData)}>
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleDelete(contractData)}>
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => handleOpenModal(contractData)}>
+                End Contract
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleEdit(contractData)}>
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleDelete(contractData)}>
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </>
       );
     },
   },

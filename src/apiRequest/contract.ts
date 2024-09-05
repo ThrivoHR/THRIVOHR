@@ -30,17 +30,22 @@ const apiContractRequest = {
       employeeContractModel: body,
     }),
 
-  deleteContract: (contractId: string | undefined,body: any) =>
-    http.delete<EndContractType>(`/api/v1/employeecontract?ContractID=${contractId}`, { "contractID": body }),
+  deleteContract: (contractId: string | undefined, body: any) =>
+    http.delete<EndContractType>(
+      `/api/v1/employeecontract?ContractID=${contractId}`,
+      { contractID: body }
+    ),
 
-  updateContract: (
-    contractId: string | undefined,
-    body: UpdateContractType
-  ) =>
+  updateContract: (contractId: string | undefined, body: UpdateContractType) =>
     http.put<UpdateContractResType>(
       `/api/v1/employeecontract?ContractID=${contractId}`,
       body
     ),
+  endContract: (contractId: string | undefined, body: any) =>
+    http.put<EndContractType>(
+      `/api/v1/employeecontract/end-employee-contract?ContractID=${contractId}`,
+      { contractID: body }
+    ),
 };
 
-export default apiContractRequest
+export default apiContractRequest;

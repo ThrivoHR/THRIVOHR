@@ -21,9 +21,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import React from "react";
 import { AddContractModal } from "./addContract";
+import * as XLSX from "xlsx";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -65,25 +65,37 @@ export function DataTable<TData, TValue>({
     setModalOpen(false);
   };
 
+  // const exportToExcel = () => {
+  //   const exportData = table.getRowModel().rows.map((row) => row.original);
+
+  //   const worksheet = XLSX.utils.json_to_sheet(exportData);
+  //   const workbook = XLSX.utils.book_new();
+
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+
+  //   XLSX.writeFile(workbook, "contracts_data.xlsx");
+  // };
+
   return (
     <>
-      <div className="flex items-center py-3 mx-3">
-        <Button className="ml-auto" onClick={openModal}>Add new contract</Button>
+      <div className=" flex justify-end items-center py-3 space-x-2">
+        {/* <Button variant="outline" onClick={exportToExcel}>Export to Excel</Button> */}
+        <Button onClick={openModal}>Add new contract</Button>
       </div>
       <div className="rounded-md border">
         <Table className="text-center">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} >
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} className="text-center">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   );
                 })}
@@ -108,13 +120,8 @@ export function DataTable<TData, TValue>({
                 </TableRow>
               ))
             ) : (
-              <TableRow >
-                <TableCell
-                  colSpan={columns.length}
-                  
-                >
-                  No results.
-                </TableCell>
+              <TableRow>
+                <TableCell colSpan={columns.length}>No results.</TableCell>
               </TableRow>
             )}
           </TableBody>

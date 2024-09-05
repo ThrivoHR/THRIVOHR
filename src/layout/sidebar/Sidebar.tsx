@@ -38,7 +38,11 @@ export default function Sidebar() {
         <div className="flex-1 py-2 overflow-y-auto">
           <nav className="text-sm">
             <Accordion type="multiple">
-              <Link href="/home/employee" className={`flex font-medium items-center gap-3 rounded-sm px-3 !pl-3  py-4 cursor-pointer ${linkClasses("/employee")}`} onClick={() => handleNavigation("/employee")}>
+              <Link
+                href="/home/employee"
+                className={`flex font-medium items-center gap-3 rounded-sm px-3 !pl-3 py-4 cursor-pointer ${linkClasses("/employee")}`}
+                onClick={() => handleNavigation("/employee")}
+              >
                 <UserIcon className="w-3 h-3" />
                 Information
               </Link>
@@ -51,10 +55,18 @@ export default function Sidebar() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Link href="/home/contract/Long-term" className={linkClasses("/home/contract/Long-term")} onClick={() => handleNavigation("/contract/Long-term")}>
+                  <Link
+                    href="/home/contract/Long-term"
+                    className={`${linkClasses("/home/contract/Long-term")} pl-16`}
+                    onClick={() => handleNavigation("/home/contract/Long-term")}
+                  >
                     Long-term contract
                   </Link>
-                  <Link href="/home/contract/Short-term" className={linkClasses("/home/contract/Short-term")} onClick={() => handleNavigation("/contract/Short-term")}>
+                  <Link
+                    href="/home/contract/Short-term"
+                    className={`${linkClasses("/home/contract/Short-term")} pl-16`}
+                    onClick={() => handleNavigation("/home/contract/Short-term")}
+                  >
                     Short-term contract
                   </Link>
                 </AccordionContent>
@@ -68,16 +80,32 @@ export default function Sidebar() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Link href="/home/history/union" className={linkClasses("/home/history/union")} onClick={() => handleNavigation("/history/union")}>
+                  <Link
+                    href="/home/history/union"
+                    className={`${linkClasses("/home/history/union")} pl-16`}
+                    onClick={() => handleNavigation("/home/history/union")}
+                  >
                     Union activities
                   </Link>
-                  <Link href="/home/history/workhistory" className={linkClasses("/home/history/workhistory")} onClick={() => handleNavigation("/history/workhistory")}>
+                  <Link
+                    href="/home/history/workhistory"
+                    className={`${linkClasses("/home/history/workhistory")} pl-16`}
+                    onClick={() => handleNavigation("/home/history/workhistory")}
+                  >
                     Career history
                   </Link>
-                  <Link href="/home/history/addition" className={linkClasses("/home/history/addition")} onClick={() => handleNavigation("/history/addition")}>
+                  <Link
+                    href="/home/history/addition"
+                    className={`${linkClasses("/home/history/addition")} pl-16`}
+                    onClick={() => handleNavigation("/home/history/addition")}
+                  >
                     Addition
                   </Link>
-                  <Link href="/home/history/deduction" className={linkClasses("/home/history/deduction")} onClick={() => handleNavigation("/history/deduction")}>
+                  <Link
+                    href="/home/history/deduction"
+                    className={`${linkClasses("/home/history/deduction")} pl-16`}
+                    onClick={() => handleNavigation("/home/history/deduction")}
+                  >
                     Deduction
                   </Link>
                 </AccordionContent>
@@ -87,17 +115,29 @@ export default function Sidebar() {
                 <AccordionTrigger className="font-medium hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
                   <div className="flex items-center gap-3 rounded-sm px-3 text-gray-900 transition-all cursor-pointer">
                     <WorkIcon />
-                    Application 
+                    Application
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Link href="/home/application/absent" className={linkClasses("/home/application/absent")} onClick={() => handleNavigation("/application/absent")}>
+                  <Link
+                    href="/home/application/absent"
+                    className={`${linkClasses("/home/application/absent")} pl-16`}
+                    onClick={() => handleNavigation("/home/application/absent")}
+                  >
                     Absence application
                   </Link>
-                  <Link href="/home/application/overtime" className={linkClasses("/home/application/overtime")} onClick={() => handleNavigation("/application/overtime")}>
+                  <Link
+                    href="/home/application/overtime"
+                    className={`${linkClasses("/home/application/overtime")} pl-16`}
+                    onClick={() => handleNavigation("/home/application/overtime")}
+                  >
                     Overtime
                   </Link>
-                  <Link href="/home/application/workreport" className={linkClasses("/home/application/workreport")} onClick={() => handleNavigation("/application/workreport")}>
+                  <Link
+                    href="/home/application/workreport"
+                    className={`${linkClasses("/home/application/workreport")} pl-16`}
+                    onClick={() => handleNavigation("/home/application/workreport")}
+                  >
                     Work report
                   </Link>
                 </AccordionContent>
@@ -111,14 +151,23 @@ export default function Sidebar() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Link href="/home/progress/viewprogress" className={linkClasses("/home/progress/viewprogress")} onClick={() => handleNavigation("/progress/viewprogress")}>
+                  <Link
+                    href="/home/progress/viewprogress"
+                    className={`${linkClasses("/home/progress/viewprogress")} pl-16`}
+                    onClick={() => handleNavigation("/home/progress/viewprogress")}
+                  >
                     View progress
                   </Link>
-                  <Link href="/home/progress/reportprogress" className={linkClasses("/home/progress/reportprogress")} onClick={() => handleNavigation("/progress/reportprogress")}>
+                  <Link
+                    href="/home/progress/reportprogress"
+                    className={`${linkClasses("/home/progress/reportprogress")} pl-16`}
+                    onClick={() => handleNavigation("/home/progress/reportprogress")}
+                  >
                     Progress report
                   </Link>
                 </AccordionContent>
               </AccordionItem>
+
               <AccordionItem value="salary">
                 <AccordionTrigger className="font-medium hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
                   <div className="flex items-center gap-3 rounded-lg px-3 text-gray-900 transition-all cursor-pointer">
@@ -127,32 +176,66 @@ export default function Sidebar() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Link href="/home/salary/coefficient" className={linkClasses("/home/salary/coefficient")} onClick={() => handleNavigation("/salary/coefficient")}>
+                  <Link
+                    href="/home/salary/coefficient"
+                    className={`${linkClasses("/home/salary/coefficient")} pl-16`}
+                    onClick={() => handleNavigation("/home/salary/coefficient")}
+                  >
                     Coefficient
                   </Link>
-                  <Link href="/home/salary/raise" className={linkClasses("/home/salary/raise")} onClick={() => handleNavigation("/salary/raise")}>
+                  <Link
+                    href="/home/salary/raise"
+                    className={`${linkClasses("/home/salary/raise")} pl-16`}
+                    onClick={() => handleNavigation("/home/salary/raise")}
+                  >
                     Raise
                   </Link>
-                  <Link href="/home/salary/bonus" className={linkClasses("/home/salary/bonus")} onClick={() => handleNavigation("/salary/bonus")}>
+                  <Link
+                    href="/home/salary/bonus"
+                    className={`${linkClasses("/home/salary/bonus")} pl-16`}
+                    onClick={() => handleNavigation("/home/salary/bonus")}
+                  >
                     Bonus
                   </Link>
-                  <Link href="/home/salary/overtimesalary" className={linkClasses("/home/salary/overtimesalary")} onClick={() => handleNavigation("/salary/overtimesalary")}>
+                  <Link
+                    href="/home/salary/overtimesalary"
+                    className={`${linkClasses("/home/salary/overtimesalary")} pl-16`}
+                    onClick={() => handleNavigation("/home/salary/overtimesalary")}
+                  >
                     Overtime salary
                   </Link>
-                  <Link href="/home/salary/deductionreport" className={linkClasses("/home/salary/deductionreport")} onClick={() => handleNavigation("/salary/deductionreport")}>
+                  <Link
+                    href="/home/salary/deductionreport"
+                    className={`${linkClasses("/home/salary/deductionreport")} pl-16`}
+                    onClick={() => handleNavigation("/home/salary/deductionreport")}
+                  >
                     Deduction report
                   </Link>
-                  <Link href="/home/salary/totalsalary" className={linkClasses("/home/salary/totalsalary")} onClick={() => handleNavigation("/salary/totalsalary")}>
+                  <Link
+                    href="/home/salary/totalsalary"
+                    className={`${linkClasses("/home/salary/totalsalary")} pl-16`}
+                    onClick={() => handleNavigation("/home/salary/totalsalary")}
+                  >
                     Total salary
                   </Link>
                 </AccordionContent>
               </AccordionItem>
-              <Link href="/home/skill_inventory" className={`flex font-medium items-center gap-3 rounded-sm !pl-3 py-4 cursor-pointer ${linkClasses("/skill_inventory")}`} onClick={() => handleNavigation("/skill_inventory")}>
-                <Skill className="w-3 h-3"/>
-                Training program
+
+              <Link
+                href="/home/skill_inventory"
+                className={`flex font-medium items-center gap-3 rounded-sm px-3 !pl-3 py-4 cursor-pointer ${linkClasses("/skill_inventory")}`}
+                onClick={() => handleNavigation("/skill_inventory")}
+              >
+                <Skill className="w-3 h-3" />
+                Skill inventory
               </Link>
-              <Link href="/home/archive" className={`flex font-medium items-center gap-3 rounded-sm !pl-3 py-4 cursor-pointer ${linkClasses("/archive")}`} onClick={() => handleNavigation("/archive")}>
-                <Archive className="w-3 h-3"/>
+
+              <Link
+                href="/home/archive"
+                className={`flex font-medium items-center gap-3 rounded-sm px-3 !pl-3 py-4 cursor-pointer ${linkClasses("/archive")}`}
+                onClick={() => handleNavigation("/archive")}
+              >
+                <Archive className="w-3 h-3" />
                 Archive
               </Link>
             </Accordion>

@@ -8,7 +8,7 @@ import {
   UpdateContractType,
 } from "@/schemaValidation/contract.schema";
 import { DataTable } from "./data-table";
-import { columns } from "./columns";
+import { Columns } from "./columns";
 import ContractFilter from "./filterContract";
 import {
   AlertDialog,
@@ -34,6 +34,8 @@ export default function Contract() {
   const [contractData, setContractData] = useState<UpdateContractType | null>(
     null
   );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [isEditModalOpen, setEditModalOpen] = useState(false);
 
   const handleFilterChange = (newFilter: ContractFilterType) => {
@@ -122,6 +124,24 @@ export default function Contract() {
     setPage(1);
   };
 
+  const handleOpenModal = (contract: ContractSchemaType) => {
+    setSelectedContract(contract);
+    setIsModalOpen(true);
+  };
+
+  const handleEndContract = async () => {
+    if (selectedContract) {
+      try {
+        await apiContractRequest.endContract(selectedContract.id, selectedContract.id);
+        console.log("Contract ended successfully");
+        setIsModalOpen(false);  // Close the modal after success
+        setSelectedContract(null);  // Reset the selected contract
+      } catch (error) {
+        console.error("Error ending contract:", error);
+      }
+    }
+  };
+
   useEffect(() => {
     const fetchContract = async () => {
       setLoading(true);
@@ -150,7 +170,7 @@ export default function Contract() {
   return (
     <div>
       <ContractFilter onFilter={handleFilterChange} />
-      <DataTable columns={columns(handleDelete, handleEdit)} data={contract} />
+      <DataTable columns={Columns(handleDelete, handleEdit, handleOpenModal)} data={contract} />
       <div className="flex justify-between items-center p-4">
         <div>
           <select
@@ -205,6 +225,26 @@ export default function Contract() {
           contractData={contractData}
           contractId={contractData.employeeContractModel.contractId}
         />
+      )}
+
+      {/* Confirmation Modal */}
+      {selectedContract && (
+        <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>End Contract</AlertDialogTitle>
+            </AlertDialogHeader>
+            <p>Are you sure you want to end this contract?</p>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={handleEndContract}>
+                End Contract
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       )}
     </div>
   );
