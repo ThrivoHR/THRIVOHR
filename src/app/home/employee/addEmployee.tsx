@@ -33,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { handleErrorApi } from "@/lib/utils";
+import toast from "react-hot-toast";
 
 interface AddEmployeeModalProps {
   isOpen: boolean;
@@ -102,12 +103,14 @@ export function AddEmployeeModal({ isOpen, onClose }: AddEmployeeModalProps) {
     console.log("data", formattedData);
     try {
       const result = await apiEmployeeRequest.createEmployee(formattedData);
+      toast.success("Employee added successfully!");
       console.log(result);
     } catch (error: any) {
       handleErrorApi({
         error,
         setError: form.setError,
       });
+      toast.error("Employee added failed");
     } finally {
       setLoading(false);
       onClose();

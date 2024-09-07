@@ -27,6 +27,7 @@ import { handleErrorApi } from "@/lib/utils";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UpdateContractType } from "@/schemaValidation/contract.schema";
 import apiContractRequest from "@/apiRequest/contract";
+import toast from "react-hot-toast";
 
 interface EditContractModalProps {
   isOpen: boolean;
@@ -70,6 +71,7 @@ export function EditContractModal({
         },
       };
       const result = await apiContractRequest.updateContract(contractId, updatedData);
+      toast.success("Contract edited successfully!");
       console.log(result);
       onClose();
     } catch (error: any) {
@@ -77,6 +79,7 @@ export function EditContractModal({
         error,
         setError: form.setError,
       });
+      toast.error("Error");
     }
   };
   

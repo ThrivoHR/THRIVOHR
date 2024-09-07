@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import toast from "react-hot-toast";
 
 interface EditEmployeeModalProps {
   isOpen: boolean;
@@ -140,6 +141,7 @@ export function EditEmployeeModal({
         employeeCode,
         data
       );
+      toast.success("Employee edited successfully!");
       console.log(result);
       onClose();
     } catch (error: any) {
@@ -147,6 +149,7 @@ export function EditEmployeeModal({
         error,
         setError: form.setError,
       });
+      toast.error("Error");
     }
   };
 

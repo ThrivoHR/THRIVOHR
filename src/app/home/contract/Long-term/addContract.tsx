@@ -33,6 +33,7 @@ import {
 import { handleErrorApi } from "@/lib/utils";
 import { CreateContractType } from "@/schemaValidation/contract.schema";
 import apiContractRequest from "@/apiRequest/contract";
+import toast from "react-hot-toast";
 
 interface AddContractModalProps {
   isOpen: boolean;
@@ -77,12 +78,14 @@ export function AddContractModal({ isOpen, onClose }: AddContractModalProps) {
     setLoading(true);
     try {
       const result = await apiContractRequest.createContract(data);
+      toast.success("Contract added successfully!");
       console.log(result);
     } catch (error: any) {
       handleErrorApi({
         error,
         setError: form.setError,
       });
+      toast.error("Contract added failed");
     } finally {
       setLoading(false);
       onClose();

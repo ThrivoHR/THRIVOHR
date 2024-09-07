@@ -21,6 +21,7 @@ import {
 import authApiRequest from "@/apiRequest/auth";
 import { handleErrorApi } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import toast from "react-hot-toast";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -52,7 +53,9 @@ export default function LoginForm() {
           sessionToken: result.payload.value.token,
         });
         localStorage.setItem("sessionToken", result.payload.value.token)
+
         router.push("/home");
+        toast.success("Login successful!");
         console.log(result)
       }
 
@@ -61,6 +64,7 @@ export default function LoginForm() {
         error,
         setError: form.setError,
       });
+      toast.error("Login failed");
     } finally {
       setLoading(false);
     }
