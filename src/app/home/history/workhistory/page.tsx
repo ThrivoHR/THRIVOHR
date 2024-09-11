@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import apiTrainingHistoryRequest from "@/apiRequest/trainingHistory";
 import { TrainingHistoryFilterType, TrainingHistorySchemaType } from "@/schemaValidation/trainingHistory.schema";
 import { UpdateContractType } from "@/schemaValidation/contract.schema";
+import HistoryFilter from "./filterEmployee";
 // import { AddEmployeeModal } from "./addEmployee";
 
 export default function EmployeeTable() {
@@ -148,24 +149,24 @@ export default function EmployeeTable() {
 
   return (
     <div>
-      {/* <EmployeeFilter onFilter={handleFilterChange} /> */}
-      {/* <div className="flex items-center py-3">
+      <HistoryFilter onFilter={handleFilterChange} /> 
+      <div className="flex items-center py-3">
         <Button className="ml-auto" onClick={openModal}>
           Add new employee
         </Button>
-      </div> */}
+      </div> 
       {/* <AddEmployeeModal isOpen={isModalOpen} onClose={closeModal} /> */}
 
-      {/* {filter ? (
+      {filter ? (
         <>
           {loading ? (
             <div>Loading...</div>
           ) : (
             <>
-              {employees.length > 0 ? (
+              {trainingHistory.length > 0 ? (
                 <DataTable
-                  columns={columns(handleDelete, handleEdit)}
-                  data={employees}
+                  columns={columns(handleDelete)}
+                  data={trainingHistory}
                 />
               ) : (
                 <div>No employees found for the selected filter.</div>
@@ -213,7 +214,7 @@ export default function EmployeeTable() {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete {selectedEmployee?.fullName}? This
+              Are you sure you want to delete? This
               action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -226,16 +227,17 @@ export default function EmployeeTable() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {employeeData && (
-        <EditEmployeeModal
-          isOpen={isEditModalOpen}
-          onClose={() => {
-            setEditModalOpen(false);
-          }}
-          employeeData={employeeData}
-          employeeCode={employeeData.employeeModel.employeeCode}
-        />
-      )} */}
+      {trainingData && (
+        // <EditEmployeeModal
+        //   isOpen={isEditModalOpen}
+        //   onClose={() => {
+        //     setEditModalOpen(false);
+        //   }}
+        //   employeeData={employeeData}
+        //   employeeCode={employeeData.employeeModel.employeeCode}
+        // />
+        1
+      )}
     </div>
   );
 }

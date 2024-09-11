@@ -14,35 +14,15 @@ import { ArrowUpDown } from "lucide-react";
 
 export const columns = (
   handleDelete: (train: TrainingHistorySchemaType) => void,
-  handleEdit: (train: TrainingHistorySchemaType) => void
+  // handleEdit: (train: TrainingHistorySchemaType) => void
 ): ColumnDef<TrainingHistorySchemaType>[] => [
-  // {
-  //   accessorKey: "employeeCode",
-  //   header: ({ column }) => (
-  //     <Button
-  //       variant="ghost"
-  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //     >
-  //       Employee Code
-  //       <ArrowUpDown className="ml-2 h-4 w-4" />
-  //     </Button>
-  //   ),
-  // },
   {
     accessorKey: "employee",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Employee
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: "Employee",
   },
   {
-    accessorKey: "startDate",
-    header: "Start Date",
+    accessorKey: "startDay",
+    header: "Start Day",
   },
   {
     accessorKey: "workshopName",
@@ -70,7 +50,7 @@ export const columns = (
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => handleEdit(row.original)}>Edit</DropdownMenuItem>
+            {/* <DropdownMenuItem onClick={() => handleEdit(row.original)}>Edit</DropdownMenuItem> */}
             <DropdownMenuItem onClick={() => handleDelete(row.original)}>
               Delete
             </DropdownMenuItem>
