@@ -40,6 +40,7 @@ export default function Contract() {
   const [isModalOpen, setModalOpen] = React.useState(false);
   const [departments, setDepartments] = useState<{ [key: number]: string }>({});
   const [positions, setPositions] = useState<{ [key: number]: string }>({});
+  const [showTable, setShowTable] = useState(true); // Add state to toggle table visibility
 
   const handleFilterChange = (newFilter: ContractFilterType) => {
     setFilter(newFilter);
@@ -152,12 +153,14 @@ export default function Contract() {
     fetchData();
   }, [page, pageSize, filter]);
 
-
   return (
     <div>
       <ContractFilter onFilter={handleFilterChange} />
       <div className="flex justify-end items-center py-3 space-x-2">
         <Button onClick={openModal}>Add new contract</Button>
+        <Button variant="secondary" onClick={() => setShowTable((prev) => !prev)}>
+          {showTable ? "Hide" : "Show"}
+        </Button>
       </div>
       <AddContractModal isOpen={isModalOpen} onClose={closeModal} />
 
@@ -168,37 +171,39 @@ export default function Contract() {
           ) : (
             <>
               {contract.length > 0 ? (
-                <>
-                  <DataTable columns={Columns(handleDelete, handleEdit, handleOpenModal)} data={contract} />
-                  <div className="flex justify-between items-center p-4">
-                    <div>
-                      <select
-                        value={pageSize}
-                        onChange={(e) => handleChangePageSize(Number(e.target.value))}
-                        className="px-4 py-2 border rounded-lg"
-                      >
-                        <option value={5}>5 rows</option>
-                        <option value={10}>10 rows</option>
-                      </select>
+                showTable && (
+                  <>
+                    <DataTable columns={Columns(handleDelete, handleEdit, handleOpenModal)} data={contract} />
+                    <div className="flex justify-between items-center p-4">
+                      <div>
+                        <select
+                          value={pageSize}
+                          onChange={(e) => handleChangePageSize(Number(e.target.value))}
+                          className="px-4 py-2 border rounded-lg"
+                        >
+                          <option value={5}>5 rows</option>
+                          <option value={10}>10 rows</option>
+                        </select>
+                      </div>
+                      <div>
+                        <button
+                          onClick={() => handleChangePage(Math.max(page - 1, 1))}
+                          disabled={page === 1}
+                          className="px-4 py-2 border rounded-lg text-sm"
+                        >
+                          Previous
+                        </button>
+                        <span className="mx-4">Page {page}</span>
+                        <button
+                          onClick={() => handleChangePage(page + 1)}
+                          className="px-4 py-2 border rounded-lg text-sm"
+                        >
+                          Next
+                        </button>
+                      </div>
                     </div>
-                    <div>
-                      <button
-                        onClick={() => handleChangePage(Math.max(page - 1, 1))}
-                        disabled={page === 1}
-                        className="px-4 py-2 border rounded-lg text-sm"
-                      >
-                        Previous
-                      </button>
-                      <span className="mx-4">Page {page}</span>
-                      <button
-                        onClick={() => handleChangePage(page + 1)}
-                        className="px-4 py-2 border rounded-lg text-sm"
-                      >
-                        Next
-                      </button>
-                    </div>
-                  </div>
-                </>
+                  </>
+                )
               ) : (
                 <div>No contracts found for the selected filter.</div>
               )}

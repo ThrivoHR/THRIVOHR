@@ -38,10 +38,11 @@ export default function EmployeeTable() {
   );
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [showTable, setShowTable] = useState(true); // State variable to control table visibility
 
   const handleFilterChange = (newFilter: EmployeeFilterType) => {
     setFilter(newFilter);
-    setPage(1); 
+    setPage(1);
   };
 
   useEffect(() => {
@@ -148,9 +149,12 @@ export default function EmployeeTable() {
   return (
     <div>
       <EmployeeFilter onFilter={handleFilterChange} />
-      <div className="flex items-center py-3">
+      <div className="flex items-center py-3 space-x-2">
         <Button className="ml-auto" onClick={openModal}>
           Add new employee
+        </Button>
+        <Button variant="secondary" onClick={() => setShowTable((prev) => !prev)}>
+          {showTable ? "Hide" : "Show"}
         </Button>
       </div>
       <AddEmployeeModal isOpen={isModalOpen} onClose={closeModal} />
@@ -162,44 +166,49 @@ export default function EmployeeTable() {
           ) : (
             <>
               {employees.length > 0 ? (
-                <DataTable
-                  columns={columns(handleDelete, handleEdit)}
-                  data={employees}
-                />
+                showTable && ( // Conditionally render the table based on showTable state
+                  <>
+                    <DataTable
+                      columns={columns(handleDelete, handleEdit)}
+                      data={employees}
+                    />
+                    <div className="flex justify-between items-center p-4">
+                      <div>
+                        <select
+                          value={pageSize}
+                          onChange={(e) =>
+                            handleChangePageSize(Number(e.target.value))
+                          }
+                          className="px-4 py-2 border rounded-lg"
+                        >
+                          <option value={5}>5 rows</option>
+                          <option value={10}>10 rows</option>
+                        </select>
+                      </div>
+                      <div>
+                        <button
+                          onClick={() => handleChangePage(Math.max(page - 1, 1))}
+                          disabled={page === 1}
+                          className="px-3 py-2 border rounded-lg text-sm"
+                        >
+                          Previous
+                        </button>
+                        <span className="mx-4">Page {page}</span>
+                        <button
+                          onClick={() => handleChangePage(page + 1)}
+                          className="px-4 py-2 border rounded-lg text-sm"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )
               ) : (
                 <div>No employees found for the selected filter.</div>
               )}
             </>
           )}
-
-          <div className="flex justify-between items-center p-4">
-            <div>
-              <select
-                value={pageSize}
-                onChange={(e) => handleChangePageSize(Number(e.target.value))}
-                className="px-4 py-2 border rounded-lg"
-              >
-                <option value={5}>5 rows</option>
-                <option value={10}>10 rows</option>
-              </select>
-            </div>
-            <div>
-              <button
-                onClick={() => handleChangePage(Math.max(page - 1, 1))}
-                disabled={page === 1}
-                className="px-3 py-2 border rounded-lg text-sm"
-              >
-                Previous
-              </button>
-              <span className="mx-4">Page {page}</span>
-              <button
-                onClick={() => handleChangePage(page + 1)}
-                className="px-4 py-2 border rounded-lg text-sm"
-              >
-                Next
-              </button>
-            </div>
-          </div>
         </>
       ) : (
         <div className="p-4 text-center">

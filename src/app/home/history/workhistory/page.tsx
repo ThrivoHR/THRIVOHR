@@ -151,9 +151,9 @@ export default function EmployeeTable() {
     <div>
       <HistoryFilter onFilter={handleFilterChange} /> 
       <div className="flex items-center py-3">
-        <Button className="ml-auto" onClick={openModal}>
+        {/* <Button className="ml-auto" onClick={openModal}>
           Add new employee
-        </Button>
+        </Button> */}
       </div> 
       {/* <AddEmployeeModal isOpen={isModalOpen} onClose={closeModal} /> */}
 
@@ -169,7 +169,7 @@ export default function EmployeeTable() {
                   data={trainingHistory}
                 />
               ) : (
-                <div>No employees found for the selected filter.</div>
+                <div>No training history found.</div>
               )}
             </>
           )}

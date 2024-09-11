@@ -20,19 +20,18 @@ export default function ContractFilter({ onFilter }: ContractFilterProps) {
     StartDate: "",
     EndDate: "",
     Notes: "",
-    Salary: 0,
-    Department: 0,
-    Position: 0,
+    Salary: undefined, // Use undefined instead of 0
+    Department: undefined, // Use undefined instead of 0
+    Position: undefined, // Use undefined instead of 0
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFilters((prev) => ({
       ...prev,
-      [name]: name === "Salary" && value === "" ? undefined : value,
+      [name]: value === "" ? undefined : value, // Handle empty fields correctly
     }));
   };
-  
 
   const handleApplyFilter = () => {
     onFilter(filters);
@@ -44,23 +43,23 @@ export default function ContractFilter({ onFilter }: ContractFilterProps) {
       StartDate: "",
       EndDate: "",
       Notes: "",
-      Salary: 0,
-      Department: 0,
-      Position: 0,
+      Salary: undefined, // Reset to undefined
+      Department: undefined, // Reset to undefined
+      Position: undefined, // Reset to undefined
     });
     onFilter({
       EmployeeCode: "",
       StartDate: "",
       EndDate: "",
       Notes: "",
-      Salary: 0,
-      Department: 0,
-      Position: 0,
+      Salary: undefined,
+      Department: undefined,
+      Position: undefined,
     });
   };
 
   return (
-    <Collapsible open>
+    <Collapsible defaultOpen>
       <CollapsibleTrigger className="w-full">
         <Button variant="outline" className="w-full">
           Filter
@@ -99,19 +98,21 @@ export default function ContractFilter({ onFilter }: ContractFilterProps) {
               placeholder="Salary"
               type="number"
               name="Salary"
-              value={filters.Salary}
+              value={filters.Salary ?? ""} // Handle undefined by using an empty string
               onChange={handleChange}
             />
             <Input
               placeholder="Department"
+              type="number"
               name="Department"
-              value={filters.Department}
+              value={filters.Department ?? ""} // Handle undefined by using an empty string
               onChange={handleChange}
             />
             <Input
               placeholder="Position"
+              type="number"
               name="Position"
-              value={filters.Position}
+              value={filters.Position ?? ""} // Handle undefined by using an empty string
               onChange={handleChange}
             />
           </div>

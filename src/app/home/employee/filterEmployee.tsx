@@ -114,7 +114,7 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
   };
 
   return (
-    <Collapsible open>
+    <Collapsible defaultOpen>
       <CollapsibleTrigger className="w-full">
         <Button variant="outline" className="w-full">
           Filter
