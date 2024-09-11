@@ -43,6 +43,11 @@ export const Columns = (
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
+    cell: ({ row }) => {
+      const salary = row.original.salary;
+      const formattedSalary = new Intl.NumberFormat('en-US').format(salary);
+      return <span>{formattedSalary}</span>;
+    },
   },
   {
     accessorKey: "department",
