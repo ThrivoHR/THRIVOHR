@@ -60,7 +60,7 @@ export default function ContractFilter({ onFilter }: ContractFilterProps) {
   };
 
   return (
-    <Collapsible>
+    <Collapsible open>
       <CollapsibleTrigger className="w-full">
         <Button variant="outline" className="w-full">
           Filter

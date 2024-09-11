@@ -58,7 +58,6 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
     getDept();
   }, []);
 
-  // Type guard to differentiate between input events and select value changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement> | { name: string; value: string }
   ) => {
@@ -115,7 +114,7 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
   };
 
   return (
-    <Collapsible>
+    <Collapsible open>
       <CollapsibleTrigger className="w-full">
         <Button variant="outline" className="w-full">
           Filter
