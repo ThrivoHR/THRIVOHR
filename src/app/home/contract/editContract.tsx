@@ -24,9 +24,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { handleErrorApi } from "@/lib/utils";
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UpdateContractType } from "@/schemaValidation/contract.schema";
 import apiContractRequest from "@/apiRequest/contract";
+import apiDepartmentRequest from "@/apiRequest/department";
+import apiPositionRequest from "@/apiRequest/position";
 import toast from "react-hot-toast";
 
 interface EditContractModalProps {
@@ -38,13 +40,13 @@ interface EditContractModalProps {
 
 const editContractSchema = z.object({
   employeeContractModel: z.object({
-    departmentId:z.number(),
-    positionId:z.number(),
-    startDate:z.string(),
-    endDate:z.string(),
-    notes:z.string(),
-    salary:z.number(),
-    contractId:z.string()
+    departmentId: z.number(),
+    positionId: z.number(),
+    startDate: z.string(),
+    endDate: z.string(),
+    notes: z.string(),
+    salary: z.number(),
+    contractId: z.string()
   }),
 });
 
@@ -54,10 +56,30 @@ export function EditContractModal({
   contractData,
   contractId,
 }: EditContractModalProps) {
+  const [departments, setDepartments] = useState<{ [key: number]: string }>({});
+  const [positions, setPositions] = useState<{ [key: number]: string }>({});
+
   const form = useForm<UpdateContractType>({
     resolver: zodResolver(editContractSchema),
     defaultValues: contractData,
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [departmentData, positionData] = await Promise.all([
+          apiDepartmentRequest.getDepartment(),
+          apiPositionRequest.getPosition(),
+        ]);
+        setDepartments(departmentData.payload.value);
+        setPositions(positionData.payload.value);
+      } catch (error) {
+        console.error("Error fetching departments and positions:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleEdit = async (data: UpdateContractType) => {
     console.log("Submitting form with data:", data);
@@ -66,8 +88,8 @@ export function EditContractModal({
         ...data,
         employeeContractModel: {
           ...data.employeeContractModel,
-          departmentId: data.employeeContractModel.departmentId,
-          positionId: data.employeeContractModel.positionId,
+          departmentId: Number(data.employeeContractModel.departmentId),
+          positionId: Number(data.employeeContractModel.positionId),
         },
       };
       const result = await apiContractRequest.updateContract(contractId, updatedData);
@@ -83,10 +105,9 @@ export function EditContractModal({
     }
   };
   
-  
   const handleClose = () => {
-    form.reset(); // Reset form state
-    onClose();    // Close modal
+    form.reset();
+    onClose();
   };
 
   useEffect(() => {
@@ -94,7 +115,6 @@ export function EditContractModal({
       form.reset(contractData);
     }
   }, [isOpen, contractData, form]);
-  
 
   return (
     <AlertDialog open={isOpen} onOpenChange={handleClose}>
@@ -110,15 +130,27 @@ export function EditContractModal({
             onSubmit={form.handleSubmit(handleEdit)}
             className="grid grid-cols-1 md:grid-cols-3 gap-4"
           >
-            {/* Form fields */}
             <FormItem>
               <FormLabel>Department</FormLabel>
-              <FormControl>
-                <Input
-                  {...form.register("employeeContractModel.departmentId", { valueAsNumber: true })}
-                  className="border rounded-md px-3 py-2 w-full"
-                />
-              </FormControl>
+              <Select
+                onValueChange={(value) =>
+                  form.setValue("employeeContractModel.departmentId", Number(value))
+                }
+                value={form.getValues("employeeContractModel.departmentId")?.toString()}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Department" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Object.entries(departments).map(([id, name]) => (
+                    <SelectItem key={id} value={id}>
+                      {name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage>
                 {form.formState.errors.employeeContractModel?.departmentId?.message}
               </FormMessage>
@@ -126,12 +158,25 @@ export function EditContractModal({
 
             <FormItem>
               <FormLabel>Position</FormLabel>
-              <FormControl>
-                <Input
-                  {...form.register("employeeContractModel.positionId", { valueAsNumber: true })}
-                  className="border rounded-md px-3 py-2 w-full"
-                />
-              </FormControl>
+              <Select
+                onValueChange={(value) =>
+                  form.setValue("employeeContractModel.positionId", Number(value))
+                }
+                value={form.getValues("employeeContractModel.positionId")?.toString()}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Position" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Object.entries(positions).map(([id, name]) => (
+                    <SelectItem key={id} value={id}>
+                      {name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage>
                 {form.formState.errors.employeeContractModel?.positionId?.message}
               </FormMessage>
@@ -146,7 +191,7 @@ export function EditContractModal({
                 />
               </FormControl>
               <FormMessage>
-                {/* {form.formState.errors.employeeModel.lastName?.message} */}
+                {form.formState.errors.employeeContractModel?.notes?.message}
               </FormMessage>
             </FormItem>
 

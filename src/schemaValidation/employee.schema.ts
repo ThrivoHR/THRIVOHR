@@ -136,7 +136,6 @@ export type CreateEmployeeResType = z.TypeOf<typeof CreateEmployeeRes>;
 export type CreateEmployeeType = z.TypeOf<typeof CreateEmployee>;
 export type UpdateEmployeeResType = z.TypeOf<typeof UpdateEmployeeRes>;
 export type UpdateEmployeeType = z.TypeOf<typeof UpdateEmployee>;
-
 export type DeleteEmployeeResType = z.TypeOf<typeof DeleteEmployeeRes>;
 export type DeleteEmployeeType = z.TypeOf<typeof DeleteEmployee>;
 

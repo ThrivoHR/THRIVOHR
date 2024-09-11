@@ -45,7 +45,7 @@ export const CreateContract = z.object({
   startDate: z.string(),
   endDate: z.string(),
   notes: z.string(),
-  salary: z.string(),
+  salary: z.number(),
   employeeCode: z.string(),
 });
 

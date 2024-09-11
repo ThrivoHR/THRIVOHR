@@ -1,140 +1,262 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import apiContractRequest from "@/apiRequest/contract";
+import apiDepartmentRequest from "@/apiRequest/department";
+import apiPositionRequest from "@/apiRequest/position";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+  ContractFilterType,
+  ContractSchemaType,
+  UpdateContractType,
+} from "@/schemaValidation/contract.schema";
+import { DataTable } from "./data-table";
+import { Columns } from "./columns";
+import ContractFilter from "./filterContract";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { EditContractModal } from "./editContract";
+import { AddContractModal } from "./addContract";
+import { Button } from "@/components/ui/button";
 
 export default function Contract() {
+  const [loading, setLoading] = useState(true);
+  const [contract, setContract] = useState<ContractSchemaType[]>([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [filter, setFilter] = useState<ContractFilterType | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedContract, setSelectedContract] = useState<ContractSchemaType | null>(null);
+  const [contractData, setContractData] = useState<UpdateContractType | null>(null);
+  const [isEndModalOpen, setIsEndModalOpen] = useState(false);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = React.useState(false);
+  const [departments, setDepartments] = useState<{ [key: number]: string }>({});
+  const [positions, setPositions] = useState<{ [key: number]: string }>({});
+
+  const handleFilterChange = (newFilter: ContractFilterType) => {
+    setFilter(newFilter);
+    setPage(1);
+  };
+
+  const handleDelete = (contract: ContractSchemaType) => {
+    setSelectedContract(contract);
+    setDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedContract) {
+      try {
+        const contractCodeString = selectedContract.id.toString();
+        await apiContractRequest.deleteContract(contractCodeString, contractCodeString);
+        setContract((prev) => prev.filter((c) => c.id !== contractCodeString));
+        console.log("Deleted contract:", contractCodeString);
+      } catch (error) {
+        console.error("Error deleting contract:", error);
+      } finally {
+        setDialogOpen(false);
+        setSelectedContract(null);
+      }
+    }
+  };
+
+  const handleEdit = (contract: ContractSchemaType) => {
+    setContractData({
+      employeeContractModel: {
+        contractId: contract.id,
+        startDate: contract.startDate,
+        endDate: contract.endDate,
+        notes: contract.notes,
+        salary: contract.salary,
+        departmentId: getDepartmentId(contract.department),
+        positionId: getPositionId(contract.position),
+      },
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangePageSize = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setPage(1);
+  };
+
+  const handleOpenModal = (contract: ContractSchemaType) => {
+    setSelectedContract(contract);
+    setIsEndModalOpen(true);
+  };
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleEndContract = async () => {
+    if (selectedContract) {
+      try {
+        await apiContractRequest.endContract(selectedContract.id, selectedContract.id);
+        console.log("Contract ended successfully");
+        setIsEndModalOpen(false);
+        setSelectedContract(null);
+      } catch (error) {
+        console.error("Error ending contract:", error);
+      }
+    }
+  };
+
+  const getDepartmentId = (departmentName: string | undefined): number => {
+    const entry = Object.entries(departments).find(([, name]) => name === departmentName);
+    return entry ? parseInt(entry[0]) : 0;
+  };
+
+  const getPositionId = (positionName: string | undefined): number => {
+    const entry = Object.entries(positions).find(([, name]) => name === positionName);
+    return entry ? parseInt(entry[0]) : 0;
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (filter) {
+        setLoading(true);
+        try {
+          const [contractData, departmentData, positionData] = await Promise.all([
+            apiContractRequest.getListContract(page, pageSize, filter),
+            apiDepartmentRequest.getDepartment(),
+            apiPositionRequest.getPosition(),
+          ]);
+          setContract(contractData.payload.value.data);
+          setDepartments(departmentData.payload.value);
+          setPositions(positionData.payload.value);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          setContract([]);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+  }, [page, pageSize, filter]);
+
+
   return (
-    <div className="grid grid-cols-1 gap-8">
-      <div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="first-name">First Name</Label>
-                <Input id="first-name" placeholder="John" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="last-name">Last Name</Label>
-                <Input id="last-name" placeholder="Doe" />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="john@example.com" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" type="tel" placeholder="(123) 456-7890" />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="date-of-birth">Date of Birth</Label>
-                <Input id="date-of-birth" type="date" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="gender">Gender</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
-              <Textarea
-                id="address"
-                rows={3}
-                placeholder="123 Main St, Anytown USA"
-              />
-            </div>
-          </CardContent>
-        </Card>
+    <div>
+      <ContractFilter onFilter={handleFilterChange} />
+      <div className="flex justify-end items-center py-3 space-x-2">
+        <Button onClick={openModal}>Add new contract</Button>
       </div>
-      <div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Account Settings</CardTitle>
-          </CardHeader>
-          <CardContent className="space-x-1 grid grid-cols-12">
-            <div className="space-y-2 col-span-3">
-              <Label htmlFor="language">Language</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select language" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="es">Spanish</SelectItem>
-                  <SelectItem value="fr">French</SelectItem>
-                  <SelectItem value="de">German</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2 col-span-3">
-              <Label htmlFor="timezone">Timezone</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select timezone" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="utc-8">UTC-8 (Pacific Time)</SelectItem>
-                  <SelectItem value="utc-5">UTC-5 (Eastern Time)</SelectItem>
-                  <SelectItem value="utc-6">UTC-6 (Central Time)</SelectItem>
-                  <SelectItem value="utc-7">UTC-7 (Mountain Time)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2 col-span-3">
-              <Label htmlFor="currency">Currency</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select currency" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="usd">USD</SelectItem>
-                  <SelectItem value="eur">EUR</SelectItem>
-                  <SelectItem value="gbp">GBP</SelectItem>
-                  <SelectItem value="cad">CAD</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2 col-span-3">
-              <Label htmlFor="notification-settings">
-                Notification Settings
-              </Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select notification settings" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Notifications</SelectItem>
-                  <SelectItem value="important">Important Only</SelectItem>
-                  <SelectItem value="none">No Notifications</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <AddContractModal isOpen={isModalOpen} onClose={closeModal} />
+
+      {filter ? (
+        <>
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            <>
+              {contract.length > 0 ? (
+                <>
+                  <DataTable columns={Columns(handleDelete, handleEdit, handleOpenModal)} data={contract} />
+                  <div className="flex justify-between items-center p-4">
+                    <div>
+                      <select
+                        value={pageSize}
+                        onChange={(e) => handleChangePageSize(Number(e.target.value))}
+                        className="px-4 py-2 border rounded-lg"
+                      >
+                        <option value={5}>5 rows</option>
+                        <option value={10}>10 rows</option>
+                      </select>
+                    </div>
+                    <div>
+                      <button
+                        onClick={() => handleChangePage(Math.max(page - 1, 1))}
+                        disabled={page === 1}
+                        className="px-4 py-2 border rounded-lg text-sm"
+                      >
+                        Previous
+                      </button>
+                      <span className="mx-4">Page {page}</span>
+                      <button
+                        onClick={() => handleChangePage(page + 1)}
+                        className="px-4 py-2 border rounded-lg text-sm"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div>No contracts found for the selected filter.</div>
+              )}
+            </>
+          )}
+        </>
+      ) : (
+        <div className="p-4 text-center">
+          <p>Try to search something using the filter.</p>
+        </div>
+      )}
+      
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the contract? This action cannot
+              be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDialogOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      {contractData && (
+        <EditContractModal
+          isOpen={isEditModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          contractData={contractData}
+          contractId={contractData.employeeContractModel.contractId}
+        />
+      )}
+
+      {selectedContract && (
+        <AlertDialog open={isEndModalOpen} onOpenChange={setIsEndModalOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>End Contract</AlertDialogTitle>
+            </AlertDialogHeader>
+            <p>Are you sure you want to end this contract?</p>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setIsEndModalOpen(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={handleEndContract}>
+                End Contract
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 }

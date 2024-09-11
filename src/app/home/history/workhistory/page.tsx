@@ -1,223 +1,241 @@
 "use client";
 
-import { useState } from "react";
-import DataTable from "@/components/Table";
+import { useEffect, useState } from "react";
+import apiEmployeeRequest from "@/apiRequest/employee";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+  EmployeeFilterType,
+  EmployeeSchemaType,
+  UpdateEmployeeType,
+} from "@/schemaValidation/employee.schema";
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import Filter from "@/components/Filter";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+// import EmployeeFilter from "./filterEmployee";
+// import { EditEmployeeModal } from "./editEmployee";
+import { Button } from "@/components/ui/button";
+import apiTrainingHistoryRequest from "@/apiRequest/trainingHistory";
+import { TrainingHistoryFilterType, TrainingHistorySchemaType } from "@/schemaValidation/trainingHistory.schema";
+import { UpdateContractType } from "@/schemaValidation/contract.schema";
+// import { AddEmployeeModal } from "./addEmployee";
 
-type Employee = {
-  id: string;
-  fullName: string;
-  workshopJoined: string; // Replace unionCode with workshopJoined
-  specializedClassJoined: string; // Replace joinDate with specializedClassJoined
-};
-
-const columns = [
-  "ID",
-  "Full Name",
-  "Workshop Joined",
-  "Specialized Class Joined",
-];
-
-const employees: Employee[] = [
-  {
-    id: "EMP001",
-    fullName: "John Doe",
-    workshopJoined: "Workshop A",
-    specializedClassJoined: "Class X",
-  },
-  {
-    id: "EMP002",
-    fullName: "Jane Doe",
-    workshopJoined: "Workshop B",
-    specializedClassJoined: "Class Y",
-  },
-  {
-    id: "EMP003",
-    fullName: "Bob Smith",
-    workshopJoined: "Workshop C",
-    specializedClassJoined: "Class Z",
-  },
-];
-
-export default function Employee() {
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+export default function EmployeeTable() {
+  const [loading, setLoading] = useState(false);
+  const [trainingHistory, setTrainingHistory] = useState<TrainingHistorySchemaType[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedHistory, setSelectedHistory] =
+    useState<TrainingHistorySchemaType | null>(null);
+  const [filter, setFilter] = useState<TrainingHistoryFilterType | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [trainingData, setTrainingData] = useState<UpdateContractType | null>(
     null
   );
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dialogType, setDialogType] = useState<"edit" | "delete" | null>(null);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
 
-  const handleEditClick = (row: Record<string, React.ReactNode>) => {
-    const employee = employees.find((emp) => emp.id === row["ID"])!;
-    setSelectedEmployee(employee);
-    setDialogType("edit");
-    setIsDialogOpen(true);
+  const handleFilterChange = (newFilter: TrainingHistoryFilterType) => {
+    setFilter(newFilter);
+    setPage(1); 
   };
 
-  const handleDeleteClick = (row: Record<string, React.ReactNode>) => {
-    const employee = employees.find((emp) => emp.id === row["ID"])!;
-    setSelectedEmployee(employee);
-    setDialogType("delete");
-    setIsDialogOpen(true);
-  };
+  useEffect(() => {
+    if (filter) {
+      const fetchTrainingHistory = async () => {
+        setLoading(true);
+        try {
+          const data = await apiTrainingHistoryRequest.getListTrainingHistory(
+            page,
+            pageSize,
+            filter
+          );
+          setTrainingHistory(data.payload.value.data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          setTrainingHistory([]);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-  const closeDialog = () => {
-    setIsDialogOpen(false);
-    setSelectedEmployee(null);
-    setDialogType(null);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (selectedEmployee) {
-      const { name, value } = e.target;
-      setSelectedEmployee({ ...selectedEmployee, [name]: value });
+      fetchTrainingHistory();
     }
+  }, [page, pageSize, filter]);
+
+  const handleDelete = (training: TrainingHistorySchemaType) => {
+    setSelectedHistory({
+      ...training,
+      id: training.id,
+    });
+    setDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedHistory) {
+      try {
+        await apiTrainingHistoryRequest.deleteTrainingHistory(
+          selectedHistory.id
+        );
+        setTrainingHistory((prev) =>
+          prev.filter((emp) => emp.id !== selectedHistory.id)
+        );
+        console.log("Deleted employee:", selectedHistory.id);
+      } catch (error) {
+        console.error("Error deleting employee:", error);
+      } finally {
+        setDialogOpen(false);
+        setSelectedHistory(null);
+      }
+    }
+  };
+
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangePageSize = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setPage(1);
+  };
+
+  // const transformRowToUpdateEmployee = (
+  //   rowData: EmployeeSchemaType
+  // ): UpdateEmployeeType => {
+  //   return {
+  //     employeeModel: {
+  //       employeeCode: rowData.employeeCode.toString(),
+  //       firstName: rowData.firstName,
+  //       lastName: rowData.lastName,
+  //       fullName: rowData.fullName,
+  //       identityNumber: rowData.identityNumber,
+  //       dateOfBirth: rowData.dateOfBirth,
+  //       phoneNumber: rowData.phoneNumber,
+  //       taxCode: rowData.taxCode ?? "",
+  //       bankAccount: rowData.bankAccount ?? "",
+  //       email: rowData.email,
+  //       address: {
+  //         addressLine: rowData.address.addressLine,
+  //         ward: rowData.address.ward,
+  //         district: rowData.address.district,
+  //         city: rowData.address.city,
+  //         country: rowData.address.country,
+  //       },
+  //     },
+  //   };
+  // };
+
+  // const handleEdit = (rowData: EmployeeSchemaType) => {
+  //   const transformedData = transformRowToUpdateEmployee(rowData);
+  //   setEmployeeData(transformedData);
+  //   setEditModalOpen(true);
+  // };
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
   };
 
   return (
     <div>
-      <div>
-        <Filter />
-      </div>
-      <div className="border rounded-lg w-full h-[80vh] flex flex-col">
-        <DataTable
-          columns={columns}
-          data={employees.map((employee) => ({
-            ID: employee.id,
-            "Full Name": employee.fullName,
-            "Workshop Joined": employee.workshopJoined,
-            "Specialized Class Joined": employee.specializedClassJoined,
-          }))}
-          onEditClick={handleEditClick}
-          onDeleteClick={handleDeleteClick}
-        />
+      {/* <EmployeeFilter onFilter={handleFilterChange} /> */}
+      {/* <div className="flex items-center py-3">
+        <Button className="ml-auto" onClick={openModal}>
+          Add new employee
+        </Button>
+      </div> */}
+      {/* <AddEmployeeModal isOpen={isModalOpen} onClose={closeModal} /> */}
 
-        <div className="pagination">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+      {/* {filter ? (
+        <>
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            <>
+              {employees.length > 0 ? (
+                <DataTable
+                  columns={columns(handleDelete, handleEdit)}
+                  data={employees}
+                />
+              ) : (
+                <div>No employees found for the selected filter.</div>
+              )}
+            </>
+          )}
+
+          <div className="flex justify-between items-center p-4">
+            <div>
+              <select
+                value={pageSize}
+                onChange={(e) => handleChangePageSize(Number(e.target.value))}
+                className="px-4 py-2 border rounded-lg"
+              >
+                <option value={5}>5 rows</option>
+                <option value={10}>10 rows</option>
+              </select>
+            </div>
+            <div>
+              <button
+                onClick={() => handleChangePage(Math.max(page - 1, 1))}
+                disabled={page === 1}
+                className="px-3 py-2 border rounded-lg text-sm"
+              >
+                Previous
+              </button>
+              <span className="mx-4">Page {page}</span>
+              <button
+                onClick={() => handleChangePage(page + 1)}
+                className="px-4 py-2 border rounded-lg text-sm"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="p-4 text-center">
+          <p>Try to search something using the filter.</p>
         </div>
-        {selectedEmployee && (
-          <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
-            <DialogContent className="w-full max-w-4xl h-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {dialogType === "edit" && "Edit Employee"}
-                  {dialogType === "delete" && "Delete Employee"}
-                </DialogTitle>
-                <DialogClose />
-              </DialogHeader>
-              <div className="p-4 bg-white">
-                {dialogType === "edit" && (
-                  <form className="grid grid-cols-1 gap-4">
-                    <div className="flex flex-col">
-                      <label>ID:</label>
-                      <Input
-                        type="text"
-                        name="id"
-                        value={selectedEmployee.id}
-                        readOnly
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Full Name:</label>
-                      <Input
-                        type="text"
-                        name="fullName"
-                        value={selectedEmployee.fullName}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Workshop Joined:</label>
-                      <Input
-                        type="text"
-                        name="workshopJoined"
-                        value={selectedEmployee.workshopJoined}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Specialized Class Joined:</label>
-                      <Input
-                        type="text"
-                        name="specializedClassJoined"
-                        value={selectedEmployee.specializedClassJoined}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                  </form>
-                )}
+      )}
 
-                {dialogType === "delete" && (
-                  <p>
-                    Are you sure you want to delete employee{" "}
-                    {selectedEmployee.fullName} with ID {selectedEmployee.id}?
-                  </p>
-                )}
-              </div>
-              <DialogFooter>
-                <button
-                  className="mt-4 px-4 py-2 bg-blue-300 text-white rounded"
-                  onClick={closeDialog}
-                >
-                  Close
-                </button>
-                {dialogType === "edit" && (
-                  <button className="mt-4 px-4 py-2 bg-green-500 text-white rounded">
-                    Save Changes
-                  </button>
-                )}
-                {dialogType === "delete" && (
-                  <button className="mt-4 px-4 py-2 bg-red-500 text-white rounded">
-                    Confirm Delete
-                  </button>
-                )}
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {selectedEmployee?.fullName}? This
+              action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {employeeData && (
+        <EditEmployeeModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setEditModalOpen(false);
+          }}
+          employeeData={employeeData}
+          employeeCode={employeeData.employeeModel.employeeCode}
+        />
+      )} */}
     </div>
   );
 }

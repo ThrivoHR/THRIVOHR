@@ -21,9 +21,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import React from "react";
-import { AddEmployeeModal } from "./addEmployee";
+import { AddContractModal } from "./addContract";
+import * as XLSX from "xlsx";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -56,23 +56,23 @@ export function DataTable<TData, TValue>({
     },
   });
 
-
   return (
     <>
+
       <div className="rounded-md border">
         <Table className="text-center">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} >
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} className="text-center">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   );
                 })}
@@ -97,18 +97,14 @@ export function DataTable<TData, TValue>({
                 </TableRow>
               ))
             ) : (
-              <TableRow >
-                <TableCell
-                  colSpan={columns.length}
-                  
-                >
-                  No results.
-                </TableCell>
+              <TableRow>
+                <TableCell colSpan={columns.length}>No results.</TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
+
     </>
   );
 }

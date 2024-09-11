@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EmployeeFilterType } from "@/schemaValidation/employee.schema";
@@ -9,6 +9,15 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import apiPositionRequest from "@/apiRequest/position";
+import apiDepartmentRequest from "@/apiRequest/department";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 interface EmployeeFilterProps {
   onFilter: (filter: EmployeeFilterType) => void;
@@ -31,12 +40,41 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
     DateOfBirth: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const [positions, setPositions] = useState<{ [key: number]: string }>({});
+  const [departments, setDepartments] = useState<{ [key: number]: string }>({});
+
+  const getPos = async () => {
+    const posData = await apiPositionRequest.getPosition();
+    setPositions(posData.payload.value);
+  };
+
+  const getDept = async () => {
+    const deptData = await apiDepartmentRequest.getDepartment();
+    setDepartments(deptData.payload.value);
+  };
+
+  useEffect(() => {
+    getPos();
+    getDept();
+  }, []);
+
+  // Type guard to differentiate between input events and select value changes
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement> | { name: string; value: string }
+  ) => {
+    if ("target" in e) {
+      const { name, value } = e.target;
+      setFilters((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    } else {
+      const { name, value } = e;
+      setFilters((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleApplyFilter = () => {
@@ -116,12 +154,57 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
               value={filters.PhoneNumber}
               onChange={handleChange}
             />
-            <Input
-              placeholder="Bank Account"
-              name="BankAccount"
-              value={filters.BankAccount}
-              onChange={handleChange}
-            />
+
+            <Select
+              onValueChange={(value) =>
+                handleChange({ name: "PositionId", value })
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={
+                    filters.PositionId === 0
+                      ? "Select Position"
+                      : positions[
+                          filters.PositionId as keyof typeof positions
+                        ] ?? "Unknown Position"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(positions).map(([key, value]) => (
+                  <SelectItem key={key} value={key}>
+                    {value}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              onValueChange={(value) =>
+                handleChange({ name: "DepartmentId", value })
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={
+                    filters.DepartmentId === 0
+                      ? "Select Department"
+                      : departments[
+                          filters.DepartmentId as keyof typeof departments
+                        ] ?? "Unknown Department"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(departments).map(([key, value]) => (
+                  <SelectItem key={key} value={key}>
+                    {value}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <Input
               placeholder="Address"
               name="Address"
@@ -134,19 +217,6 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
               value={filters.FullName}
               onChange={handleChange}
             />
-            <Input
-              placeholder="Identity Number"
-              name="IdentityNumber"
-              value={filters.IdentityNumber}
-              onChange={handleChange}
-            />
-            <Input
-              placeholder="Tax Code"
-              name="TaxCode"
-              value={filters.TaxCode}
-              onChange={handleChange}
-            />
-
             <Input
               placeholder="Date of Birth"
               type="date"

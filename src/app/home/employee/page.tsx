@@ -21,9 +21,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import EmployeeFilter from "./filterEmployee";
 import { EditEmployeeModal } from "./editEmployee";
+import { Button } from "@/components/ui/button";
+import { AddEmployeeModal } from "./addEmployee";
 
 export default function EmployeeTable() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState<EmployeeSchemaType[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] =
@@ -35,30 +37,34 @@ export default function EmployeeTable() {
     null
   );
   const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const handleFilterChange = (newFilter: EmployeeFilterType) => {
     setFilter(newFilter);
-    setPage(1); // Reset to page 1 when filters change
+    setPage(1); 
   };
 
   useEffect(() => {
-    const fetchEmployees = async () => {
-      setLoading(true);
-      try {
-        const data = await apiEmployeeRequest.getListEmployee(
-          page,
-          pageSize,
-          filter
-        );
-        setEmployees(data.payload.value.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (filter) {
+      const fetchEmployees = async () => {
+        setLoading(true);
+        try {
+          const data = await apiEmployeeRequest.getListEmployee(
+            page,
+            pageSize,
+            filter
+          );
+          setEmployees(data.payload.value.data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          setEmployees([]);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    fetchEmployees();
+      fetchEmployees();
+    }
   }, [page, pageSize, filter]);
 
   const handleDelete = (employee: EmployeeSchemaType) => {
@@ -73,7 +79,10 @@ export default function EmployeeTable() {
     if (selectedEmployee) {
       try {
         const employeeCodeString = selectedEmployee.employeeCode.toString();
-        await apiEmployeeRequest.deleteEmployee(employeeCodeString,employeeCodeString);
+        await apiEmployeeRequest.deleteEmployee(
+          employeeCodeString,
+          employeeCodeString
+        );
         setEmployees((prev) =>
           prev.filter((emp) => emp.employeeCode !== employeeCodeString)
         );
@@ -128,42 +137,76 @@ export default function EmployeeTable() {
     setEditModalOpen(true);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
 
   return (
     <div>
       <EmployeeFilter onFilter={handleFilterChange} />
-      <DataTable columns={columns(handleDelete, handleEdit)} data={employees} />
-      <div className="flex justify-between items-center p-4">
-        <div>
-          <select
-            value={pageSize}
-            onChange={(e) => handleChangePageSize(Number(e.target.value))}
-            className="px-4 py-2 border rounded-lg"
-          >
-            <option value={5}>5 rows</option>
-            <option value={10}>10 rows</option>
-          </select>
-        </div>
-        <div>
-          <button
-            onClick={() => handleChangePage(Math.max(page - 1, 1))}
-            disabled={page === 1}
-            className="px-4 py-2 border rounded-lg"
-          >
-            Previous
-          </button>
-          <span className="mx-4">Page {page}</span>
-          <button
-            onClick={() => handleChangePage(page + 1)}
-            className="px-4 py-2 border rounded-lg"
-          >
-            Next
-          </button>
-        </div>
+      <div className="flex items-center py-3">
+        <Button className="ml-auto" onClick={openModal}>
+          Add new employee
+        </Button>
       </div>
+      <AddEmployeeModal isOpen={isModalOpen} onClose={closeModal} />
+
+      {filter ? (
+        <>
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            <>
+              {employees.length > 0 ? (
+                <DataTable
+                  columns={columns(handleDelete, handleEdit)}
+                  data={employees}
+                />
+              ) : (
+                <div>No employees found for the selected filter.</div>
+              )}
+            </>
+          )}
+
+          <div className="flex justify-between items-center p-4">
+            <div>
+              <select
+                value={pageSize}
+                onChange={(e) => handleChangePageSize(Number(e.target.value))}
+                className="px-4 py-2 border rounded-lg"
+              >
+                <option value={5}>5 rows</option>
+                <option value={10}>10 rows</option>
+              </select>
+            </div>
+            <div>
+              <button
+                onClick={() => handleChangePage(Math.max(page - 1, 1))}
+                disabled={page === 1}
+                className="px-3 py-2 border rounded-lg text-sm"
+              >
+                Previous
+              </button>
+              <span className="mx-4">Page {page}</span>
+              <button
+                onClick={() => handleChangePage(page + 1)}
+                className="px-4 py-2 border rounded-lg text-sm"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="p-4 text-center">
+          <p>Try to search something using the filter.</p>
+        </div>
+      )}
+
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -181,6 +224,7 @@ export default function EmployeeTable() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
       {employeeData && (
         <EditEmployeeModal
           isOpen={isEditModalOpen}

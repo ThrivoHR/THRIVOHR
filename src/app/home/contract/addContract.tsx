@@ -33,6 +33,8 @@ import {
 import { handleErrorApi } from "@/lib/utils";
 import { CreateContractType } from "@/schemaValidation/contract.schema";
 import apiContractRequest from "@/apiRequest/contract";
+import apiPositionRequest from "@/apiRequest/position";
+import apiDepartmentRequest from "@/apiRequest/department";
 import toast from "react-hot-toast";
 
 interface AddContractModalProps {
@@ -52,18 +54,33 @@ const contractSchema = z.object({
 
 export function AddContractModal({ isOpen, onClose }: AddContractModalProps) {
   const [loading, setLoading] = useState(false);
-  const [employees, setEmployees] = useState<{ employeeCode: string }[]>([]);
+  const [employees, setEmployees] = useState<{ employeeCode: string; fullName: string }[]>([]);
+  const [positions, setPositions] = useState<{ [key: number]: string }>({});
+  const [departments, setDepartments] = useState<{ [key: number]: string }>({});
 
   const form = useForm<CreateContractType>({
     resolver: zodResolver(contractSchema),
+    defaultValues: {
+      departmentId: 0,
+      positionId: 0,
+      startDate: "",
+      endDate: "",
+      notes: "",
+      salary: 0,
+      employeeCode: "",
+    },
   });
 
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const data = await apiEmployeeRequest.getListEmployee(1, 500, {});
-        setEmployees(data.payload.value.data);
+        const [ positionsData, departmentsData] = await Promise.all([
+          apiPositionRequest.getPosition(),
+          apiDepartmentRequest.getDepartment(),
+        ]);
+        setPositions(positionsData.payload.value);
+        setDepartments(departmentsData.payload.value);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -71,7 +88,7 @@ export function AddContractModal({ isOpen, onClose }: AddContractModalProps) {
       }
     };
 
-    fetchEmployees();
+    fetchData();
   }, []);
 
   const handleAdd = async (data: CreateContractType) => {
@@ -80,16 +97,20 @@ export function AddContractModal({ isOpen, onClose }: AddContractModalProps) {
       const result = await apiContractRequest.createContract(data);
       toast.success("Contract added successfully!");
       console.log(result);
+      onClose();
     } catch (error: any) {
       handleErrorApi({
         error,
         setError: form.setError,
       });
-      toast.error("Contract added failed");
+      toast.error("Contract addition failed");
     } finally {
       setLoading(false);
-      onClose();
     }
+  };
+
+  const handleChange = (name: string, value: string | number) => {
+    form.setValue(name as keyof CreateContractType, value);
   };
 
   return (
@@ -108,34 +129,71 @@ export function AddContractModal({ isOpen, onClose }: AddContractModalProps) {
           >
             <FormItem>
               <FormLabel>Department</FormLabel>
-              <FormControl>
-                <Input
-                  {...form.register("departmentId", { valueAsNumber: true })}
-                  className="border rounded-md px-3 py-2 w-full"
-                />
-              </FormControl>
-              <FormMessage>
-                {form.formState.errors.departmentId?.message}
-              </FormMessage>
+              <Select
+                onValueChange={(value) =>
+                  handleChange("departmentId", parseInt(value))
+                }
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={
+                        form.getValues("departmentId") === 0
+                          ? "Select Department"
+                          : departments[
+                              form.getValues("departmentId") as keyof typeof departments
+                            ] ?? "Unknown Department"
+                      }
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Object.entries(departments).map(([key, value]) => (
+                    <SelectItem key={key} value={key}>
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage>{form.formState.errors.departmentId?.message}</FormMessage>
             </FormItem>
 
             <FormItem>
               <FormLabel>Position</FormLabel>
-              <FormControl>
-                <Input
-                  {...form.register("positionId", { valueAsNumber: true })}
-                  className="border rounded-md px-3 py-2 w-full"
-                />
-              </FormControl>
-              <FormMessage>
-                {form.formState.errors.positionId?.message}
-              </FormMessage>
+              <Select
+                onValueChange={(value) =>
+                  handleChange("positionId", parseInt(value))
+                }
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={
+                        form.getValues("positionId") === 0
+                          ? "Select Position"
+                          : positions[
+                              form.getValues("positionId") as keyof typeof positions
+                            ] ?? "Unknown Position"
+                      }
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Object.entries(positions).map(([key, value]) => (
+                    <SelectItem key={key} value={key}>
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage>{form.formState.errors.positionId?.message}</FormMessage>
             </FormItem>
 
             <FormItem>
               <FormLabel>Salary</FormLabel>
               <FormControl>
                 <Input
+                  type="number"
                   {...form.register("salary", { valueAsNumber: true })}
                   className="border rounded-md px-3 py-2 w-full"
                 />
@@ -152,9 +210,7 @@ export function AddContractModal({ isOpen, onClose }: AddContractModalProps) {
                   className="border rounded-md px-3 py-2 w-full"
                 />
               </FormControl>
-              <FormMessage>
-                {form.formState.errors.startDate?.message}
-              </FormMessage>
+              <FormMessage>{form.formState.errors.startDate?.message}</FormMessage>
             </FormItem>
 
             <FormItem>
@@ -166,9 +222,7 @@ export function AddContractModal({ isOpen, onClose }: AddContractModalProps) {
                   className="border rounded-md px-3 py-2 w-full"
                 />
               </FormControl>
-              <FormMessage>
-                {form.formState.errors.endDate?.message}
-              </FormMessage>
+              <FormMessage>{form.formState.errors.endDate?.message}</FormMessage>
             </FormItem>
 
             <FormItem>
@@ -181,35 +235,16 @@ export function AddContractModal({ isOpen, onClose }: AddContractModalProps) {
               </FormControl>
               <FormMessage>{form.formState.errors.notes?.message}</FormMessage>
             </FormItem>
-            
-            {/* employeeCode */}
+
             <FormItem>
-              <FormLabel>Employee Code</FormLabel>
+              <FormLabel>Employee</FormLabel>
               <FormControl>
-                <Select
-                  onValueChange={(value) =>
-                    form.setValue("employeeCode", value)
-                  }
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Employee Code" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {employees.map((employee) => (
-                      <SelectItem
-                        key={employee.employeeCode}
-                        value={employee.employeeCode}
-                      >
-                        {" "}
-                        {employee.employeeCode}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Input
+                  {...form.register("employeeCode")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
               </FormControl>
-              <FormMessage>
-                {form.formState.errors.employeeCode?.message}
-              </FormMessage>
+              <FormMessage>{form.formState.errors.employeeCode?.message}</FormMessage>
             </FormItem>
 
             <AlertDialogFooter className="col-span-3">
