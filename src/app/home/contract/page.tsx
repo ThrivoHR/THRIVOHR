@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function Contract() {
-  const [loading, setLoading] = useState(false); // Start with false loading
+  const [loading, setLoading] = useState(false);
   const [contract, setContract] = useState<ContractSchemaType[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -46,7 +46,7 @@ export default function Contract() {
   const handleFilterChange = (newFilter: ContractFilterType) => {
     setFilter(newFilter);
     setPage(1);
-    fetchData(newFilter); // Fetch data based on the filter change
+    fetchData(newFilter); 
   };
 
   const handleDelete = (contract: ContractSchemaType) => {
@@ -77,7 +77,7 @@ export default function Contract() {
         startDate: contract.startDate,
         endDate: contract.endDate,
         notes: contract.notes,
-        salary: contract.salary,
+        salary: Number(contract.salary),
         departmentId: getDepartmentId(contract.department),
         positionId: getPositionId(contract.position),
       },
@@ -139,6 +139,7 @@ export default function Contract() {
         apiPositionRequest.getPosition(),
       ]);
       setContract(contractData.payload.value.data);
+      console.log("Fetched contracts:", contractData.payload.value.data);
       setDepartments(departmentData.payload.value);
       setPositions(positionData.payload.value);
     } catch (error) {

@@ -33,21 +33,12 @@ export const Columns = (
     ),
   },
   {
+    accessorKey: "employeeName",
+    header: "Employee Name",
+  },
+  {
     accessorKey: "salary",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Salary
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const salary = row.original.salary;
-      const formattedSalary = new Intl.NumberFormat('en-US').format(salary);
-      return <span>{formattedSalary}</span>;
-    },
+    header: "Salary",
   },
   {
     accessorKey: "department",

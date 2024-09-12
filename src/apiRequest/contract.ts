@@ -19,12 +19,13 @@ const apiContractRequest = {
       `/api/v1/employeecontract?PageNumber=${PageNumber}&PageSize=${PageSize}${
         filter?.EmployeeCode ? `&EmployeeCode=${filter.EmployeeCode}` : ""
       }${filter?.StartDate ? `&StartDate=${filter.StartDate}` : ""}${
-        filter?.EndDate ? `&EndDate=${filter.EndDate}` : ""
-      }${filter?.Salary ? `&Salary=${filter.Salary}` : ""}${
-        filter?.Department ? `&Department=${filter.Department}` : ""
-      }${filter?.Position ? `&Position=${filter.Position}` : ""}`
+        filter?.EndDate ? `&EndDate=${filter.EndDate}` : ""}${
+        filter?.Salary ? `&Salary=${filter.Salary}` : ""}${
+        filter?.Department ? `&Department=${filter.Department}` : ""}${
+        filter?.Position ? `&Position=${filter.Position}` : ""}${
+        filter?.EmployeeName ? `&EmployeeName=${filter.EmployeeName}` : ""}`
     ),
-
+    
   createContract: (body: CreateContractType) =>
     http.post<CreateContractResType>("/api/v1/employeecontract", {
       employeeContractModel: body,

@@ -1,8 +1,10 @@
+import Employee from "@/app/home/application/absent/page";
 import z from "zod";
 
 export const ContractSchema = z.object({
   id:z.string(),
   employeeCode: z.string(),
+  employeeName: z.string(),
   department: z.string(),
   position: z.string(),
   startDate: z.string(),
@@ -10,7 +12,7 @@ export const ContractSchema = z.object({
   duration: z.number(),
   isNoExpiry: z.boolean(),
   notes:z.string(),
-  salary: z.number(),
+  salary: z.string(),
 });
 
 export const ContractPageSchema = z.object({
@@ -22,6 +24,7 @@ export const ContractPageSchema = z.object({
 
 export const ContractFilterSchema = z.object({
   EmployeeCode: z.string().optional(),
+  EmployeeName: z.string().optional(),
   StartDate: z.string().optional(),
   EndDate: z.string().optional(),
   Notes: z.string().optional(),
