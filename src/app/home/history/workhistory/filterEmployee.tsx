@@ -111,7 +111,7 @@ export default function HistoryFilter({ onFilter }: HistoryFilterProps) {
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {Array.from({ length: 5 }, (_, num) => (
+                {Array.from({ length: 4 }, (_, num) => (
                   <SelectItem key={num} value={num.toString()}>
                     {num}
                   </SelectItem>

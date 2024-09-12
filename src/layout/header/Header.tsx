@@ -34,7 +34,7 @@ export default function Header() {
   };
 
   return (
-    <header className="flex h-[55px] max-w-full shrink-0 items-center px-4 md:px-6 border-b bg-white">
+    <header className="flex h-[55px] max-w-full shrink-0 items-center px-4 md:px-6 border-b bg-white shadow-sm">
       <div className="ml-auto flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -25,9 +25,10 @@ import {
 import { EditContractModal } from "./editContract";
 import { AddContractModal } from "./addContract";
 import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Contract() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Start with false loading
   const [contract, setContract] = useState<ContractSchemaType[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -37,14 +38,15 @@ export default function Contract() {
   const [contractData, setContractData] = useState<UpdateContractType | null>(null);
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const [isModalOpen, setModalOpen] = React.useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
   const [departments, setDepartments] = useState<{ [key: number]: string }>({});
   const [positions, setPositions] = useState<{ [key: number]: string }>({});
-  const [showTable, setShowTable] = useState(true); // Add state to toggle table visibility
+  const [showTable, setShowTable] = useState(false); // Table visibility state
 
   const handleFilterChange = (newFilter: ContractFilterType) => {
     setFilter(newFilter);
     setPage(1);
+    fetchData(newFilter); // Fetch data based on the filter change
   };
 
   const handleDelete = (contract: ContractSchemaType) => {
@@ -128,30 +130,30 @@ export default function Contract() {
     return entry ? parseInt(entry[0]) : 0;
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (filter) {
-        setLoading(true);
-        try {
-          const [contractData, departmentData, positionData] = await Promise.all([
-            apiContractRequest.getListContract(page, pageSize, filter),
-            apiDepartmentRequest.getDepartment(),
-            apiPositionRequest.getPosition(),
-          ]);
-          setContract(contractData.payload.value.data);
-          setDepartments(departmentData.payload.value);
-          setPositions(positionData.payload.value);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          setContract([]);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
+  const fetchData = async (filterParam: ContractFilterType | null) => {
+    setLoading(true);
+    try {
+      const [contractData, departmentData, positionData] = await Promise.all([
+        apiContractRequest.getListContract(page, pageSize, filterParam),
+        apiDepartmentRequest.getDepartment(),
+        apiPositionRequest.getPosition(),
+      ]);
+      setContract(contractData.payload.value.data);
+      setDepartments(departmentData.payload.value);
+      setPositions(positionData.payload.value);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setContract([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
-  }, [page, pageSize, filter]);
+  useEffect(() => {
+    if (showTable) {
+      fetchData(filter); 
+    }
+  }, [page, pageSize, showTable]); 
 
   return (
     <div>
@@ -159,63 +161,56 @@ export default function Contract() {
       <div className="flex justify-end items-center py-3 space-x-2">
         <Button onClick={openModal}>Add new contract</Button>
         <Button variant="secondary" onClick={() => setShowTable((prev) => !prev)}>
-          {showTable ? "Hide" : "Show"}
+          {showTable ? <div className="flex items-center"
+          ><EyeOff size={20}/>&nbsp; Hide Table</div> : <div className="flex items-center"><Eye size={20}/>&nbsp; Show Table</div>}
         </Button>
       </div>
       <AddContractModal isOpen={isModalOpen} onClose={closeModal} />
 
-      {filter ? (
-        <>
-          {loading ? (
-            <div>Loading...</div>
-          ) : (
-            <>
-              {contract.length > 0 ? (
-                showTable && (
-                  <>
-                    <DataTable columns={Columns(handleDelete, handleEdit, handleOpenModal)} data={contract} />
-                    <div className="flex justify-between items-center p-4">
-                      <div>
-                        <select
-                          value={pageSize}
-                          onChange={(e) => handleChangePageSize(Number(e.target.value))}
-                          className="px-4 py-2 border rounded-lg"
-                        >
-                          <option value={5}>5 rows</option>
-                          <option value={10}>10 rows</option>
-                        </select>
-                      </div>
-                      <div>
-                        <button
-                          onClick={() => handleChangePage(Math.max(page - 1, 1))}
-                          disabled={page === 1}
-                          className="px-4 py-2 border rounded-lg text-sm"
-                        >
-                          Previous
-                        </button>
-                        <span className="mx-4">Page {page}</span>
-                        <button
-                          onClick={() => handleChangePage(page + 1)}
-                          className="px-4 py-2 border rounded-lg text-sm"
-                        >
-                          Next
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                )
-              ) : (
-                <div>No contracts found for the selected filter.</div>
-              )}
-            </>
-          )}
-        </>
+      {loading ? (
+        <div>Loading...</div>
       ) : (
-        <div className="p-4 text-center">
-          <p>Try to search something using the filter.</p>
-        </div>
+        showTable && (
+          <>
+            {contract.length > 0 ? (
+              <>
+                <DataTable columns={Columns(handleDelete, handleEdit, handleOpenModal)} data={contract} />
+                <div className="flex justify-between items-center p-4">
+                  <div>
+                    <select
+                      value={pageSize}
+                      onChange={(e) => handleChangePageSize(Number(e.target.value))}
+                      className="px-4 py-2 border rounded-lg"
+                    >
+                      <option value={5}>5 rows</option>
+                      <option value={10}>10 rows</option>
+                    </select>
+                  </div>
+                  <div>
+                    <button
+                      onClick={() => handleChangePage(Math.max(page - 1, 1))}
+                      disabled={page === 1}
+                      className="px-4 py-2 border rounded-lg text-sm"
+                    >
+                      Previous
+                    </button>
+                    <span className="mx-4">Page {page}</span>
+                    <button
+                      onClick={() => handleChangePage(page + 1)}
+                      className="px-4 py-2 border rounded-lg text-sm"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div>No contracts found.</div>
+            )}
+          </>
+        )
       )}
-      
+
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -255,9 +250,7 @@ export default function Contract() {
               <AlertDialogCancel onClick={() => setIsEndModalOpen(false)}>
                 Cancel
               </AlertDialogCancel>
-              <AlertDialogAction onClick={handleEndContract}>
-                End Contract
-              </AlertDialogAction>
+              <AlertDialogAction onClick={handleEndContract}>End</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

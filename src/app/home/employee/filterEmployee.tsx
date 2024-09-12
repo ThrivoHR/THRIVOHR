@@ -124,18 +124,6 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
         <div className="flex flex-col space-y-4 mb-6 p-4 border rounded-lg shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Input
-              placeholder="Employee Code"
-              name="EmployeeCode"
-              value={filters.EmployeeCode}
-              onChange={handleChange}
-            />
-            <Input
-              placeholder="Email"
-              name="Email"
-              value={filters.Email}
-              onChange={handleChange}
-            />
-            <Input
               placeholder="First Name"
               name="FirstName"
               value={filters.FirstName}
@@ -145,6 +133,24 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
               placeholder="Last Name"
               name="LastName"
               value={filters.LastName}
+              onChange={handleChange}
+            />
+            <Input
+              placeholder="Full Name"
+              name="FullName"
+              value={filters.FullName}
+              onChange={handleChange}
+            />
+            <Input
+              placeholder="Employee Code"
+              name="EmployeeCode"
+              value={filters.EmployeeCode}
+              onChange={handleChange}
+            />
+            <Input
+              placeholder="Email"
+              name="Email"
+              value={filters.Email}
               onChange={handleChange}
             />
             <Input
@@ -210,12 +216,7 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
               value={filters.Address}
               onChange={handleChange}
             />
-            <Input
-              placeholder="Full Name"
-              name="FullName"
-              value={filters.FullName}
-              onChange={handleChange}
-            />
+            
             <Input
               placeholder="Date of Birth"
               type="date"

@@ -23,6 +23,7 @@ import EmployeeFilter from "./filterEmployee";
 import { EditEmployeeModal } from "./editEmployee";
 import { Button } from "@/components/ui/button";
 import { AddEmployeeModal } from "./addEmployee";
+import { Divide, Eye, EyeOff } from "lucide-react";
 
 export default function EmployeeTable() {
   const [loading, setLoading] = useState(false);
@@ -38,7 +39,7 @@ export default function EmployeeTable() {
   );
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [showTable, setShowTable] = useState(true); // State variable to control table visibility
+  const [showTable, setShowTable] = useState(false); // Default to false so table is initially hidden
 
   const handleFilterChange = (newFilter: EmployeeFilterType) => {
     setFilter(newFilter);
@@ -46,7 +47,7 @@ export default function EmployeeTable() {
   };
 
   useEffect(() => {
-    if (filter) {
+    if (filter || showTable) { // Fetch data regardless of filter when table is toggled to show
       const fetchEmployees = async () => {
         setLoading(true);
         try {
@@ -66,7 +67,7 @@ export default function EmployeeTable() {
 
       fetchEmployees();
     }
-  }, [page, pageSize, filter]);
+  }, [page, pageSize, filter, showTable]);
 
   const handleDelete = (employee: EmployeeSchemaType) => {
     setSelectedEmployee({
@@ -154,66 +155,63 @@ export default function EmployeeTable() {
           Add new employee
         </Button>
         <Button variant="secondary" onClick={() => setShowTable((prev) => !prev)}>
-          {showTable ? "Hide" : "Show"}
+          {showTable ? <div className="flex items-center"
+          ><EyeOff size={20}/>&nbsp; Hide Table</div> : <div className="flex items-center"><Eye size={20}/>&nbsp; Show Table</div>}
         </Button>
       </div>
       <AddEmployeeModal isOpen={isModalOpen} onClose={closeModal} />
 
-      {filter ? (
+      {showTable ? (
         <>
           {loading ? (
             <div>Loading...</div>
           ) : (
             <>
               {employees.length > 0 ? (
-                showTable && ( // Conditionally render the table based on showTable state
-                  <>
-                    <DataTable
-                      columns={columns(handleDelete, handleEdit)}
-                      data={employees}
-                    />
-                    <div className="flex justify-between items-center p-4">
-                      <div>
-                        <select
-                          value={pageSize}
-                          onChange={(e) =>
-                            handleChangePageSize(Number(e.target.value))
-                          }
-                          className="px-4 py-2 border rounded-lg"
-                        >
-                          <option value={5}>5 rows</option>
-                          <option value={10}>10 rows</option>
-                        </select>
-                      </div>
-                      <div>
-                        <button
-                          onClick={() => handleChangePage(Math.max(page - 1, 1))}
-                          disabled={page === 1}
-                          className="px-3 py-2 border rounded-lg text-sm"
-                        >
-                          Previous
-                        </button>
-                        <span className="mx-4">Page {page}</span>
-                        <button
-                          onClick={() => handleChangePage(page + 1)}
-                          className="px-4 py-2 border rounded-lg text-sm"
-                        >
-                          Next
-                        </button>
-                      </div>
+                <>
+                  <DataTable
+                    columns={columns(handleDelete, handleEdit)}
+                    data={employees}
+                  />
+                  <div className="flex justify-between items-center p-4">
+                    <div>
+                      <select
+                        value={pageSize}
+                        onChange={(e) =>
+                          handleChangePageSize(Number(e.target.value))
+                        }
+                        className="px-4 py-2 border rounded-lg"
+                      >
+                        <option value={5}>5 rows</option>
+                        <option value={10}>10 rows</option>
+                      </select>
                     </div>
-                  </>
-                )
+                    <div>
+                      <button
+                        onClick={() => handleChangePage(Math.max(page - 1, 1))}
+                        disabled={page === 1}
+                        className="px-3 py-2 border rounded-lg text-sm"
+                      >
+                        Previous
+                      </button>
+                      <span className="mx-4">Page {page}</span>
+                      <button
+                        onClick={() => handleChangePage(page + 1)}
+                        className="px-4 py-2 border rounded-lg text-sm"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                </>
               ) : (
-                <div>No employees found for the selected filter.</div>
+                <div>No employees found.</div>
               )}
             </>
           )}
         </>
       ) : (
-        <div className="p-4 text-center">
-          <p>Try to search something using the filter.</p>
-        </div>
+        <></>
       )}
 
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>

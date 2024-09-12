@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ContractFilterType } from "@/schemaValidation/contract.schema";
@@ -9,6 +9,15 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import apiPositionRequest from "@/apiRequest/position";
+import apiDepartmentRequest from "@/apiRequest/department";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ContractFilterProps {
   onFilter: (filter: ContractFilterType) => void;
@@ -21,16 +30,44 @@ export default function ContractFilter({ onFilter }: ContractFilterProps) {
     EndDate: "",
     Notes: "",
     Salary: undefined, // Use undefined instead of 0
-    Department: undefined, // Use undefined instead of 0
-    Position: undefined, // Use undefined instead of 0
+    Department: 0, // Use undefined instead of 0
+    Position: 0, // Use undefined instead of 0
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({
-      ...prev,
-      [name]: value === "" ? undefined : value, // Handle empty fields correctly
-    }));
+  const [positions, setPositions] = useState<{ [key: number]: string }>({});
+  const [departments, setDepartments] = useState<{ [key: number]: string }>({});
+
+  const getPos = async () => {
+    const posData = await apiPositionRequest.getPosition();
+    setPositions(posData.payload.value);
+  };
+
+  const getDept = async () => {
+    const deptData = await apiDepartmentRequest.getDepartment();
+    setDepartments(deptData.payload.value);
+  };
+
+  useEffect(() => {
+    getPos();
+    getDept();
+  }, []);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement> | { name: string; value: string }
+  ) => {
+    if ("target" in e) {
+      const { name, value } = e.target;
+      setFilters((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    } else {
+      const { name, value } = e;
+      setFilters((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleApplyFilter = () => {
@@ -44,8 +81,8 @@ export default function ContractFilter({ onFilter }: ContractFilterProps) {
       EndDate: "",
       Notes: "",
       Salary: undefined, // Reset to undefined
-      Department: undefined, // Reset to undefined
-      Position: undefined, // Reset to undefined
+      Department: 0, // Reset to undefined
+      Position: 0, // Reset to undefined
     });
     onFilter({
       EmployeeCode: "",
@@ -53,8 +90,8 @@ export default function ContractFilter({ onFilter }: ContractFilterProps) {
       EndDate: "",
       Notes: "",
       Salary: undefined,
-      Department: undefined,
-      Position: undefined,
+      Department: 0,
+      Position: 0,
     });
   };
 
@@ -101,20 +138,54 @@ export default function ContractFilter({ onFilter }: ContractFilterProps) {
               value={filters.Salary ?? ""} // Handle undefined by using an empty string
               onChange={handleChange}
             />
-            <Input
-              placeholder="Department"
-              type="number"
-              name="Department"
-              value={filters.Department ?? ""} // Handle undefined by using an empty string
-              onChange={handleChange}
-            />
-            <Input
-              placeholder="Position"
-              type="number"
-              name="Position"
-              value={filters.Position ?? ""} // Handle undefined by using an empty string
-              onChange={handleChange}
-            />
+            <Select
+              onValueChange={(value) =>
+                handleChange({ name: "Position", value })
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={
+                    filters.Position === 0
+                      ? "Select Position"
+                      : positions[filters.Position as keyof typeof positions] ??
+                        "Unknown Position"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(positions).map(([key, value]) => (
+                  <SelectItem key={key} value={key}>
+                    {value}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              onValueChange={(value) =>
+                handleChange({ name: "Department", value })
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={
+                    filters.Department === 0
+                      ? "Select Department"
+                      : departments[
+                          filters.Department as keyof typeof departments
+                        ] ?? "Unknown Department"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(departments).map(([key, value]) => (
+                  <SelectItem key={key} value={key}>
+                    {value}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="flex justify-end space-x-2">
             <Button variant="outline" onClick={handleReset}>
