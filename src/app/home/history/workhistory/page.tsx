@@ -26,9 +26,10 @@ import apiTrainingHistoryRequest from "@/apiRequest/trainingHistory";
 import { TrainingHistoryFilterType, TrainingHistorySchemaType } from "@/schemaValidation/trainingHistory.schema";
 import { UpdateContractType } from "@/schemaValidation/contract.schema";
 import HistoryFilter from "./filterEmployee";
+import { Eye, EyeOff } from "lucide-react";
 // import { AddEmployeeModal } from "./addEmployee";
 
-export default function EmployeeTable() {
+export default function HistoryTable() {
   const [loading, setLoading] = useState(false);
   const [trainingHistory, setTrainingHistory] = useState<TrainingHistorySchemaType[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -42,6 +43,7 @@ export default function EmployeeTable() {
   );
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [showTable, setShowTable] = useState(false);
 
   const handleFilterChange = (newFilter: TrainingHistoryFilterType) => {
     setFilter(newFilter);
@@ -151,13 +153,20 @@ export default function EmployeeTable() {
     <div>
       <HistoryFilter onFilter={handleFilterChange} /> 
       <div className="flex items-center py-3">
-        {/* <Button className="ml-auto" onClick={openModal}>
-          Add new employee
-        </Button> */}
-      </div> 
-      {/* <AddEmployeeModal isOpen={isModalOpen} onClose={closeModal} /> */}
+        <Button variant="secondary" onClick={() => setShowTable(!showTable)}>
+          {showTable ? (
+            <div className="flex items-center">
+              <EyeOff size={20} /> &nbsp; Hide Table
+            </div>
+          ) : (
+            <div className="flex items-center">
+              <Eye size={20} /> &nbsp; Show Table
+            </div>
+          )}
+        </Button>
+      </div>
 
-      {filter ? (
+      {showTable && ( // Conditionally render table based on showTable state
         <>
           {loading ? (
             <div>Loading...</div>
@@ -203,10 +212,6 @@ export default function EmployeeTable() {
             </div>
           </div>
         </>
-      ) : (
-        <div className="p-4 text-center">
-          <p>Try to search something using the filter.</p>
-        </div>
       )}
 
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>

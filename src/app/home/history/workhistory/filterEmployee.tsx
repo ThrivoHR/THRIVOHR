@@ -16,10 +16,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 
 interface HistoryFilterProps {
   onFilter: (filter: TrainingHistoryFilterType) => void;
 }
+
+const statusOptions = [
+  { label: "Completed", value: 0 },
+  { label: "In Progress", value: 1 },
+  { label: "Failed", value: 2 },
+  { label: "Not Started", value: 3 },
+];
 
 export default function HistoryFilter({ onFilter }: HistoryFilterProps) {
   const [filters, setFilters] = useState<TrainingHistoryFilterType>({
@@ -59,74 +73,84 @@ export default function HistoryFilter({ onFilter }: HistoryFilterProps) {
     }));
   };
 
-  const handleSelectChange = (name: string, value: string) => {
+  const handleSelectChange = (value: string) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      [name]: parseInt(value, 10), // Convert value to number for Status
+      Status: parseInt(value, 10),
     }));
   };
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Collapsible defaultOpen>
-      <CollapsibleTrigger className="w-full">
-        <Button variant="outline" className="w-full">
-          Filter
-        </Button>
-      </CollapsibleTrigger>
-      <CollapsibleContent>
-        <div className="flex flex-col space-y-4 mb-6 p-4 border rounded-lg shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Input
-              placeholder="Employee Code"
-              name="EmployeeCode"
-              value={filters.EmployeeCode}
-              onChange={handleInputChange}
-            />
-            <Input
-              placeholder="Start Day"
-              name="StartDay"
-              value={filters.StartDay}
-              onChange={handleInputChange}
-            />
-            <Input
-              placeholder="Content"
-              name="Content"
-              value={filters.Content}
-              onChange={handleInputChange}
-            />
-            <Input
-              placeholder="Workshop Name"
-              name="WorkshopName"
-              value={filters.WorkshopName}
-              onChange={handleInputChange}
-            />
-            <Select
-              onValueChange={(value) => handleSelectChange("Status", value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Status">
-                  {filters.Status !== null && filters.Status !== undefined
-                    ? filters.Status.toString()
-                    : "Status"}{" "}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {Array.from({ length: 4 }, (_, num) => (
-                  <SelectItem key={num} value={num.toString()}>
-                    {num}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+    <Accordion
+      type="single"
+      collapsible
+      onValueChange={(value) => setIsOpen(!!value)}
+      defaultValue="filter"
+    >
+      <AccordionItem value="filter">
+        <AccordionTrigger className="rounded-md border items-center justify-start py-2">
+          &nbsp; Search information &nbsp;
+        </AccordionTrigger>
+        <AccordionContent>
+          <div className="flex flex-col space-y-4 mb-6 p-4 border rounded-lg shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Input
+                placeholder="Employee Code"
+                name="EmployeeCode"
+                value={filters.EmployeeCode}
+                onChange={handleInputChange}
+              />
+              <Input
+                placeholder="Start Day"
+                name="StartDay"
+                value={filters.StartDay}
+                onChange={handleInputChange}
+              />
+              <Input
+                placeholder="Content"
+                name="Content"
+                value={filters.Content}
+                onChange={handleInputChange}
+              />
+              <Input
+                placeholder="Workshop Name"
+                name="WorkshopName"
+                value={filters.WorkshopName}
+                onChange={handleInputChange}
+              />
+              <Select
+                onValueChange={handleSelectChange}
+                value={filters.Status?.toString()}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue>
+                    {statusOptions.find(
+                      (option) => option.value === filters.Status
+                    )?.label || "Status"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOptions.map((option) => (
+                    <SelectItem
+                      key={option.value}
+                      value={option.value.toString()}
+                    >
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-start space-x-2">
+              <Button variant="outline" onClick={handleReset}>
+                Clear filter
+              </Button>
+              <Button onClick={handleApplyFilter}><MagnifyingGlassIcon/>&nbsp;Search</Button>
+            </div>
           </div>
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={handleReset}>
-              Reset
-            </Button>
-            <Button onClick={handleApplyFilter}>Apply Filter</Button>
-          </div>
-        </div>
-      </CollapsibleContent>
-    </Collapsible>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }

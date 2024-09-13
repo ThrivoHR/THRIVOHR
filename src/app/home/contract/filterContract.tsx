@@ -24,6 +24,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 
 interface ContractFilterProps {
   onFilter: (filter: ContractFilterType) => void;
@@ -113,7 +114,7 @@ export default function ContractFilter({ onFilter }: ContractFilterProps) {
       defaultValue="filter"
     >
       <AccordionItem value="filter">
-        <AccordionTrigger className=" rounded-md border items-center justify-start py-2">&nbsp; Filter&nbsp;</AccordionTrigger>
+        <AccordionTrigger className=" rounded-md border items-center justify-start py-2">&nbsp; Search information &nbsp;</AccordionTrigger>
         <AccordionContent>
           <div className="flex flex-col space-y-4 mb-6 p-4 border rounded-lg shadow-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -205,11 +206,11 @@ export default function ContractFilter({ onFilter }: ContractFilterProps) {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex justify-end space-x-2">
+            <div className="flex justify-start space-x-2 mt-2">
               <Button variant="outline" onClick={handleReset}>
-                Reset
+                Clear filter
               </Button>
-              <Button onClick={handleApplyFilter}>Apply Filter</Button>
+              <Button onClick={handleApplyFilter}><MagnifyingGlassIcon/>&nbsp;Search</Button>
             </div>
           </div>
         </AccordionContent>

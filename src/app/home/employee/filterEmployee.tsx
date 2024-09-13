@@ -25,6 +25,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 
 interface EmployeeFilterProps {
   onFilter: (filter: EmployeeFilterType) => void;
@@ -130,7 +131,7 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
     >
       <AccordionItem value="filter">
         <AccordionTrigger className=" rounded-md border items-center justify-start py-2">
-          &nbsp; Filter&nbsp;
+          &nbsp; Search information &nbsp;
         </AccordionTrigger>
         <AccordionContent>
           <div className="flex flex-col space-y-4 mb-6 p-4 border rounded-lg shadow-sm">
@@ -237,11 +238,11 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
                 onChange={handleChange}
               />
             </div>
-            <div className="flex justify-end space-x-2">
+            <div className="flex justify-start space-x-2">
               <Button variant="outline" onClick={handleReset}>
-                Reset
+                Clear filter
               </Button>
-              <Button onClick={handleApplyFilter}>Apply Filter</Button>
+              <Button onClick={handleApplyFilter}><MagnifyingGlassIcon/>&nbsp;Search</Button>
             </div>
           </div>
         </AccordionContent>
