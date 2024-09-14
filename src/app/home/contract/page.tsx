@@ -26,6 +26,7 @@ import { EditContractModal } from "./editContract";
 import { AddContractModal } from "./addContract";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
+import LoadingAnimate from "@/components/Loading";
 
 export default function Contract() {
   const [loading, setLoading] = useState(false);
@@ -169,7 +170,7 @@ export default function Contract() {
       <AddContractModal isOpen={isModalOpen} onClose={closeModal} />
 
       {loading ? (
-        <div>Loading...</div>
+        <div><LoadingAnimate/></div>
       ) : (
         showTable && (
           <>

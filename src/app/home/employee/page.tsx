@@ -24,6 +24,7 @@ import { EditEmployeeModal } from "./editEmployee";
 import { Button } from "@/components/ui/button";
 import { AddEmployeeModal } from "./addEmployee";
 import { Divide, Eye, EyeOff } from "lucide-react";
+import LoadingAnimate from "@/components/Loading";
 
 export default function EmployeeTable() {
   const [loading, setLoading] = useState(false);
@@ -164,7 +165,7 @@ export default function EmployeeTable() {
       {showTable ? (
         <>
           {loading ? (
-            <div>Loading...</div>
+            <div><LoadingAnimate/></div>
           ) : (
             <>
               {employees.length > 0 ? (

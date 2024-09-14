@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
+import LoadingAnimate from "@/components/Loading";
 
 export default function HistoryTable() {
   const [loading, setLoading] = useState(false);
@@ -108,7 +109,7 @@ export default function HistoryTable() {
 
       <div className="flex items-center py-3 space-x-2">
         <Button className="ml-auto" onClick={openModal}>
-          Add new career history
+          Add
         </Button>
         <Button variant="secondary" onClick={() => setShowTable(prev => !prev)}>
           {showTable ? (
@@ -127,7 +128,7 @@ export default function HistoryTable() {
       {showTable && (
         <>
           {loading ? (
-            <div>Loading...</div>
+            <div><LoadingAnimate/></div>
           ) : (
             <>
               {trainingHistory.length > 0 ? (
