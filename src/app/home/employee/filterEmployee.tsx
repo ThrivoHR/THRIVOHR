@@ -26,10 +26,12 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { Collapse } from "antd";
 
 interface EmployeeFilterProps {
   onFilter: (filter: EmployeeFilterType) => void;
 }
+const { Panel } = Collapse;
 
 export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
   const [filters, setFilters] = useState<EmployeeFilterType>({
@@ -123,130 +125,131 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
   };
 
   return (
-    <Accordion
-      type="single"
-      collapsible
-      onValueChange={(value) => setIsOpen(!!value)}
-      defaultValue="filter"
-    >
-      <AccordionItem value="filter">
-        <AccordionTrigger className=" rounded-md border items-center justify-start py-2">
-          &nbsp; Search information &nbsp;
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="flex flex-col space-y-4 mb-6 p-4 border rounded-lg shadow-sm">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Input
-                placeholder="First Name"
-                name="FirstName"
-                value={filters.FirstName}
-                onChange={handleChange}
-              />
-              <Input
-                placeholder="Last Name"
-                name="LastName"
-                value={filters.LastName}
-                onChange={handleChange}
-              />
-              <Input
-                placeholder="Full Name"
-                name="FullName"
-                value={filters.FullName}
-                onChange={handleChange}
-              />
-              <Input
-                placeholder="Employee Code"
-                name="EmployeeCode"
-                value={filters.EmployeeCode}
-                onChange={handleChange}
-              />
-              <Input
-                placeholder="Email"
-                name="Email"
-                value={filters.Email}
-                onChange={handleChange}
-              />
-              <Input
-                placeholder="Phone Number"
-                name="PhoneNumber"
-                value={filters.PhoneNumber}
-                onChange={handleChange}
-              />
+<Collapse defaultActiveKey={["1"]} size="small" style={{ width: "100%", marginBottom: "10px" }}>
+  <Panel header="Search Information" key="1">
+    <div style={{ padding: "6px 0" }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Input
+          placeholder="First Name"
+          name="FirstName"
+          value={filters.FirstName}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Last Name"
+          name="LastName"
+          value={filters.LastName}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Full Name"
+          name="FullName"
+          value={filters.FullName}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Employee Code"
+          name="EmployeeCode"
+          value={filters.EmployeeCode}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Email"
+          name="Email"
+          value={filters.Email}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Phone Number"
+          name="PhoneNumber"
+          value={filters.PhoneNumber}
+          onChange={handleChange}
+        />
 
-              <Select
-                onValueChange={(value) =>
-                  handleChange({ name: "PositionId", value })
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue
-                    placeholder={
-                      filters.PositionId === 0
-                        ? "Select Position"
-                        : positions[
-                            filters.PositionId as keyof typeof positions
-                          ] ?? "Unknown Position"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(positions).map(([key, value]) => (
-                    <SelectItem key={key} value={key}>
-                      {value}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        <Select
+          onValueChange={(value) =>
+            handleChange({ name: "PositionId", value })
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue
+              placeholder={
+                filters.PositionId === 0
+                  ? "Select Position"
+                  : positions[filters.PositionId as keyof typeof positions] ??
+                    "Unknown Position"
+              }
+            />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(positions).map(([key, value]) => (
+              <SelectItem key={key} value={key}>
+                {value}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-              <Select
-                onValueChange={(value) =>
-                  handleChange({ name: "DepartmentId", value })
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue
-                    placeholder={
-                      filters.DepartmentId === 0
-                        ? "Select Department"
-                        : departments[
-                            filters.DepartmentId as keyof typeof departments
-                          ] ?? "Unknown Department"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(departments).map(([key, value]) => (
-                    <SelectItem key={key} value={key}>
-                      {value}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        <Select
+          onValueChange={(value) =>
+            handleChange({ name: "DepartmentId", value })
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue
+              placeholder={
+                filters.DepartmentId === 0
+                  ? "Select Department"
+                  : departments[filters.DepartmentId as keyof typeof departments] ??
+                    "Unknown Department"
+              }
+            />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(departments).map(([key, value]) => (
+              <SelectItem key={key} value={key}>
+                {value}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-              <Input
-                placeholder="Address"
-                name="Address"
-                value={filters.Address}
-                onChange={handleChange}
-              />
+        <Input
+          placeholder="Address"
+          name="Address"
+          value={filters.Address}
+          onChange={handleChange}
+        />
 
-              <Input
-                placeholder="Date of Birth"
-                type="date"
-                name="DateOfBirth"
-                value={filters.DateOfBirth}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="flex justify-start space-x-2">
-              <Button variant="outline" onClick={handleReset}>
-                Clear filter
-              </Button>
-              <Button onClick={handleApplyFilter}><MagnifyingGlassIcon/>&nbsp;Search</Button>
-            </div>
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+        <Input
+          placeholder="Date of Birth"
+          type="date"
+          name="DateOfBirth"
+          value={filters.DateOfBirth}
+          onChange={handleChange}
+        />
+      </div>
+      <div className="flex justify-between mt-3">
+        <div className="space-x-2">
+          <Button variant="outline" onClick={handleReset}>
+            Clear Filter
+          </Button>
+          <Button onClick={handleApplyFilter}>
+          <MagnifyingGlassIcon/>&nbsp;Search
+          </Button>
+        </div>
+        <div className="space-x-2">
+          <Button className="bg-green-400 hover:bg-green-300">
+            Import
+          </Button>
+          <Button className="bg-orange-400 hover:bg-orange-300">
+            Export
+          </Button>
+        </div>
+      </div>
+    </div>
+  </Panel>
+</Collapse>
+
   );
 }

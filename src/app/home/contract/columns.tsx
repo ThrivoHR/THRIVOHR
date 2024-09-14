@@ -70,7 +70,7 @@ export const Columns = (
     cell: ({ row }) => {
       const isExpired = row.original.isNoExpiry;
       return isExpired ? (
-        <Badge variant="destructive">Expired</Badge>
+        <Badge variant="destructive" className="!bg-red-100 !text-red-800 !dark:bg-red-800 !dark:text-red-100">Expired</Badge>
       ) : (
         <Badge variant="outline">Available</Badge>
       );

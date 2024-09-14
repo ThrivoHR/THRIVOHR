@@ -47,7 +47,7 @@ export default function EmployeeTable() {
   };
 
   useEffect(() => {
-    if (filter || showTable) { // Fetch data regardless of filter when table is toggled to show
+    if (filter || showTable) {
       const fetchEmployees = async () => {
         setLoading(true);
         try {

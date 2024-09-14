@@ -11,10 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDown } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export const columns = (
-  handleDelete: (train: TrainingHistorySchemaType) => void,
-  // handleEdit: (train: TrainingHistorySchemaType) => void
+  handleDelete: (train: TrainingHistorySchemaType) => void
 ): ColumnDef<TrainingHistorySchemaType>[] => [
   {
     accessorKey: "employee",
@@ -32,9 +33,56 @@ export const columns = (
     accessorKey: "content",
     header: "Content",
   },
+
   {
     accessorKey: "status",
     header: "Status",
+    cell: ({ getValue }) => {
+      const status = getValue();
+
+      let variant: "default" | "secondary" | "destructive" | "outline" =
+        "secondary";
+      let badgeClasses = "";
+      let badgeText = "Unknown";
+
+      switch (status) {
+        case "Completed":
+          variant = "secondary";
+          badgeClasses =
+            "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100";
+          badgeText = "Completed";
+          break;
+        case "InProgress":
+          variant = "secondary";
+          badgeClasses =
+            "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100";
+          badgeText = "In Progress";
+          break;
+        case "Failed":
+          variant = "secondary";
+          badgeClasses =
+            "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100";
+          badgeText = "Failed";
+          break;
+        case "NotStarted":
+          variant = "outline";
+          badgeClasses =
+            "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100";
+          badgeText = "Not Started";
+          break;
+        default:
+          variant = "secondary";
+          badgeClasses =
+            "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100";
+          badgeText = "Unknown";
+      }
+
+      return (
+        <Badge variant={variant} className={cn(badgeClasses, "font-medium")}>
+          {badgeText}
+        </Badge>
+      );
+    },
   },
   {
     id: "actions",
