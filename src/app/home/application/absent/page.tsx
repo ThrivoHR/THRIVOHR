@@ -21,15 +21,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Filter from "@/components/Filter";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardFooter,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
-// import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { EyeOff } from "lucide-react";
 
 type Employee = {
   id: string;
@@ -100,6 +93,15 @@ export default function Employee() {
       <div>
         <Filter />
       </div>
+      <div className="flex justify-end items-center py-3 space-x-2">
+          <Button>Add new contract</Button>
+          <Button variant="secondary">
+            <div className="flex items-center">
+              <EyeOff size={20} />
+              &nbsp; Hide Table
+            </div>
+          </Button>
+        </div>
       <div className="border rounded-lg w-full h-[80vh]">
         <DataTable
           columns={columns}

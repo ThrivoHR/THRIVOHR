@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Filter from "@/components/Filter";
+import { Button } from "@/components/ui/button";
+import { EyeOff } from "lucide-react";
 
 type Employee = {
   id: string;
@@ -89,7 +91,16 @@ export default function Employee() {
   return (
     <div>
       <div>
-        <Filter/>
+        <Filter />
+        <div className="flex justify-end items-center py-3 space-x-2">
+          <Button>Add new contract</Button>
+          <Button variant="secondary">
+            <div className="flex items-center">
+              <EyeOff size={20} />
+              &nbsp; Hide Table
+            </div>
+          </Button>
+        </div>
       </div>
       <div className="border rounded-lg w-full h-[80vh] flex flex-col">
         <DataTable
