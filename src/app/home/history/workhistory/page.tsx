@@ -109,7 +109,7 @@ export default function HistoryTable() {
 
       <div className="flex items-center py-3 space-x-2">
         <Button className="ml-auto" onClick={openModal}>
-          Add
+          Add new work history
         </Button>
         <Button variant="secondary" onClick={() => setShowTable(prev => !prev)}>
           {showTable ? (

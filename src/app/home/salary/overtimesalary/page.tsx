@@ -98,7 +98,7 @@ export default function Employee() {
         <Filter/>
       </div>
       <div className="flex justify-end items-center py-3 space-x-2">
-          <Button>Add new contract</Button>
+          <Button>Add new overtime salary</Button>
           <Button variant="secondary">
             <div className="flex items-center">
               <EyeOff size={20} />

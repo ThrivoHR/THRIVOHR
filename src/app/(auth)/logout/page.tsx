@@ -24,7 +24,7 @@ function LogoutLogic() {
       
     };
   }, [sessionToken, router, pathname]);
-  return <div>page</div>;
+  return <div></div>;
 }
 
 export default function LogoutPage() {

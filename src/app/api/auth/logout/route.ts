@@ -1,6 +1,4 @@
-import authApiRequest from "@/apiRequest/auth";
-import { HttpError } from "@/lib/https";
-import { cookies } from "next/headers";
+
 
 export async function POST(request: Request) {
   const res = await request.json();

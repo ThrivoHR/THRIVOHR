@@ -123,7 +123,6 @@ const request = async <Response>(
             // Handle logout request error
           } finally {
             localStorage.removeItem("sessionToken");
-            localStorage.removeItem("sessionTokenExpiresAt");
             clientLogoutRequest = null;
             location.href = "/login";
           }
@@ -153,10 +152,9 @@ const request = async <Response>(
     payload,
   };
 
-  // Đảm bảo logic dưới đây chỉ chạy ở phía client (browser)
   if (isClient()) {
     if (
-      ["api/v1/authenticate"].some(
+      ["api/v1/authentication"].some(
         (item) => item === normalizePath(url)
       )
     ) {

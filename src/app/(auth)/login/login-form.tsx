@@ -44,10 +44,17 @@ export default function LoginForm() {
     },
   });
 
+  function saveSession(token: string, refreshToken: string) {
+    localStorage.setItem("token", token);
+    localStorage.setItem("refreshToken", refreshToken);
+  }
+  
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     try {
       const result = await authApiRequest.login(values);
+      const { token, refreshToken } = result.payload.value;
+      saveSession(token, refreshToken);
       if (result.payload.value.token) {
         await authApiRequest.auth({
           sessionToken: result.payload.value.token,
@@ -58,6 +65,7 @@ export default function LoginForm() {
         toast.success("Login successful!");
         console.log(result)
       }
+      if(result.payload.value.refreshToken){}
 
     } catch (error: any) {
       handleErrorApi({
