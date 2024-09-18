@@ -96,7 +96,7 @@ export const Columns = (
       accessorKey: "status",
       cell: ({ row }) => {
         const status = row.original.status;
-        return <Badge>{Object.keys(statusMap).find((key) => statusMap[key] === status)}</Badge>;
+        return <Badge>{status}</Badge>;
       },
     },
     {
@@ -146,12 +146,12 @@ export const Columns = (
                 <AlertDialogFooter>
                   <AlertDialogCancel onClick={handleDialogClose}>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={() => {
-                      if (selectedStatus !== null && currentData) {
-                        handleEdit({ ...currentData, status: selectedStatus });
-                        handleDialogClose();
-                      }
-                    }}
+                    // onClick={() => {
+                    //   if (selectedStatus !== null && currentData) {
+                    //     handleEdit({ ...currentData,selectedStatus });
+                    //     handleDialogClose();
+                    //   }
+                    // }}
                   >
                     Save Changes
                   </AlertDialogAction>
