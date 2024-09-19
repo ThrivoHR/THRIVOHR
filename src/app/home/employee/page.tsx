@@ -122,6 +122,9 @@ export default function EmployeeTable() {
         phoneNumber: rowData.phoneNumber,
         taxCode: rowData.taxCode ?? "",
         bankAccount: rowData.bankAccount ?? "",
+        sex: rowData.sex,
+        religion: rowData.religion,
+        ethnicity: rowData.ethnicity,
         email: rowData.email,
         address: {
           addressLine: rowData.address.addressLine,
