@@ -48,6 +48,7 @@ export default function Contract() {
     setFilter(newFilter);
     setPage(1);
     fetchData(newFilter);
+    setShowTable(true);
   };
 
   const handleChangePage = (newPage: number) => {
@@ -114,13 +115,13 @@ export default function Contract() {
     if (showTable) {
       fetchData(filter);
     }
-  }, [page, pageSize, showTable]);
+  }, [page, pageSize, showTable,filter]);
 
   return (
     <div>
       <ApplicationFormFilter onFilter={handleFilterChange} />
       <div className="flex justify-end items-center py-3 space-x-2">
-        <Button onClick={openModal}>Add new resignation</Button>
+        <Button onClick={openModal}>Add</Button>
 
         <Button
           variant="secondary"

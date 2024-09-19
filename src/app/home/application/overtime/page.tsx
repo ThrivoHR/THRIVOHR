@@ -15,13 +15,6 @@ import {
 } from "@/schemaValidation/applicationForm.schema";
 import { AddApplicationFormModal } from "./addApplicationForm";
 import ApplicationFormFilter from "./filterApplicationForm";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog"; // Import Dialog components
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Import Select components
 import {
   AlertDialog,
@@ -52,6 +45,7 @@ export default function Contract() {
     setFilter(newFilter);
     setPage(1);
     fetchData(newFilter);
+    setShowTable(true);
   };
 
   const handleChangePage = (newPage: number) => {
@@ -69,19 +63,6 @@ export default function Contract() {
 
   const closeModal = () => {
     setModalOpen(false);
-  };
-
-  const getStatusNumber = (status: string): number => {
-    switch (status) {
-      case "Pending":
-        return 0;
-      case "Approved":
-        return 1;
-      case "Rejected":
-        return 2;
-      default:
-        return -1;
-    }
   };
 
   const fetchData = async (filter: ApplicationFormFilterType | null) => {
@@ -138,7 +119,7 @@ export default function Contract() {
     <div>
       <ApplicationFormFilter onFilter={handleFilterChange} />
       <div className="flex justify-end items-center py-3 space-x-2">
-        <Button onClick={openModal}>Add new application</Button>
+        <Button onClick={openModal}>Add</Button>
 
         <Button
           variant="secondary"

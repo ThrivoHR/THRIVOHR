@@ -40,7 +40,8 @@ const apiEmployeeRequest = {
       `/api/v1/employee?EmployeeCode=${employeeCode}`, 
       body
     ),
-  
+    importEmployee: (body: any) =>
+      http.post<CreateEmployeeResType>("/api/v1/employee/import", body),
 };
 
 export default apiEmployeeRequest;

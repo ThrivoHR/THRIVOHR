@@ -47,7 +47,7 @@ export default function Contract() {
   const handleFilterChange = (newFilter: ContractFilterType) => {
     setFilter(newFilter);
     setPage(1);
-    fetchData(newFilter); 
+    setShowTable(true); // Show table when filter is applied
   };
 
   const handleDelete = (contract: ContractSchemaType) => {
@@ -155,13 +155,13 @@ export default function Contract() {
     if (showTable) {
       fetchData(filter); 
     }
-  }, [page, pageSize, showTable]); 
+  }, [page, pageSize, showTable,filter]); 
 
   return (
     <div>
       <ContractFilter onFilter={handleFilterChange} />
       <div className="flex justify-end items-center py-3 space-x-2">
-        <Button onClick={openModal}>Add new contract</Button>
+        <Button onClick={openModal}>Add</Button>
         <Button variant="secondary" onClick={() => setShowTable((prev) => !prev)}>
           {showTable ? <div className="flex items-center"
           ><EyeOff size={20}/>&nbsp; Hide Table</div> : <div className="flex items-center"><Eye size={20}/>&nbsp; Show Table</div>}

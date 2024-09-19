@@ -182,7 +182,11 @@ const http = {
     body: any,
     options?: Omit<CustomOptions, "body"> | undefined
   ) {
-    return request<Response>("POST", url, { ...options, body });
+    const headers = {
+      ...options?.headers,
+    };
+
+    return request<Response>("POST", url, { ...options, headers, body });
   },
   put<Response>(
     url: string,

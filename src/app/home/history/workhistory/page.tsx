@@ -38,6 +38,7 @@ export default function HistoryTable() {
   const handleFilterChange = (newFilter: TrainingHistoryFilterType) => {
     setFilter(newFilter);
     setPage(1);
+    setShowTable(true); // Show table when filter is applied
   };
 
   useEffect(() => {
@@ -109,7 +110,7 @@ export default function HistoryTable() {
 
       <div className="flex items-center py-3 space-x-2">
         <Button className="ml-auto" onClick={openModal}>
-          Add new work history
+          Add
         </Button>
         <Button variant="secondary" onClick={() => setShowTable(prev => !prev)}>
           {showTable ? (

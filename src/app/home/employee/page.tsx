@@ -42,13 +42,15 @@ export default function EmployeeTable() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [showTable, setShowTable] = useState(false); // Default to false so table is initially hidden
 
+  // Handle filter change and ensure table is shown
   const handleFilterChange = (newFilter: EmployeeFilterType) => {
     setFilter(newFilter);
     setPage(1);
+    setShowTable(true); // Show table when filter is applied
   };
 
   useEffect(() => {
-    if (filter || showTable) {
+    if (showTable) {
       const fetchEmployees = async () => {
         setLoading(true);
         try {
@@ -156,11 +158,21 @@ export default function EmployeeTable() {
       <EmployeeFilter onFilter={handleFilterChange} />
       <div className="flex items-center py-3 space-x-2">
         <Button className="ml-auto" onClick={openModal}>
-          Add new employee
+          Add
         </Button>
-        <Button variant="secondary" onClick={() => setShowTable((prev) => !prev)}>
-          {showTable ? <div className="flex items-center"
-          ><EyeOff size={20}/>&nbsp; Hide Table</div> : <div className="flex items-center"><Eye size={20}/>&nbsp; Show Table</div>}
+        <Button
+          variant="secondary"
+          onClick={() => setShowTable((prev) => !prev)}
+        >
+          {showTable ? (
+            <div className="flex items-center">
+              <EyeOff size={20} />&nbsp; Hide Table
+            </div>
+          ) : (
+            <div className="flex items-center">
+              <Eye size={20} />&nbsp; Show Table
+            </div>
+          )}
         </Button>
       </div>
       <AddEmployeeModal isOpen={isModalOpen} onClose={closeModal} />
@@ -168,7 +180,9 @@ export default function EmployeeTable() {
       {showTable ? (
         <>
           {loading ? (
-            <div><LoadingAnimate/></div>
+            <div>
+              <LoadingAnimate />
+            </div>
           ) : (
             <>
               {employees.length > 0 ? (
@@ -215,7 +229,7 @@ export default function EmployeeTable() {
           )}
         </>
       ) : (
-        <></>
+        <>Nothing</>
       )}
 
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
