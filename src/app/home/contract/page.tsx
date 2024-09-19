@@ -232,6 +232,7 @@ export default function Contract() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      
       {contractData && (
         <EditContractModal
           isOpen={isEditModalOpen}

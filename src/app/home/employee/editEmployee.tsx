@@ -52,11 +52,14 @@ const editEmployeeSchema = z.object({
     lastName: z.string(),
     fullName: z.string(),
     identityNumber: z.string(),
-    dateOfBirth: z.string(), // Assuming the date is still a string in the format YYYY-MM-DD
+    dateOfBirth: z.string(),
     phoneNumber: z.string(),
     taxCode: z.string(),
     bankAccount: z.string(),
     email: z.string(),
+    sex: z.boolean(),
+    religion: z.string(),
+    ethnicity: z.string(),
     address: z.object({
       addressLine: z.string(),
       ward: z.string(),
@@ -178,7 +181,6 @@ export function EditEmployeeModal({
             onSubmit={form.handleSubmit(handleEdit)}
             className="grid grid-cols-1 md:grid-cols-3 gap-4"
           >
-            {/* Form fields */}
             <FormItem>
               <FormLabel>Employee Code</FormLabel>
               <FormControl>
@@ -214,6 +216,65 @@ export function EditEmployeeModal({
               </FormControl>
               <FormMessage>
                 {form.formState.errors.employeeModel?.lastName?.message}
+              </FormMessage>
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Full Name</FormLabel>
+              <FormControl>
+                <Input
+                  {...form.register("employeeModel.fullName")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage>
+                {form.formState.errors.employeeModel?.fullName?.message}
+              </FormMessage>
+            </FormItem>
+            <FormItem>
+              <FormLabel>Gender</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={(value) =>
+                    form.setValue("employeeModel.sex", value === "true")
+                  }
+                  value={form.watch("employeeModel.sex") ? "true" : "false"}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Male</SelectItem>
+                    <SelectItem value="false">Female</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage>{form.formState.errors.employeeModel?.sex?.message}</FormMessage>
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Religion</FormLabel>
+              <FormControl>
+                <Input
+                  {...form.register("employeeModel.religion")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage>
+                {form.formState.errors.employeeModel?.religion?.message}
+              </FormMessage>
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Ethnicity</FormLabel>
+              <FormControl>
+                <Input
+                  {...form.register("employeeModel.ethnicity")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage>
+                {form.formState.errors.employeeModel?.ethnicity?.message}
               </FormMessage>
             </FormItem>
 

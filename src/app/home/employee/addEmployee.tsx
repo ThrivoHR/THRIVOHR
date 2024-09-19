@@ -52,9 +52,12 @@ const employeeSchema = z.object({
   identityNumber: z.string().min(1, "Identity number is required"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   phoneNumber: z.string().min(1, "Phone number is required"),
-  taxCode: z.string().optional(),
-  bankAccount: z.string().optional(),
+  taxCode: z.string().min(1, "Tax code is required"),
+  bankAccount: z.string().min(1, "Bank account is required"),
   email: z.string().email("Invalid email address"),
+  sex: z.boolean(),
+  religion: z.string().min(1, "Religion is required"),
+  ethnicity: z.string().min(1, "Ethnicity is required"),
   address: z.object({
     addressLine: z.string().min(1, "Address line is required"),
     ward: z.string().min(1, "Ward is required"),
@@ -218,6 +221,54 @@ export function AddEmployeeModal({ isOpen, onClose }: AddEmployeeModalProps) {
                 {form.formState.errors.fullName?.message}
               </FormMessage>
             </FormItem>
+
+            <FormItem>
+              <FormLabel>Gender</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={(value) =>
+                    form.setValue("sex", value === "true")
+                  }
+                  value={form.watch("sex") ? "true" : "false"}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Male</SelectItem>
+                    <SelectItem value="false">Female</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage>{form.formState.errors.sex?.message}</FormMessage>
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Religion</FormLabel>
+              <FormControl>
+                <Input
+                  {...form.register("religion")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage>
+                {form.formState.errors.religion?.message}
+              </FormMessage>
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Ethnicity</FormLabel>
+              <FormControl>
+                <Input
+                  {...form.register("ethnicity")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage>
+                {form.formState.errors.ethnicity?.message}
+              </FormMessage>
+            </FormItem>
+
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>

@@ -44,20 +44,22 @@ interface AddApplicationModalProps {
 }
 
 const ApplicationFormSchema = z.object({
-  fullName: z.string(),
-  email: z.string(),
-  phoneNumber: z.string(),
-  dateOfBirth: z.string(),
-  address: z.string(),
-  city: z.string(),
-  country: z.string(),
-  nationalID: z.string(),
+  fullName: z.string().min(1, "Full Name is required"),
+  email: z.string().email("Invalid email address"),
+  phoneNumber: z.string().min(10, "Phone Number must be at least 10 digits"),
+  dateOfBirth: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Invalid date format",
+  }),
+  address: z.string().min(1, "Address is required"),
+  city: z.string().min(1, "City is required"),
+  country: z.string().min(1, "Country is required"),
+  nationalID: z.string().min(1, "National ID is required"),
   gender: z.boolean(),
-  educationLevel: z.string(),
-  employmentHistory: z.string(),
-  status: z.number(),
-  positionId: z.number(),
-  departmentId: z.number(),
+  educationLevel: z.string().min(1, "Education Level is required"),
+  employmentHistory: z.string().min(1, "Employment History is required"),
+  status: z.number().min(0).max(2, "Status must be between 0 and 2"),
+  positionId: z.number().min(1, "Position is required"),
+  departmentId: z.number().min(1, "Department is required"),
 });
 
 export function AddApplicationFormModal({
@@ -84,6 +86,7 @@ export function AddApplicationFormModal({
       status: 0,
       positionId: 0,
       departmentId: 0,
+      gender: true,
     },
   });
 
@@ -110,7 +113,9 @@ export function AddApplicationFormModal({
   const handleAdd = async (data: CreateApplicationFormType) => {
     setLoading(true);
     try {
-      const result = await apiApplicationFormRequest.createApplicationForm(data);
+      const result = await apiApplicationFormRequest.createApplicationForm(
+        data
+      );
       toast.success("Application added successfully!");
       console.log(result);
       onClose();
@@ -133,7 +138,7 @@ export function AddApplicationFormModal({
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent className="w-[900px] max-w-6xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Add</AlertDialogTitle>
+          <AlertDialogTitle>Add new application</AlertDialogTitle>
           <AlertDialogDescription>
             Fill in the details below to add.
           </AlertDialogDescription>
@@ -151,7 +156,99 @@ export function AddApplicationFormModal({
                   className="border rounded-md px-3 py-2 w-full"
                 />
               </FormControl>
-              <FormMessage>{form.formState.errors.fullName?.message}</FormMessage>
+              <FormMessage>
+                {form.formState.errors.fullName?.message}
+              </FormMessage>
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Date of Birth</FormLabel>
+              <FormControl>
+                <Input
+                  type="date"
+                  {...form.register("dateOfBirth")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage>
+                {form.formState.errors.dateOfBirth?.message}
+              </FormMessage>
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Address</FormLabel>
+              <FormControl>
+                <Input
+                  {...form.register("address")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage>
+                {form.formState.errors.address?.message}
+              </FormMessage>
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>City</FormLabel>
+              <FormControl>
+                <Input
+                  {...form.register("city")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage>{form.formState.errors.city?.message}</FormMessage>
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Country</FormLabel>
+              <FormControl>
+                <Input
+                  {...form.register("country")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage>
+                {form.formState.errors.country?.message}
+              </FormMessage>
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>National ID</FormLabel>
+              <FormControl>
+                <Input
+                  {...form.register("nationalID")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage>
+                {form.formState.errors.nationalID?.message}
+              </FormMessage>
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Education level</FormLabel>
+              <FormControl>
+                <Input
+                  {...form.register("educationLevel")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage>
+                {form.formState.errors.nationalID?.message}
+              </FormMessage>
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Employment history</FormLabel>
+              <FormControl>
+                <Input
+                  {...form.register("employmentHistory")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage>
+                {form.formState.errors.nationalID?.message}
+              </FormMessage>
             </FormItem>
 
             <FormItem>
@@ -173,7 +270,9 @@ export function AddApplicationFormModal({
                   className="border rounded-md px-3 py-2 w-full"
                 />
               </FormControl>
-              <FormMessage>{form.formState.errors.phoneNumber?.message}</FormMessage>
+              <FormMessage>
+                {form.formState.errors.phoneNumber?.message}
+              </FormMessage>
             </FormItem>
 
             <FormItem>
@@ -246,42 +345,58 @@ export function AddApplicationFormModal({
               </FormMessage>
             </FormItem>
 
-            {/* <FormItem>
-              <FormLabel>Start Date</FormLabel>
-              <FormControl>
-                <Input
-                  type="date"
-                  {...form.register("startDate")}
-                  className="border rounded-md px-3 py-2 w-full"
-                />
-              </FormControl>
-              <FormMessage>{form.formState.errors.startDate?.message}</FormMessage>
+            <FormItem>
+              <FormLabel>Gender</FormLabel>
+              <Select
+                onValueChange={(value) =>
+                  handleChange("gender", value === "true" ? "true" : "false")
+                }
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={
+                        form.getValues("gender") === true ? "Male" : "Female"
+                      }
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="true">Male</SelectItem>
+                  <SelectItem value="false">Female</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage>{form.formState.errors.gender?.message}</FormMessage>
             </FormItem>
 
             <FormItem>
-              <FormLabel>End Date</FormLabel>
-              <FormControl>
-                <Input
-                  type="date"
-                  {...form.register("endDate")}
-                  className="border rounded-md px-3 py-2 w-full"
-                />
-              </FormControl>
-              <FormMessage>{form.formState.errors.endDate?.message}</FormMessage>
+              <FormLabel>Status</FormLabel>
+              <Select
+                onValueChange={(value) =>
+                  handleChange("status", parseInt(value))
+                }
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={
+                        form.getValues("status") === 0
+                          ? "Inactive"
+                          : form.getValues("status") === 1
+                          ? "Active"
+                          : "Pending"
+                      }
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="0">Inactive</SelectItem>
+                  <SelectItem value="1">Active</SelectItem>
+                  <SelectItem value="2">Pending</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage>{form.formState.errors.status?.message}</FormMessage>
             </FormItem>
-
-            
-
-            <FormItem>
-              <FormLabel>Employee</FormLabel>
-              <FormControl>
-                <Input
-                  {...form.register("employeeCode")}
-                  className="border rounded-md px-3 py-2 w-full"
-                />
-              </FormControl>
-              <FormMessage>{form.formState.errors.employeeCode?.message}</FormMessage>
-            </FormItem> */}
 
             <AlertDialogFooter className="col-span-3">
               <AlertDialogCancel onClick={onClose} className="mr-2">

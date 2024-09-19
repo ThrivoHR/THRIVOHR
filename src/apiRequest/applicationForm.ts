@@ -26,7 +26,7 @@ const apiApplicationFormRequest = {
 
   updateApplicationFormStatus: (Id: string, status: number) =>
     http.put<UpdateStatusResType>(
-      `/api/v1/applicationform/update-status/?Id=${Id}?status=${status}`,
+      `/api/v1/applicationform/update-status?Id=${Id}&Status=${status}`,
       {}
     ),
 };

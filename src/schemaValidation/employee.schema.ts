@@ -30,6 +30,9 @@ export const EmployeeSchema = z.object({
     description: z.string(),
   }),
   dateOfBirth: z.string(),
+  sex:z.boolean(),
+  religion:z.string(),
+  ethnicity:z.string(),
   manager: z.string(),
 });
 
@@ -82,6 +85,9 @@ export const CreateEmployee = z.object({
     city: z.string(),
     country: z.string(),
   }),
+  sex:z.boolean(),
+  religion:z.string(),
+  ethnicity:z.string(),
   dateOfBirth: z.string(),
 });
 
@@ -97,7 +103,7 @@ export const UpdateEmployee = z.object({
     lastName: z.string(),
     fullName: z.string(),
     identityNumber: z.string(),
-    dateOfBirth: z.string(), // Assuming the date is still a string in the format YYYY-MM-DD
+    dateOfBirth: z.string(),
     phoneNumber: z.string(),
     taxCode: z.string(),
     bankAccount: z.string(),
@@ -109,7 +115,10 @@ export const UpdateEmployee = z.object({
       city: z.string(),
       country: z.string(),
     }),
-    employeeCode: z.string(), // Moved inside employeeModel
+    sex:z.boolean(),
+    religion:z.string(),
+    ethnicity:z.string(),
+    employeeCode: z.string(),
   })
 });
 

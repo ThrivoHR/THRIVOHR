@@ -86,7 +86,7 @@ export default function ApplicationFormFilter({ onFilter }: ApplicationFormFilte
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Input
           placeholder="Full Name"
-          name="EmployeeCode"
+          name="FullName"
           value={filters.FullName}
           onChange={handleChange}
         />

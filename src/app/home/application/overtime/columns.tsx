@@ -12,14 +12,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { ApplicationFormSchemaType } from "@/schemaValidation/applicationForm.schema";
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogTrigger, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogTrigger,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Status string to number mapping
 const statusMap: { [key: string]: number } = {
-  "Pending": 0,
-  "Approved": 1,
-  "Rejected": 2,
+  Pending: 0,
+  Approved: 1,
+  Rejected: 2,
 };
 
 // Position mapping
@@ -43,124 +59,88 @@ const departmentMap: { [key: number]: string } = {
 };
 
 export const Columns = (
-  handleEdit: (application: ApplicationFormSchemaType) => void,
-): ColumnDef<ApplicationFormSchemaType>[] => {
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
-  const [currentData, setCurrentData] = useState<ApplicationFormSchemaType | null>(null);
-
-  const handleStatusChange = (value: string) => {
-    setSelectedStatus(parseInt(value)); // Convert the string value to number
-  };
-
-  const handleDialogOpen = (data: ApplicationFormSchemaType) => {
-    setCurrentData(data);
-    setOpenDialog(true);
-  };
-
-  const handleDialogClose = () => {
-    setOpenDialog(false);
-  };
-
-  return [
-    {
-      header: "Full Name",
-      accessorKey: "fullName",
+  handleEdit: (application: ApplicationFormSchemaType) => void
+): ColumnDef<ApplicationFormSchemaType>[] => [
+  {
+    accessorKey: "fullName",
+    header: "Full Name",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "phoneNumber",
+    header: "Phone Number",
+  },
+  {
+    accessorKey: "dateOfBirth",
+    header: "Date Of Birth",
+  },
+  {
+    accessorKey: "address",
+    header: "Address",
+  },
+  {
+    accessorKey: "city",
+    header: "City",
+  },
+  {
+    accessorKey: "country",
+    header: "Country",
+  },
+  {
+    accessorKey: "nationalID",
+    header: "National ID",
+  },
+  {
+    accessorKey: "departmentId",
+    header: "Department",
+    cell: ({ row }) => {
+      const departmentId = row.original.departmentId;
+      return departmentMap[departmentId];
     },
-    {
-      header: "Email",
-      accessorKey: "email",
+  },
+  {
+    accessorKey: "position",
+    header: "Position",
+    cell: ({ row }) => {
+      const position = row.original.positionId;
+      return positionMap[position];
     },
-    {
-      header: "Phone Number",
-      accessorKey: "phoneNumber",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status;
+      return <Badge>{status}</Badge>;
     },
-    {
-      header: "Position",
-      accessorKey: "positionId",
-      cell: ({ row }) => {
-        const positionId = row.original.positionId;
-        return positionMap[positionId];
-      },
+  },
+  {
+    accessorKey: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const id = row.original;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button variant="ghost">
+              <MoreHorizontal size={20} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => {
+                handleEdit(id);
+              }}
+            >
+              Edit
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
     },
-    {
-      header: "Department",
-      accessorKey: "departmentId",
-      cell: ({ row }) => {
-        const departmentId = row.original.departmentId;
-        return departmentMap[departmentId];
-      },
-    },
-    {
-      header: "Status",
-      accessorKey: "status",
-      cell: ({ row }) => {
-        const status = row.original.status;
-        return <Badge>{status}</Badge>;
-      },
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => {
-        const data = row.original;
-
-        return (
-          <>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleDialogOpen(data)}>
-                  Update Status
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Update Status</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Select the new status for <strong>{currentData?.fullName}</strong>:
-                  </AlertDialogDescription>
-                  <Select onValueChange={handleStatusChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.keys(statusMap).map((status) => (
-                        <SelectItem key={status} value={statusMap[status].toString()}>
-                          {status}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel onClick={handleDialogClose}>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    // onClick={() => {
-                    //   if (selectedStatus !== null && currentData) {
-                    //     handleEdit({ ...currentData,selectedStatus });
-                    //     handleDialogClose();
-                    //   }
-                    // }}
-                  >
-                    Save Changes
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </>
-        );
-      },
-    },
-  ];
-};
+  },
+];

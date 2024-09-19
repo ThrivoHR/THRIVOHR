@@ -41,6 +41,11 @@ export const columns = (
     ),
   },
   {
+    accessorKey: "sex",
+    header: "Gender",
+    cell: ({ row }) => (row.original.sex ? "Male" : "Female"),
+  },
+  {
     accessorKey: "email",
     header: "Email",
   },
