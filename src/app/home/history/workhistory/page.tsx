@@ -7,7 +7,7 @@ import {
   TrainingHistorySchemaType,
 } from "@/schemaValidation/trainingHistory.schema";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { CirclePlus, Eye, EyeOff } from "lucide-react";
 import { AddHistoryModal } from "./addHistory";
 import HistoryFilter from "./filterHistory";
 import {
@@ -110,6 +110,7 @@ export default function HistoryTable() {
 
       <div className="flex items-center py-3 space-x-2">
         <Button className="ml-auto" onClick={openModal}>
+        <CirclePlus size={16} />&nbsp;
           Add
         </Button>
         <Button variant="secondary" onClick={() => setShowTable(prev => !prev)}>

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Collapse } from "antd";
+import { FileDown, FileUp } from "lucide-react";
 
 interface ContractFilterProps {
   onFilter: (filter: ContractFilterType) => void;
@@ -211,9 +212,11 @@ export default function ContractFilter({ onFilter }: ContractFilterProps) {
         </div>
         <div className="space-x-2">
           <Button className="bg-green-400 hover:bg-green-300">
+          <FileUp size={16} />&nbsp;
             Import
           </Button>
           <Button className="bg-orange-400 hover:bg-orange-300">
+          <FileDown size={16} />&nbsp;
             Export
           </Button>
         </div>

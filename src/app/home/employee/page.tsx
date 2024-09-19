@@ -23,8 +23,9 @@ import EmployeeFilter from "./filterEmployee";
 import { EditEmployeeModal } from "./editEmployee";
 import { Button } from "@/components/ui/button";
 import { AddEmployeeModal } from "./addEmployee";
-import { Divide, Eye, EyeOff } from "lucide-react";
+import { CirclePlus, Divide, Eye, EyeOff } from "lucide-react";
 import LoadingAnimate from "@/components/Loading";
+import * as XLSX from 'xlsx';
 
 export default function EmployeeTable() {
   const [loading, setLoading] = useState(false);
@@ -153,11 +154,30 @@ export default function EmployeeTable() {
     setModalOpen(false);
   };
 
+  const handleExport = () => {
+    const exportData = employees.map((employee) => ({
+      employeeCode: employee.employeeCode,
+      fullName: employee.fullName,
+      dateOfBirth: employee.dateOfBirth,
+      email: employee.email,
+      phoneNumber: employee.phoneNumber,
+      department: employee.department,
+      position: employee.position,
+      address: employee.address.fullAddress,
+    }));
+  
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Employees");
+    XLSX.writeFile(workbook, "EmployeeData.xlsx");
+  };
+  
   return (
     <div>
-      <EmployeeFilter onFilter={handleFilterChange} />
+      <EmployeeFilter onFilter={handleFilterChange} employees={employees} onExport={handleExport}/>
       <div className="flex items-center py-3 space-x-2">
         <Button className="ml-auto" onClick={openModal}>
+          <CirclePlus size={16} />&nbsp;
           Add
         </Button>
         <Button

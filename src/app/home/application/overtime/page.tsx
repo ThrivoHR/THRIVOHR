@@ -5,7 +5,7 @@ import { DataTable } from "./data-table";
 import { Columns } from "./columns";
 
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { CirclePlus, Eye, EyeOff } from "lucide-react";
 import LoadingAnimate from "@/components/Loading";
 import apiApplicationFormRequest from "@/apiRequest/applicationForm";
 import {
@@ -119,7 +119,7 @@ export default function Contract() {
     <div>
       <ApplicationFormFilter onFilter={handleFilterChange} />
       <div className="flex justify-end items-center py-3 space-x-2">
-        <Button onClick={openModal}>Add</Button>
+        <Button onClick={openModal}><CirclePlus size={16} />&nbsp;Add</Button>
 
         <Button
           variant="secondary"

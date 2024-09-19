@@ -25,7 +25,7 @@ import {
 import { EditContractModal } from "./editContract";
 import { AddContractModal } from "./addContract";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { CirclePlus, Eye, EyeOff } from "lucide-react";
 import LoadingAnimate from "@/components/Loading";
 
 export default function Contract() {
@@ -161,7 +161,7 @@ export default function Contract() {
     <div>
       <ContractFilter onFilter={handleFilterChange} />
       <div className="flex justify-end items-center py-3 space-x-2">
-        <Button onClick={openModal}>Add</Button>
+        <Button onClick={openModal}><CirclePlus size={16} />&nbsp;Add</Button>
         <Button variant="secondary" onClick={() => setShowTable((prev) => !prev)}>
           {showTable ? <div className="flex items-center"
           ><EyeOff size={20}/>&nbsp; Hide Table</div> : <div className="flex items-center"><Eye size={20}/>&nbsp; Show Table</div>}

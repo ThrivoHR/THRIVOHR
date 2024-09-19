@@ -1,14 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EmployeeFilterType } from "@/schemaValidation/employee.schema";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import apiPositionRequest from "@/apiRequest/position";
 import apiDepartmentRequest from "@/apiRequest/department";
 import {
@@ -18,24 +13,28 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Collapse } from "antd";
 import apiEmployeeRequest from "@/apiRequest/employee"; // Assuming you have this request for importing employees
 import toast from "react-hot-toast";
+import * as XLSX from "xlsx"; // Ensure you have XLSX installed for Excel export
+import { FileDown, FileUp, Import } from "lucide-react";
 
 interface EmployeeFilterProps {
   onFilter: (filter: EmployeeFilterType) => void;
+  employees: any[]; // Assuming you pass employees as a prop
+  onExport: () => void;
 }
 const { Panel } = Collapse;
 
-export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
+export default function EmployeeFilter({
+  onFilter,
+  employees,
+  onExport,
+}: EmployeeFilterProps) {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const [filters, setFilters] = useState<EmployeeFilterType>({
     EmployeeCode: "",
     Email: "",
@@ -54,8 +53,6 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
 
   const [positions, setPositions] = useState<{ [key: number]: string }>({});
   const [departments, setDepartments] = useState<{ [key: number]: string }>({});
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null); // New state for file
 
   const getPos = async () => {
     const posData = await apiPositionRequest.getPosition();
@@ -95,7 +92,7 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
   };
 
   const handleReset = () => {
-    setFilters({
+    const resetFilters = {
       EmployeeCode: "",
       Email: "",
       FirstName: "",
@@ -109,46 +106,34 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
       IdentityNumber: "",
       TaxCode: "",
       DateOfBirth: "",
-    });
-    onFilter({
-      EmployeeCode: "",
-      Email: "",
-      FirstName: "",
-      LastName: "",
-      PhoneNumber: "",
-      DepartmentId: 0,
-      PositionId: 0,
-      BankAccount: "",
-      Address: "",
-      FullName: "",
-      IdentityNumber: "",
-      TaxCode: "",
-      DateOfBirth: "",
-    });
+    };
+    setFilters(resetFilters);
+    onFilter(resetFilters);
   };
 
   // New handler for file upload
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setSelectedFile(e.target.files[0]);
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      const formData = new FormData();
+      formData.append("file", file);
+      try {
+        await apiEmployeeRequest.importEmployee(formData);
+        toast.success("File imported successfully");
+      } catch (error) {
+        toast.error("Error importing file");
+      }
     }
   };
 
-  // New handler for import
-  const handleImport = async () => {
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-      try {
-        await apiEmployeeRequest.importEmployee(formData); // Call the importEmployee API
-        toast.success("Imported successfully");
-        console.log("checck")
-      } catch (error) {
-        console.error("Error importing file:", error);
-      }
-    } else {
-      toast.error("Please select a file to import");
-    }
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleExportClick = () => {
+    // Trigger the export function passed from the parent
+    onExport();
   };
 
   return (
@@ -277,19 +262,25 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
             <div className="space-x-2">
               <input
                 type="file"
-                id="fileInput"// Hide the input element
+                ref={fileInputRef}
+                accept=".xls, .xlsx"
+                style={{ display: "none" }} 
                 onChange={handleFileChange}
               />
 
-
               <Button
                 className="bg-green-400 hover:bg-green-300"
-                onClick={handleImport}
+                onClick={handleImportClick}
               >
+                <FileUp size={16} />&nbsp;
                 Import
               </Button>
 
-              <Button className="bg-orange-400 hover:bg-orange-300">
+              <Button
+                className="bg-orange-400 hover:bg-orange-300"
+                onClick={handleExportClick}
+              >
+                <FileDown size={16} />&nbsp;
                 Export
               </Button>
             </div>
