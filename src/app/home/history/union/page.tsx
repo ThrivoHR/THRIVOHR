@@ -1,217 +1,255 @@
 "use client";
 
-import { useState } from "react";
-import DataTable from "@/components/Table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import Filter from "@/components/Filter";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { EyeOff } from "lucide-react";
+import { CirclePlus, Eye, EyeOff } from "lucide-react";
+import { AddUnionModal } from "./addUnion";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
+import LoadingAnimate from "@/components/Loading";
+import apiUnionRequest from "@/apiRequest/union";
+import {
+  UnionFilterType,
+  UnionSchemaType,
+} from "@/schemaValidation/union.schema";
+import UnionFilter from "./filterUnion";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import toast from "react-hot-toast";
 
-type Employee = {
-  id: string;
-  fullName: string;
-  unionCode: string; // Changed from 'union' to 'unionCode'
-  joinDate: string;
-};
-
-const columns = ["ID", "Full Name", "Union", "Join Date"];
-
-const employees: Employee[] = [
-  {
-    id: "EMP001",
-    fullName: "John Doe",
-    unionCode: "SA",
-    joinDate: "2023-01-15",
-  },
-  {
-    id: "EMP002",
-    fullName: "Jane Doe",
-    unionCode: "SA",
-    joinDate: "2022-11-20",
-  },
-  {
-    id: "EMP003",
-    fullName: "Bob Smith",
-    unionCode: "SA",
-    joinDate: "2023-03-05",
-  },
-];
-
-export default function Employee() {
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+export default function UnionTable() {
+  const [loading, setLoading] = useState(false);
+  const [union, setUnion] = useState<UnionSchemaType[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedUnion, setSelectedUnion] = useState<UnionSchemaType | null>(
     null
   );
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dialogType, setDialogType] = useState<"edit" | "delete" | null>(null);
+  const [filter, setFilter] = useState<UnionFilterType | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [showTable, setShowTable] = useState(false);
 
-  const handleEditClick = (row: Record<string, React.ReactNode>) => {
-    const employee = employees.find((emp) => emp.id === row["ID"])!;
-    setSelectedEmployee(employee);
-    setDialogType("edit");
-    setIsDialogOpen(true);
+  // State for the update dialog
+  const [isUpdateDialogOpen, setUpdateDialogOpen] = useState(false);
+
+  const handleFilterChange = (newFilter: UnionFilterType) => {
+    setFilter(newFilter);
+    setPage(1);
+    setShowTable(true); // Show table when filter is applied
   };
 
-  const handleDeleteClick = (row: Record<string, React.ReactNode>) => {
-    const employee = employees.find((emp) => emp.id === row["ID"])!;
-    setSelectedEmployee(employee);
-    setDialogType("delete");
-    setIsDialogOpen(true);
+  useEffect(() => {
+    if (showTable) {
+      const fetchUnion = async () => {
+        setLoading(true);
+        try {
+          const data = await apiUnionRequest.getUnion(page, pageSize, filter);
+          setUnion(data.payload.value.data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          setUnion([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchUnion();
+    }
+  }, [page, pageSize, filter, showTable]);
+
+  const handleUpdate = (union: UnionSchemaType) => {
+    setSelectedUnion(union); // Set the selected union to be updated
+    setUpdateDialogOpen(true); // Open the update dialog
   };
 
-  const closeDialog = () => {
-    setIsDialogOpen(false);
-    setSelectedEmployee(null);
-    setDialogType(null);
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (selectedEmployee) {
-      const { name, value } = e.target;
-      setSelectedEmployee({ ...selectedEmployee, [name]: value });
+  const handleChangePageSize = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setPage(1);
+  };
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
+  // Close the update dialog
+  const closeUpdateDialog = () => {
+    setUpdateDialogOpen(false);
+    setSelectedUnion(null); // Clear the selected union
+  };
+
+  // Save the updated union data
+  const saveUpdatedData = async () => {
+    if (selectedUnion) {
+      try {
+        await apiUnionRequest.updateUnion(selectedUnion, selectedUnion.id); // Call the API to update the union
+        setUpdateDialogOpen(false); // Close the dialog after saving
+        setSelectedUnion(null); // Clear the selected union
+        toast.success("Union updated successfully!");
+      } catch (error) {
+        toast.error("Error updating union");
+        console.error("Error updating union:", error);
+      }
     }
   };
 
   return (
     <div>
-      <div>
-        <Filter />
-        <div className="flex justify-end items-center py-3 space-x-2">
-          <Button>Add new activity</Button>
-          <Button variant="secondary">
+      <UnionFilter onFilter={handleFilterChange} />
+      <div className="flex items-center py-3 space-x-2">
+        <Button className="ml-auto" onClick={openModal}>
+          <CirclePlus size={16} />
+          &nbsp; Add
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={() => setShowTable((prev) => !prev)}
+        >
+          {showTable ? (
             <div className="flex items-center">
-              <EyeOff size={20} />
-              &nbsp; Hide Table
+              <EyeOff size={20} /> &nbsp; Hide Table
             </div>
-          </Button>
-        </div>
+          ) : (
+            <div className="flex items-center">
+              <Eye size={20} /> &nbsp; Show Table
+            </div>
+          )}
+        </Button>
       </div>
-      <div className="border rounded-lg w-full h-[80vh] flex flex-col">
-        <DataTable
-          columns={columns}
-          data={employees.map((employee) => ({
-            ID: employee.id,
-            "Full Name": employee.fullName,
-            Union: employee.unionCode,
-            "Join Date": employee.joinDate,
-          }))}
-          onEditClick={handleEditClick}
-          onDeleteClick={handleDeleteClick}
-        />
-        <div className="pagination">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-        {selectedEmployee && (
-          <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
-            <DialogContent className="w-full max-w-4xl h-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {dialogType === "edit" && "Edit Employee"}
-                  {dialogType === "delete" && "Delete Employee"}
-                </DialogTitle>
-                <DialogClose />
-              </DialogHeader>
-              <div className="p-4 bg-white">
-                {dialogType === "edit" && (
-                  <form className="grid grid-cols-1 gap-4">
-                    <div className="flex flex-col">
-                      <label>ID:</label>
-                      <Input
-                        type="text"
-                        name="id"
-                        value={selectedEmployee.id}
-                        readOnly
-                        className="p-2 border rounded"
-                      />
+      <AddUnionModal isOpen={isModalOpen} onClose={closeModal} />
+
+      {showTable && (
+        <>
+          {loading ? (
+            <div>
+              <LoadingAnimate />
+            </div>
+          ) : (
+            <>
+              {union.length > 0 ? (
+                <>
+                  <DataTable columns={columns(handleUpdate)} data={union} />
+                  <div className="flex justify-between items-center p-4">
+                    <div>
+                      <select
+                        value={pageSize}
+                        onChange={(e) =>
+                          handleChangePageSize(Number(e.target.value))
+                        }
+                        className="px-4 py-2 border rounded-lg"
+                      >
+                        <option value={5}>5 rows</option>
+                        <option value={10}>10 rows</option>
+                      </select>
                     </div>
-                    <div className="flex flex-col">
-                      <label>Full Name:</label>
-                      <Input
-                        type="text"
-                        name="fullName"
-                        value={selectedEmployee.fullName}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
+
+                    <div>
+                      <button
+                        onClick={() => handleChangePage(Math.max(page - 1, 1))}
+                        disabled={page === 1}
+                        className="px-3 py-2 border rounded-lg text-sm"
+                      >
+                        Previous
+                      </button>
+                      <span className="mx-4">Page {page}</span>
+                      <button
+                        onClick={() => handleChangePage(page + 1)}
+                        className="px-4 py-2 border rounded-lg text-sm"
+                      >
+                        Next
+                      </button>
                     </div>
-                    <div className="flex flex-col">
-                      <label>Join Date:</label>
-                      <Input
-                        type="text"
-                        name="joinDate"
-                        value={selectedEmployee.joinDate}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                  </form>
-                )}
-                {dialogType === "delete" && (
-                  <p>
-                    Are you sure you want to delete employee{" "}
-                    {selectedEmployee.fullName} with ID {selectedEmployee.id}?
-                  </p>
-                )}
+                  </div>
+                </>
+              ) : (
+                <div>No unions found.</div>
+              )}
+            </>
+          )}
+        </>
+      )}
+
+      {selectedUnion && (
+        <AlertDialog
+          open={isUpdateDialogOpen}
+          onOpenChange={setUpdateDialogOpen}
+        >
+          <AlertDialogContent className="w-[900px] max-w-6xl">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Update Union</AlertDialogTitle>
+              <AlertDialogDescription>
+                Edit union information
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="employeeCode">Employee Code</Label>
+                <Input
+                  id="employeeCode"
+                  value={selectedUnion.employeeCode}
+                  onChange={(e) =>
+                    setSelectedUnion((prev) =>
+                      prev ? { ...prev, employeeCode: e.target.value } : null
+                    )
+                  }
+                />
               </div>
-              <DialogFooter>
-                <button
-                  className="mt-4 px-4 py-2 bg-blue-300 text-white rounded"
-                  onClick={closeDialog}
-                >
-                  Close
-                </button>
-                {dialogType === "edit" && (
-                  <button className="mt-4 px-4 py-2 bg-green-500 text-white rounded">
-                    Save Changes
-                  </button>
-                )}
-                {dialogType === "delete" && (
-                  <button className="mt-4 px-4 py-2 bg-red-500 text-white rounded">
-                    Confirm Delete
-                  </button>
-                )}
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
+
+              <div>
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  value={selectedUnion.title}
+                  onChange={(e) =>
+                    setSelectedUnion((prev) =>
+                      prev ? { ...prev, title: e.target.value } : null
+                    )
+                  }
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="dateJoined">Date Joined</Label>
+                <Input
+                  id="dateJoined"
+                  type="date"
+                  value={selectedUnion.dateJoined}
+                  onChange={(e) =>
+                    setSelectedUnion((prev) =>
+                      prev ? { ...prev, dateJoined: e.target.value } : null
+                    )
+                  }
+                />
+              </div>
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={closeUpdateDialog}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={saveUpdatedData}>
+                Update
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 }

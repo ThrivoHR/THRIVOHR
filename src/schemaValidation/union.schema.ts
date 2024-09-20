@@ -3,7 +3,7 @@ import { title } from "process";
 import { z } from "zod";
 
 export const UnionSchema = z.object({
-    id: z.string(),
+    id: z.number(),
     employeeCode: z.string(),
     title: z.string(),
     dateJoined: z.string(),
@@ -43,11 +43,13 @@ export const CreateUnionRes = z.object({
     log: z.string(),
   });
 
-export const UpdateUnion = z.object({
-    employeeCode:z.string(),
-    title:z.string(),
-    dateJoined:z.string(),
+  export const UpdateUnion = z.object({
+      employeeCode: z.string(),
+      title: z.string(),
+      dateJoined: z.string(),
+    id: z.number(),
   });
+  
 
 export const UpdateUnionRes = z.object({
     status: z.number(),
