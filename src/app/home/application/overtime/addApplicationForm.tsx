@@ -130,7 +130,7 @@ export function AddApplicationFormModal({
     }
   };
 
-  const handleChange = (name: string, value: string | number) => {
+  const handleChange = (name: string, value: string | number | boolean) => {
     form.setValue(name as keyof CreateApplicationFormType, value);
   };
 
@@ -349,7 +349,7 @@ export function AddApplicationFormModal({
               <FormLabel>Gender</FormLabel>
               <Select
                 onValueChange={(value) =>
-                  handleChange("gender", value === "true" ? "true" : "false")
+                  handleChange("gender", value === "true" ? true : false)
                 }
               >
                 <FormControl>

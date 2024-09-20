@@ -88,6 +88,7 @@ export default function HistoryFilter({ onFilter }: HistoryFilterProps) {
               onChange={handleInputChange}
             />
             <Input
+            type="date"
               placeholder="Start Day"
               name="StartDay"
               value={filters.StartDay}
