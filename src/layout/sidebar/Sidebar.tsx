@@ -126,13 +126,24 @@ export default function Sidebar() {
                 </AccordionTrigger>
                 <AccordionContent>
                   <Link
-                    href="/home/application/absent"
+                    href="/home/application/resign"
                     className={`${linkClasses(
-                      "/home/application/absent"
+                      "/home/application/resign"
                     )} pl-16`}
-                    onClick={() => handleNavigation("/home/application/absent")}
+                    onClick={() => handleNavigation("/home/application/resign")}
                   >
-                    Absence application
+                    Resign
+                  </Link>
+                  <Link
+                    href="/home/application/applicationForm"
+                    className={`${linkClasses(
+                      "/home/application/applicationForm"
+                    )} pl-16`}
+                    onClick={() =>
+                      handleNavigation("/home/application/applicationForm")
+                    }
+                  >
+                    Application form
                   </Link>
                   <Link
                     href="/home/application/overtime"
@@ -144,6 +155,17 @@ export default function Sidebar() {
                     }
                   >
                     Overtime
+                  </Link>
+                  <Link
+                    href="/home/application/absence"
+                    className={`${linkClasses(
+                      "/home/application/absence"
+                    )} pl-16`}
+                    onClick={() =>
+                      handleNavigation("/home/application/absence")
+                    }
+                  >
+                    Absence
                   </Link>
                 </AccordionContent>
               </AccordionItem>

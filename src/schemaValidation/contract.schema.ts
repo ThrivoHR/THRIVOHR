@@ -1,4 +1,4 @@
-import Employee from "@/app/home/application/absent/page";
+import Employee from "@/app/home/application/resign/page";
 import z from "zod";
 
 export const ContractSchema = z.object({

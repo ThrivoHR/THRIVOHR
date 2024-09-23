@@ -240,7 +240,6 @@ export default function EmployeeFilter({
             />
 
             <Input
-              placeholder="Date of Birth"
               type="date"
               name="DateOfBirth"
               value={filters.DateOfBirth}
@@ -263,7 +262,6 @@ export default function EmployeeFilter({
               <input
                 type="file"
                 ref={fileInputRef}
-                accept=".xls, .xlsx"
                 style={{ display: "none" }} 
                 onChange={handleFileChange}
               />
