@@ -95,6 +95,7 @@ export const CreateEmployeeRes = z.object({
   status: z.number(),
   message: z.string(),
   log: z.string(),
+  detail: z.string(),
 });
 
 export const UpdateEmployee = z.object({
@@ -121,8 +122,6 @@ export const UpdateEmployee = z.object({
     employeeCode: z.string(),
   })
 });
-
-
 
 export const UpdateEmployeeRes = z.object({
   status: z.number(),

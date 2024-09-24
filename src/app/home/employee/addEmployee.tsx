@@ -109,9 +109,10 @@ export function AddEmployeeModal({ isOpen, onClose }: AddEmployeeModalProps) {
       const result = await apiEmployeeRequest.createEmployee(formattedData);
       toast.success("Employee added successfully!");
       form.reset();
-      console.log(result);
+      console.log("",result);
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || error?.message || "Employee add failed";
+      const errorMessage = error?.payload?.detail || "An error occurred";
+      console.log(errorMessage)
       handleErrorApi({
         error,
         setError: form.setError,

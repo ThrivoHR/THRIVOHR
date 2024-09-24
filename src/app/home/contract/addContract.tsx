@@ -98,7 +98,7 @@ export function AddContractModal({ isOpen, onClose }: AddContractModalProps) {
       console.log(result);
       onClose();
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || error?.message || "Contract addition failed";
+      const errorMessage = error?.payload?.detail || "An error occurred";
       handleErrorApi({
         error,
         setError: form.setError,

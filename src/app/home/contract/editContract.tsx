@@ -98,7 +98,7 @@ export function EditContractModal({
       console.log(result);
       onClose();
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || error?.message || "Contract editing failed";
+      const errorMessage = error?.payload?.detail || "An error occurred";
       handleErrorApi({
         error,
         setError: form.setError,

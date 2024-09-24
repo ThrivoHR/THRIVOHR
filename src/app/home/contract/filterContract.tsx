@@ -113,18 +113,6 @@ export default function ContractFilter({ onFilter }: ContractFilterProps) {
           onChange={handleChange}
         />
         <Input
-          placeholder="Department"
-          name="Department"
-          value={filters.Department}
-          onChange={handleChange}
-        />
-        <Input
-          placeholder="Position"
-          name="Position"
-          value={filters.Position}
-          onChange={handleChange}
-        />
-        <Input
           placeholder="Start Date"
           type="date"
           name="StartDate"

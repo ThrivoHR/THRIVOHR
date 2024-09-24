@@ -73,8 +73,7 @@ export function AddHistoryModal({ isOpen, onClose }: AddEmployeeModalProps) {
       console.log(result);
     } catch (error: any) {
       // Extracting the error message from the response
-      const errorMessage = error?.response?.data?.message || error?.message || "Adding failed";
-  
+      const errorMessage = error?.payload?.detail || "An error occurred";
       handleErrorApi({
         error,
         setError: form.setError,

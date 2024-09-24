@@ -118,9 +118,7 @@ export function AddApplicationFormModal({
       console.log(result);
       onClose();
     } catch (error: any) {
-      // Extracting the error message from the response
-      const errorMessage = error?.response?.data?.message || error?.message || "Application addition failed";
-  
+      const errorMessage = error?.payload?.detail || "An error occurred";
       handleErrorApi({
         error,
         setError: form.setError,
