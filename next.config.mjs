@@ -3,10 +3,8 @@ const nextConfig = {
   images: {
       remotePatterns: [
           {
-              protocol: 'https',
-              hostname: 'i.pinimg.com',
-              port: '', // Optional but can be included for clarity
-              pathname: '/**', // Matches all paths
+            protocol: "https",
+            hostname: "**",
           },
          
       ],
