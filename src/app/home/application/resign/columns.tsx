@@ -26,6 +26,10 @@ export const Columns = (
     },
   },
   {
+    accessorKey: "employeeId",
+    header: "Employee ID",
+  },
+  {
     accessorKey: "dateTime",
     header: "Date",
     cell: ({ row }) => {

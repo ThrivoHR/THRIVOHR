@@ -28,6 +28,7 @@ import { useForm } from "react-hook-form";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -229,7 +230,7 @@ export function AddEmployeeModal({ isOpen, onClose }: AddEmployeeModalProps) {
                   onValueChange={(value) =>
                     form.setValue("sex", value === "true")
                   }
-                  value={form.watch("sex") ? "true" : "false"}
+                  value={form.watch("sex") !== undefined ? (form.watch("sex") ? "true" : "false") : undefined} 
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select gender" />
@@ -375,15 +376,16 @@ export function AddEmployeeModal({ isOpen, onClose }: AddEmployeeModalProps) {
                   <SelectTrigger>
                     <SelectValue placeholder="Select province" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {provinces.map((province) => (
+                  <SelectContent className="max-h-60 overflow-y-auto">
+                    <SelectGroup>{provinces.map((province) => (
                       <SelectItem
                         key={province.code}
                         value={`${province.code}|${province.name}`}
                       >
                         {province.name}
                       </SelectItem>
-                    ))}
+                    ))}</SelectGroup>
+                    
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -418,7 +420,7 @@ export function AddEmployeeModal({ isOpen, onClose }: AddEmployeeModalProps) {
                   <SelectTrigger>
                     <SelectValue placeholder="Select district" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-60 overflow-y-auto">
                     {districts.map((district) => (
                       <SelectItem
                         key={district.code}
@@ -459,7 +461,7 @@ export function AddEmployeeModal({ isOpen, onClose }: AddEmployeeModalProps) {
                   <SelectTrigger>
                     <SelectValue placeholder="Select ward" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-60 overflow-y-auto">
                     {wards.map((ward) => (
                       <SelectItem
                         key={ward.code}
