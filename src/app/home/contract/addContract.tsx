@@ -98,15 +98,17 @@ export function AddContractModal({ isOpen, onClose }: AddContractModalProps) {
       console.log(result);
       onClose();
     } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error?.message || "Contract addition failed";
       handleErrorApi({
         error,
         setError: form.setError,
       });
-      toast.error("Contract addition failed");
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleChange = (name: string, value: string | number) => {
     form.setValue(name as keyof CreateContractType, value);

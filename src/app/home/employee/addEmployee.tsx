@@ -108,18 +108,21 @@ export function AddEmployeeModal({ isOpen, onClose }: AddEmployeeModalProps) {
     try {
       const result = await apiEmployeeRequest.createEmployee(formattedData);
       toast.success("Employee added successfully!");
+      form.reset();
       console.log(result);
     } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error?.message || "Employee add failed";
       handleErrorApi({
         error,
         setError: form.setError,
       });
-      toast.error("Employee added failed");
+      toast.error(errorMessage); 
     } finally {
       setLoading(false);
       onClose();
     }
   };
+  
 
   useEffect(() => {
     // Fetch provinces when component mounts

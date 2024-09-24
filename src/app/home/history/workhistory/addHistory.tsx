@@ -72,16 +72,20 @@ export function AddHistoryModal({ isOpen, onClose }: AddEmployeeModalProps) {
       toast.success("Added successfully!");
       console.log(result);
     } catch (error: any) {
+      // Extracting the error message from the response
+      const errorMessage = error?.response?.data?.message || error?.message || "Adding failed";
+  
       handleErrorApi({
         error,
         setError: form.setError,
       });
-      toast.error("Added failed");
+      toast.error(errorMessage);  // Display the error message in the toast
     } finally {
       setLoading(false);
       onClose();
     }
   };
+  
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>

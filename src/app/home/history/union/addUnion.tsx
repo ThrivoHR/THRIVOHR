@@ -62,16 +62,18 @@ export function AddUnionModal({ isOpen, onClose }: AddUnionModalProps) {
       toast.success("Added successfully!");
       console.log(result);
     } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error?.message || "Addition failed";
       handleErrorApi({
         error,
         setError: form.setError,
       });
-      toast.error("Added failed");
+      toast.error(errorMessage); 
     } finally {
       setLoading(false);
       onClose();
     }
   };
+  
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>

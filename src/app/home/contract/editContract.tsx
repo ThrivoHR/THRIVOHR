@@ -92,18 +92,21 @@ export function EditContractModal({
           positionId: Number(data.employeeContractModel.positionId),
         },
       };
+      
       const result = await apiContractRequest.updateContract(contractId, updatedData);
       toast.success("Contract edited successfully!");
       console.log(result);
       onClose();
     } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error?.message || "Contract editing failed";
       handleErrorApi({
         error,
         setError: form.setError,
       });
-      toast.error("Error");
+      toast.error(errorMessage);
     }
   };
+  
   
   const handleClose = () => {
     form.reset();

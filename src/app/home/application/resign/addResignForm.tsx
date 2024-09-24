@@ -67,15 +67,19 @@ export function AddResignFormModal({ isOpen, onClose }: AddResignModalProps) {
       console.log(result);
       onClose();
     } catch (error: any) {
+      // Extracting the error message from the response
+      const errorMessage = error?.response?.data?.message || error?.message || "Added failed";
+  
       handleErrorApi({
         error,
         setError: form.setError,
       });
-      toast.error("Added failed");
+      toast.error(errorMessage); // Display the error message in the toast
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>

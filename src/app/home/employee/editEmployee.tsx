@@ -140,21 +140,20 @@ export function EditEmployeeModal({
 
   const handleEdit = async (data: UpdateEmployeeType) => {
     try {
-      const result = await apiEmployeeRequest.updateEmployee(
-        employeeCode,
-        data
-      );
+      const result = await apiEmployeeRequest.updateEmployee(employeeCode, data);
       toast.success("Employee edited successfully!");
       console.log(result);
       onClose();
     } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error?.message || "Employee edit failed";
       handleErrorApi({
         error,
         setError: form.setError,
       });
-      toast.error("Error");
+      toast.error(errorMessage); 
     }
   };
+  
 
   const handleClose = () => {
     form.reset(); // Reset form state

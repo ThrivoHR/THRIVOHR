@@ -113,22 +113,24 @@ export function AddApplicationFormModal({
   const handleAdd = async (data: CreateApplicationFormType) => {
     setLoading(true);
     try {
-      const result = await apiApplicationFormRequest.createApplicationForm(
-        data
-      );
+      const result = await apiApplicationFormRequest.createApplicationForm(data);
       toast.success("Application added successfully!");
       console.log(result);
       onClose();
     } catch (error: any) {
+      // Extracting the error message from the response
+      const errorMessage = error?.response?.data?.message || error?.message || "Application addition failed";
+  
       handleErrorApi({
         error,
         setError: form.setError,
       });
-      toast.error("Application addition failed");
+      toast.error(errorMessage); // Display the error message in the toast
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleChange = (name: string, value: string | number | boolean) => {
     form.setValue(name as keyof CreateApplicationFormType, value);
