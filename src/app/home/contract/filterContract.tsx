@@ -119,13 +119,13 @@ export default function ContractFilter({ onFilter }: ContractFilterProps) {
           value={filters.StartDate}
           onChange={handleChange}
         />
-        <Input
+        {/* <Input
           placeholder="End Date"
           type="date"
           name="EndDate"
           value={filters.EndDate}
           onChange={handleChange}
-        />
+        /> */}
         <Input
           placeholder="Notes"
           name="Notes"
