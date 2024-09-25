@@ -55,18 +55,37 @@ export default function LoginForm() {
       const result = await authApiRequest.login(values);
       const { token, refreshToken } = result.payload.value;
       saveSession(token, refreshToken);
-      if (result.payload.value.token) {
+      if (token) {
         await authApiRequest.auth({
-          sessionToken: result.payload.value.token,
+          sessionToken: token,
         });
-        localStorage.setItem("sessionToken", result.payload.value.token)
-
-        router.push("/home");
         toast.success("Login successful!");
-        console.log(result)
       }
-      if(result.payload.value.refreshToken){}
-
+      if (refreshToken) {
+        setTimeout(async () => {
+          try {
+            const refreshResult = await authApiRequest.refresh({
+              token,
+              refreshToken,
+            });
+            console.log('Refresh API response:', refreshResult);
+            const newToken = (refreshResult.payload as { value: { token: string } }).value.token;
+            if (newToken) {
+              await authApiRequest.auth({
+                sessionToken: newToken,
+              });
+              const payload = refreshResult.payload as { value: { token: string, refreshToken: string } };
+              saveSession(newToken, payload.value.refreshToken); 
+              console.log('Session refreshed and auth re-run');
+            }
+          } catch (error: any) {
+            console.error('Token refresh failed', error);
+            toast.error('Token refresh failed');
+          }
+        }, 10000);
+      }
+      router.push("/home");
+      console.log(result);
     } catch (error: any) {
       handleErrorApi({
         error,
@@ -74,11 +93,11 @@ export default function LoginForm() {
       });
       toast.error("Login failed");
     } finally {
+      // Stop loading indicator
       setLoading(false);
     }
-
   }
-
+  
   return (
     <div className="flex flex-col h-screen">
       <header className="bg-white shadow-md py-3">
