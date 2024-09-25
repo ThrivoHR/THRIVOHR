@@ -82,7 +82,8 @@ export default function LoginForm() {
             console.error('Token refresh failed', error);
             toast.error('Token refresh failed');
           }
-        }, 10000);
+        }, 240000
+      );
       }
       router.push("/home");
       console.log(result);
