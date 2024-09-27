@@ -1,9 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -48,7 +48,37 @@ export default function LoginForm() {
     localStorage.setItem("token", token);
     localStorage.setItem("refreshToken", refreshToken);
   }
-  
+
+  useEffect(() => {
+    const refreshSession = async () => {
+      const token = localStorage.getItem("sessionToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (token && refreshToken) {
+        try {
+          const refreshResult = await authApiRequest.refresh({
+            token,
+            refreshToken,
+          });
+          const payload = refreshResult.payload as { value: { token: string; refreshToken: string } };
+          const newToken = payload.value.token;
+          const newRefreshToken = (refreshResult.payload as { value: { token: string; refreshToken: string } }).value.refreshToken;
+          if (newToken) {
+            localStorage.setItem("sessionToken", newToken);
+            localStorage.setItem("refreshToken", newRefreshToken);
+            await authApiRequest.auth({
+              sessionToken: newToken,
+            });
+            console.log("Session refreshed and auth re-run");
+          }
+        } catch (error) {
+          console.error("Token refresh failed", error);
+        }
+      }
+    };
+    const interval = setInterval(refreshSession, 600000);
+    return () => clearInterval(interval);
+  }, []);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     try {
@@ -61,30 +91,6 @@ export default function LoginForm() {
         });
         toast.success("Login successful!");
       }
-      if (refreshToken) {
-        setTimeout(async () => {
-          try {
-            const refreshResult = await authApiRequest.refresh({
-              token,
-              refreshToken,
-            });
-            console.log('Refresh API response:', refreshResult);
-            const newToken = (refreshResult.payload as { value: { token: string } }).value.token;
-            if (newToken) {
-              await authApiRequest.auth({
-                sessionToken: newToken,
-              });
-              const payload = refreshResult.payload as { value: { token: string, refreshToken: string } };
-              saveSession(newToken, payload.value.refreshToken); 
-              console.log('Session refreshed and auth re-run');
-            }
-          } catch (error: any) {
-            console.error('Token refresh failed', error);
-            toast.error('Token refresh failed');
-          }
-        }, 240000
-      );
-      }
       router.push("/home");
       console.log(result);
     } catch (error: any) {
@@ -94,11 +100,10 @@ export default function LoginForm() {
       });
       toast.error("Login failed");
     } finally {
-      // Stop loading indicator
       setLoading(false);
     }
   }
-  
+
   return (
     <div className="flex flex-col h-screen">
       <header className="bg-white shadow-md py-3">
@@ -135,7 +140,6 @@ export default function LoginForm() {
                         <label>Employee ID</label>
                         <FormControl>
                           <Input {...field} placeholder="000000" />
-
                         </FormControl>
                         <FormMessage />
                       </FormItem>

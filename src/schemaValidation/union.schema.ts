@@ -1,4 +1,4 @@
-import Employee from "@/app/home/history/addition/page";
+import Employee from "@/app/home/history/rewardAndDisciplinary/page";
 import { title } from "process";
 import { z } from "zod";
 

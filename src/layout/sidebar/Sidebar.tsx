@@ -99,20 +99,11 @@ export default function Sidebar() {
                     Career history
                   </Link>
                   <Link
-                    href="/home/history/addition"
-                    className={`${linkClasses("/home/history/addition")} pl-16`}
-                    onClick={() => handleNavigation("/home/history/addition")}
+                    href="/home/history/rewardAndDisciplinary"
+                    className={`${linkClasses("/home/history/rewardAndDisciplinary")} pl-16`}
+                    onClick={() => handleNavigation("/home/history/rewardAndDisciplinary")}
                   >
-                    Addition
-                  </Link>
-                  <Link
-                    href="/home/history/deduction"
-                    className={`${linkClasses(
-                      "/home/history/deduction"
-                    )} pl-16`}
-                    onClick={() => handleNavigation("/home/history/deduction")}
-                  >
-                    Deduction
+                    Reward and disciplinary
                   </Link>
                 </AccordionContent>
               </AccordionItem>

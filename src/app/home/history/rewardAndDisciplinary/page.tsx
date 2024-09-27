@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import apiEmployeeRequest from "@/apiRequest/employee";
 import {
   EmployeeFilterType,
   EmployeeSchemaType,
   UpdateEmployeeType,
 } from "@/schemaValidation/employee.schema";
-
+import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import {
   AlertDialog,
@@ -18,20 +19,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import EmployeeFilter from "./filterAbsentForm";
-import { EditAbsentModal } from "./editAbsent";
+import EmployeeFilter from "./filterReward";
+import { EditRewardModal } from "./editReward";
 import { Button } from "@/components/ui/button";
-import { AddAbsentFormModal } from "./addAbsentForm";
+import { AddRewardModal } from "./addReward";
 import { CirclePlus, Divide, Eye, EyeOff } from "lucide-react";
 import LoadingAnimate from "@/components/Loading";
+import * as XLSX from "xlsx";
 import {
-  AbsentFormFilterType,
-  AbsentFormSchemaType,
-  UpdateAbsentFormType,
-} from "@/schemaValidation/absentForm.schema";
-import apiAbsentFormRequest from "@/apiRequest/absentForm";
-import AbsentFormFilter from "./filterAbsentForm";
-import { Columns } from "./columns";
+  RewardAndDisciplinaryFilterType,
+  RewardAndDisciplinarySchemaType,
+  UpdateRewardAndDisciplinaryType,
+} from "@/schemaValidation/rewardAndDisciplinary.schema";
+import { apiRewardAndDisciplinaryRequest } from "@/apiRequest/rewardAndDisciplinary";
 import {
   Select,
   SelectContent,
@@ -41,39 +41,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function AbsentTable() {
+export default function RewardTable() {
   const [loading, setLoading] = useState(false);
-  const [absent, setAbsent] = useState<AbsentFormSchemaType[]>([]);
-  const [selectedAbsent, setSelectedAbsent] =
-    useState<AbsentFormSchemaType | null>(null);
-  const [filter, setFilter] = useState<AbsentFormFilterType | null>(null);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [absentData, setAbsentData] = useState<UpdateAbsentFormType | null>(
+  const [reward, setReward] = useState<RewardAndDisciplinarySchemaType[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const [filter, setFilter] = useState<RewardAndDisciplinaryFilterType | null>(
     null
   );
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [rewardData, setRewardData] =
+    useState<UpdateRewardAndDisciplinaryType | null>(null);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [showTable, setShowTable] = useState(false);
   const [isUpdateDialogOpen, setUpdateDialogOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<number>(0);
   const closeUpdateDialog = () => {
     setUpdateDialogOpen(false);
-    setSelectedAbsent(null);
+    setSelectedReward(null);
     setSelectedStatus(0); // Reset the status when closing the dialog
   };
-  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
-  // Handle filter change and ensure table is shown
-  const handleFilterChange = (newFilter: AbsentFormFilterType) => {
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<number>(0);
+  const [selectedReward, setSelectedReward] =
+    useState<RewardAndDisciplinarySchemaType | null>(null);
+
+  const handleFilterChange = (newFilter: EmployeeFilterType) => {
     setFilter(newFilter);
     setPage(1);
-    setShowTable(true); // Show table when filter is applied
-  };
-
-  const handleOpenModal = (absent: AbsentFormSchemaType) => {
-    setSelectedAbsent(absent);
-    setIsStatusModalOpen(true);
+    setShowTable(true);
   };
 
   useEffect(() => {
@@ -81,15 +79,16 @@ export default function AbsentTable() {
       const fetch = async () => {
         setLoading(true);
         try {
-          const data = await apiAbsentFormRequest.getAbsentForm(
-            page,
-            pageSize,
-            filter
-          );
-          setAbsent(data.payload.value.data);
+          const data =
+            await apiRewardAndDisciplinaryRequest.getRewardAndDisciplinary(
+              page,
+              pageSize,
+              filter
+            );
+          setReward(data.payload.value.data);
         } catch (error) {
           console.error("Error fetching data:", error);
-          setAbsent([]);
+          setReward([]);
         } finally {
           setLoading(false);
         }
@@ -97,6 +96,48 @@ export default function AbsentTable() {
       fetch();
     }
   }, [page, pageSize, filter, showTable]);
+
+  const handleDelete = (reward: RewardAndDisciplinarySchemaType) => {
+    setSelectedReward({
+      ...reward,
+      id: reward.id.toString(),
+    });
+    setDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedReward) {
+      try {
+        const id = selectedReward.id.toString();
+        await apiRewardAndDisciplinaryRequest.DeleteRewardAndDisciplinary(id);
+        setReward((prev) => prev.filter((emp) => emp.id !== id));
+        console.log("Deleted employee:", id);
+      } catch (error) {
+        console.error("Error deleting employee:", error);
+      } finally {
+        setDialogOpen(false);
+        setSelectedReward(null);
+      }
+    }
+  };
+
+  const saveUpdatedData = async () => {
+    if (selectedReward) {
+      try {
+        const body = {
+          id: selectedReward.id,
+          formStatus: selectedStatus,
+        };
+        await apiRewardAndDisciplinaryRequest.UpdateRewardAndDisciplinaryStatus(
+          body
+        );
+        console.log("Contract status updated successfully");
+        closeUpdateDialog();
+      } catch (error) {
+        console.error("Error updating contract status:", error);
+      }
+    }
+  };
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -107,43 +148,20 @@ export default function AbsentTable() {
     setPage(1);
   };
 
-  const transformRowToUpdate = (
-    rowData: AbsentFormSchemaType
-  ): UpdateAbsentFormType => {
-    return {
-      absentFormModel: {
-        employeeCode: rowData.employeeCode.toString(),
-        from: rowData.from,
-        to: rowData.to,
-        reason: rowData.reason,
+  const handleEdit = (reward: RewardAndDisciplinarySchemaType) => {
+    setRewardData({
+      rewardAndDisciplinaryModel: {
+        employeeId: reward.employeeId,
+        date: reward.date,
+        formOfAction: Number(reward.formOfAction),
+        amount: reward.amount,
+        reason: reward.reason,
+        isRewards: reward.isRewards,
+        status: Number(reward.status),
       },
-      id: rowData.id,
-    };
-  };
-
-  const handleEdit = (rowData: AbsentFormSchemaType) => {
-    const transformedData = transformRowToUpdate(rowData);
-    setAbsentData(transformedData);
+      id: reward.id,
+    });
     setEditModalOpen(true);
-  };
-
-  const saveUpdatedData = async () => {
-    if (selectedAbsent) {
-      try {
-        const requestBody = {
-          id: selectedAbsent.id,
-          status: selectedStatus, // The status you want to update
-        };
-        await apiAbsentFormRequest.updateAbsentFormStatus(
-          selectedAbsent.id,
-          requestBody
-        );
-        console.log("Contract status updated successfully");
-        closeUpdateDialog();
-      } catch (error) {
-        console.error("Error updating contract status:", error);
-      }
-    }
   };
 
   const openModal = () => {
@@ -154,9 +172,14 @@ export default function AbsentTable() {
     setModalOpen(false);
   };
 
+  const handleOpenModal = (reward: RewardAndDisciplinarySchemaType) => {
+    setSelectedReward(reward);
+    setIsStatusModalOpen(true);
+  };
+
   return (
     <div>
-      <AbsentFormFilter onFilter={handleFilterChange} />
+      <EmployeeFilter onFilter={handleFilterChange} />
       <div className="flex items-center py-3 space-x-2">
         <Button className="ml-auto" onClick={openModal}>
           <CirclePlus size={16} />
@@ -179,7 +202,7 @@ export default function AbsentTable() {
           )}
         </Button>
       </div>
-      <AddAbsentFormModal isOpen={isModalOpen} onClose={closeModal} />
+      <AddRewardModal isOpen={isModalOpen} onClose={closeModal} />
 
       {showTable ? (
         <>
@@ -189,11 +212,11 @@ export default function AbsentTable() {
             </div>
           ) : (
             <>
-              {absent.length > 0 ? (
+              {reward.length > 0 ? (
                 <>
                   <DataTable
-                    columns={Columns(handleEdit, handleOpenModal)}
-                    data={absent}
+                    columns={columns(handleDelete, handleEdit, handleOpenModal)}
+                    data={reward}
                   />
                   <div className="flex justify-between items-center p-4">
                     <div>
@@ -227,7 +250,7 @@ export default function AbsentTable() {
                   </div>
                 </>
               ) : (
-                <div></div>
+                <div>No employees found.</div>
               )}
             </>
           )}
@@ -236,18 +259,36 @@ export default function AbsentTable() {
         <>Nothing</>
       )}
 
-      {absentData && (
-        <EditAbsentModal
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {selectedReward?.employeeName}?
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {rewardData && (
+        <EditRewardModal
           isOpen={isEditModalOpen}
           onClose={() => {
             setEditModalOpen(false);
           }}
-          absentData={absentData}
-          id={absentData.id}
+          rewardData={rewardData}
+          id={rewardData.id}
         />
       )}
 
-      {selectedAbsent && (
+      {selectedReward && (
         <AlertDialog
           open={isStatusModalOpen}
           onOpenChange={setUpdateDialogOpen}
