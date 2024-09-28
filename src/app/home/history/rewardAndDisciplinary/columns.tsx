@@ -47,14 +47,6 @@ export const columns = (
     header: "Is Reward",
   },
   {
-    accessorKey: "amount",
-    header: "Amount",
-  },
-  {
-    accessorKey: "isRewards",
-    header: "Is Reward",
-  },
-  {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {

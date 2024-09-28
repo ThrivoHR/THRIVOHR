@@ -1,179 +1,386 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import LoadingAnimate from "@/components/Loading";
+import {
+  ProjectFilterSchemaType,
+  ProjectSchemaType,
+  UpdateProjectType,
+} from "@/schemaValidation/project.schema";
+import apiProjectRequest from "@/apiRequest/project";
+import ProjectFilter from "./filterProject";
 import { Progress } from "@/components/ui/progress";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { SetStateAction, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { AddProjectModal } from "./addProject";
+import { CirclePlus, Trash, Edit3 } from "lucide-react"; // Import Edit icon
+import { EditProjectModal } from "./editAbsent";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+export default function AbsentTable() {
+  const [loading, setLoading] = useState(false);
+  const [project, setProject] = useState<ProjectSchemaType[]>([]);
+  const [selectedProject, setSelectedProject] =
+    useState<ProjectSchemaType | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const [filter, setFilter] = useState<ProjectFilterSchemaType | null>(null);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [projectToDelete, setProjectToDelete] =
+    useState<ProjectSchemaType | null>(null);
+  const [projectToEdit, setProjectToEdit] = useState<UpdateProjectType | null>(
+    null
+  );
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [newStatus, setNewStatus] = useState<number | null>(null);
+  const [editMemberModalOpen, setEditMemberModalOpen] = useState(false);
+  const [employeeCode, setEmployeeCode] = useState<string>("");
+  const [isRemove, setIsRemove] = useState<boolean>(false);
 
-const data = {
-  labels: ["January", "February", "March", "April", "May", "June", "July"],
-  datasets: [
-    {
-      label: "Tasks Completed",
-      data: [12, 19, 3, 5, 2, 3, 7],
-      backgroundColor: "rgba(75, 192, 192, 0.2)",
-      borderColor: "rgba(137,207,240, 1)",
-      borderWidth: 2,
-      fill: true,
-      tension: 0.1,
-    },
-  ],
-};
+  useEffect(() => {
+    const fetch = async () => {
+      setLoading(true);
+      try {
+        const data = await apiProjectRequest.getProject(1, 10, filter); // Fetch project list
+        setProject(data.payload.value.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch();
+  }, [filter]);
 
-export default function ProgressPage() {
-  const [open, setOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState({
-    name: "",
-    progress: 0,
-    member: "",
-    manager: "",
-    supervisor: "",
-  });
+  const handleFilterChange = (newFilter: ProjectFilterSchemaType) => {
+    setFilter(newFilter);
+  };
 
-  const projects = [
-    {
-      name: "Project A",
-      progress: 75,
-      member: "Alice",
-      manager: "Bob",
-      supervisor: "Charlie",
-    },
-    {
-      name: "Project B",
-      progress: 50,
-      member: "Dave",
-      manager: "Eve",
-      supervisor: "Frank",
-    },
-    {
-      name: "Project C",
-      progress: 20,
-      member: "Grace",
-      manager: "Heidi",
-      supervisor: "Ivan",
-    },
-  ];
-
-  const handleCardClick = (
-    project: SetStateAction<{
-      name: string;
-      progress: number;
-      member: string;
-      manager: string;
-      supervisor: string;
-    }>
-  ) => {
+  const handleCardClick = (project: ProjectSchemaType) => {
     setSelectedProject(project);
-    setOpen(true);
+    setShowDialog(true); // Open the alert dialog
+  };
+
+  const openStatusModal = () => {
+    setStatusModalOpen(true);
+  };
+
+  const closeStatusModal = () => {
+    setStatusModalOpen(false);
+  };
+
+  const handleDelete = async () => {
+    if (!projectToDelete) return;
+    try {
+      await apiProjectRequest.deleteProject(projectToDelete.id);
+      setProject((prevProjects) =>
+        prevProjects.filter((proj) => proj.id !== projectToDelete.id)
+      );
+      console.log(
+        `Project with ID ${projectToDelete.id} deleted successfully.`
+      );
+      closeDeleteDialog();
+    } catch (error) {
+      console.error("Error deleting project:", error);
+    }
+  };
+
+  const closeDialog = () => {
+    setShowDialog(false);
+    setSelectedProject(null);
+  };
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
+  // Open delete confirmation dialog
+  const openDeleteDialog = (project: ProjectSchemaType) => {
+    setProjectToDelete(project);
+    setShowDeleteDialog(true);
+  };
+
+  const closeDeleteDialog = () => {
+    setShowDeleteDialog(false);
+    setProjectToDelete(null);
+  };
+
+  const openEditModal = (project: ProjectSchemaType) => {
+    setProjectToEdit({
+      id: project.id,
+      projectModel: {
+        name: project.name,
+        description: project.description,
+        leaderCode: "",
+        subLeaderCode: "",
+      },
+    });
+    setEditModalOpen(true);
+  };
+
+  const openEditMemberModal = () => {
+    setEditMemberModalOpen(true);
+  };
+
+  const closeEditMemberModal = () => {
+    setEditMemberModalOpen(false);
+    setEmployeeCode("");
+    setIsRemove(false);
+  };
+
+  const handleStatusChange = async () => {
+    if (selectedProject && newStatus !== null) {
+      try {
+        await apiProjectRequest.updateStatus(selectedProject.id, newStatus);
+        console.log(`Status updated to ${newStatus}`);
+        closeStatusModal();
+      } catch (error) {
+        console.error("Error updating status:", error);
+      }
+    }
+  };
+
+  const handleEditMember = async () => {
+    if (selectedProject) {
+      try {
+        await apiProjectRequest.editMember(selectedProject.id, employeeCode, isRemove);
+        console.log(`Member updated. EmployeeCode: ${employeeCode}, Removed: ${isRemove}`);
+        closeEditMemberModal();
+      } catch (error) {
+        console.error("Error editing member:", error);
+      }
+    }
   };
 
   return (
-    <>
-      <div className="mb-3 flex flex-wrap gap-4">
-        {projects.map((project) => (
-          <div key={project.name} className="flex-1 min-w-[300px]">
-            <Card onClick={() => handleCardClick(project)}>
+    <div>
+      <ProjectFilter onFilter={handleFilterChange} />
+      <div className="flex items-center py-3 space-x-2">
+        <Button className="ml-auto" onClick={openModal}>
+          <CirclePlus size={16} />
+          &nbsp; Add
+        </Button>
+      </div>
+      <AddProjectModal isOpen={isModalOpen} onClose={closeModal} />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {loading ? (
+          <LoadingAnimate />
+        ) : (
+          project.map((proj) => (
+            <Card
+              key={proj.id}
+              onClick={() => handleCardClick(proj)}
+              className="cursor-pointer relative"
+            >
               <CardHeader>
-                <CardTitle>{project.name}</CardTitle>
+                <CardTitle>
+                  Project: {proj.name || "Untitled Project"}
+                </CardTitle>
+                <CardDescription>
+                  Description: {proj.description}
+                </CardDescription>
+                <div className="absolute top-2 right-2 flex space-x-2">
+                  <Button
+                    variant="ghost"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openEditModal(proj); // Open edit modal on click
+                    }}
+                  >
+                    <Edit3 className="h-4 w-4 text-blue-500" />{" "}
+                    {/* Edit button */}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openDeleteDialog(proj); // Open delete dialog on click
+                    }}
+                  >
+                    <Trash className="h-4 w-4 text-red-500" />{" "}
+                    {/* Delete button */}
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-2">
-                  <div className="flex items-center justify-between">
-                    <span>{project.name}</span>
-                    <span>{project.progress}%</span>
-                  </div>
-                  <Progress value={project.progress} />
-                </div>
+                <p>
+                  <strong>Leader:</strong> {proj.leaderName || "N/A"}
+                </p>
+                <p>
+                  <strong>Employees:</strong> {proj.totalEmployee}
+                </p>
+                <p>
+                  <strong>Tasks:</strong> {proj.totalTask}
+                </p>
+                <p>
+                  <strong>Status:</strong> {proj.status}
+                </p>
+                <strong>Progress: </strong>
+                <Progress className="mt-2" value={proj.progress} />
               </CardContent>
             </Card>
-          </div>
-        ))}
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{selectedProject.name}</DialogTitle>
-              <DialogDescription>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-lg font-semibold">
-                      Progress:{" "}
-                      <span className="font-normal">
-                        {selectedProject.progress}%
-                      </span>
-                    </p>
-                    <Progress value={selectedProject.progress} />
-                  </div>
-                  <div>
-                    <p className="text-lg font-semibold">
-                      Member:{" "}
-                      <span className="font-normal">
-                        {selectedProject.member}
-                      </span>
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-lg font-semibold">
-                      Manager:{" "}
-                      <span className="font-normal">
-                        {selectedProject.manager}
-                      </span>
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-lg font-semibold">
-                      Supervisor:{" "}
-                      <span className="font-normal">
-                        {selectedProject.supervisor}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-      </div>
+          ))
+        )}
+        {/* detail */}
+        <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+          {selectedProject && (
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Project Details</AlertDialogTitle>
+                <AlertDialogDescription className="font-medium space-y-2 text-base">
+                  <p>
+                    <strong>Name:</strong> {selectedProject.name}
+                  </p>
+                  <p>
+                    <strong>Description:</strong> {selectedProject.description}
+                  </p>
+                  <p>
+                    <strong>Leader:</strong>{" "}
+                    {selectedProject.leaderName || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Sub Leader:</strong>{" "}
+                    {selectedProject.subLeaderName || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Total Employees:</strong>{" "}
+                    {selectedProject.totalEmployee}
+                  </p>
+                  <p>
+                    <strong>Total Tasks:</strong> {selectedProject.totalTask}
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {selectedProject.status}
+                  </p>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <Button variant="secondary" onClick={openStatusModal}>Change status</Button>
+                <Button variant="secondary" onClick={openEditMemberModal}>Edit member</Button>
+                <AlertDialogCancel onClick={closeDialog}>
+                  Close
+                </AlertDialogCancel>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          )}
+        </AlertDialog>
+        {/* delete */}
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Project</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this project? This action cannot
+                be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={closeDeleteDialog}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete}>
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        {/* edit */}
+        {projectToEdit && (
+          <EditProjectModal
+            isOpen={isEditModalOpen}
+            onClose={() => setEditModalOpen(false)}
+            data={projectToEdit}
+            id={projectToEdit.id}
+          />
+        )}
 
-      <div>
-        <Card className="p-0 items-center">
-          <CardHeader>
-            <CardTitle>Tasks</CardTitle>
-          </CardHeader>
-          <CardContent className="flex justify-center">
-            <div style={{ width: "500px", height: "250px" }}>
-              <Line data={data} />
-            </div>
-          </CardContent>
-        </Card>
+        <AlertDialog open={statusModalOpen} onOpenChange={setStatusModalOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Change Status</AlertDialogTitle>
+              <AlertDialogDescription>
+                <Select
+                  value={newStatus !== null ? newStatus.toString() : ""}
+                  onValueChange={(value) => setNewStatus(parseInt(value))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">0 - New</SelectItem>
+                    <SelectItem value="1">1 - In Progress</SelectItem>
+                    <SelectItem value="2">2 - Finished</SelectItem>
+                    <SelectItem value="3">3 - Canceled</SelectItem>
+                  </SelectContent>
+                </Select>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction onClick={handleStatusChange}>
+                OK
+              </AlertDialogAction>
+              <AlertDialogCancel onClick={closeStatusModal}>
+                Cancel
+              </AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Modal to edit member */}
+        <AlertDialog open={editMemberModalOpen} onOpenChange={setEditMemberModalOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Edit Member</AlertDialogTitle>
+              <AlertDialogDescription>
+                <Input
+                  value={employeeCode}
+                  onChange={(e) => setEmployeeCode(e.target.value)}
+                  placeholder="Enter Employee Code"
+                />
+                <Select
+                  value={isRemove ? "true" : "false"}
+                  onValueChange={(value) => setIsRemove(value === "true")}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Remove Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="false">Not Removed</SelectItem>
+                    <SelectItem value="true">Removed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction onClick={handleEditMember}>OK</AlertDialogAction>
+              <AlertDialogCancel onClick={closeEditMemberModal}>Cancel</AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
-    </>
+    </div>
   );
 }
