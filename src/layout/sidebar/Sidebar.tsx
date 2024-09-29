@@ -178,7 +178,7 @@ export default function Sidebar() {
                       handleNavigation("/home/progress/viewprogress")
                     }
                   >
-                    View progress
+                    View project
                   </Link>
                   <Link
                     href="/home/progress/reportprogress"
@@ -189,7 +189,7 @@ export default function Sidebar() {
                       handleNavigation("/home/progress/reportprogress")
                     }
                   >
-                    Progress report
+                    Project task
                   </Link>
                 </AccordionContent>
               </AccordionItem>

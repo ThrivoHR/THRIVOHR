@@ -1,7 +1,5 @@
-import Employee from "@/app/home/progress/reportprogress/page";
-import { describe } from "node:test";
-import { z } from "zod";
 
+import { z } from "zod";
 
 export const ProjectSchema = z.object({
     id: z.string(),
@@ -105,6 +103,18 @@ export const EditProjectMemberRes = z.object({
     log: z.string(),
     detail: z.string(),
 })
+
+const GetMemberResponseSchema = z.object({
+    value: z.array(z.string()),
+    isSuccess: z.boolean(),
+    isFailure: z.boolean(),
+    error: z.object({
+      code: z.string().optional(),
+      message: z.string().optional(),
+    }),
+  });
+
+export type GetMemberResponseType = z.infer<typeof GetMemberResponseSchema>;
 
 export type ProjectSchemaType = z.infer<typeof ProjectSchema>;
 

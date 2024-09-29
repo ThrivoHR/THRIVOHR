@@ -91,7 +91,7 @@ export default function LoginForm() {
         });
         toast.success("Login successful!");
       }
-      router.push("/home");
+      router.push("/home/employee");
       console.log(result);
     } catch (error: any) {
       handleErrorApi({

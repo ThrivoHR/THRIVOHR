@@ -36,35 +36,39 @@ import { apiRewardAndDisciplinaryRequest } from "@/apiRequest/rewardAndDisciplin
 import { handleErrorApi } from "@/lib/utils";
 import { CreateProjectType } from "@/schemaValidation/project.schema";
 import apiProjectRequest from "@/apiRequest/project";
+import { CreateProjectTaskType } from "@/schemaValidation/projectTask.schema";
+import apiProjectTaskRequest from "@/apiRequest/projectTask";
 
-interface AddProjectModalProps {
+interface AddProjectTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const projectSchema = z.object({
-  name: z.string().nonempty(),
-  description: z.string().nonempty(),
-  leaderCode: z.string().nonempty(),
-  subLeaderCode: z.string().nonempty(),
+const projectTaskSchema = z.object({
+    name: z.string().nonempty(),
+    description: z.string().nonempty(),
+    projectId: z.string().nonempty(),
+    assigneeCode: z.string().nonempty(),
+    dueDate: z.string().nonempty(),
 });
 
-export function AddProjectModal({ isOpen, onClose}: AddProjectModalProps) {
+export function AddProjectTaskModal({ isOpen, onClose}: AddProjectTaskModalProps) {
   const [loading, setLoading] = useState(false);
-  const form = useForm<CreateProjectType>({
-    resolver: zodResolver(projectSchema),
+  const form = useForm<CreateProjectTaskType>({
+    resolver: zodResolver(projectTaskSchema),
     defaultValues: {
       name: "",
       description: "",
-      leaderCode: "",
-      subLeaderCode: "",
+      projectId: "",
+      assigneeCode: "",
+      dueDate: "",
     },
   });
 
-  const handleAdd = async (data: CreateProjectType) => {
+  const handleAdd = async (data: CreateProjectTaskType) => {
     setLoading(true);
     try {
-      await apiProjectRequest.createProject(data);
+      await apiProjectTaskRequest.createProjectTask(data);
       toast.success("Added successfully!");
       form.reset();
     } catch (error: any) {
@@ -119,28 +123,42 @@ export function AddProjectModal({ isOpen, onClose}: AddProjectModalProps) {
             </FormItem>
 
             <FormItem>
-              <FormLabel>Leader Code</FormLabel>
+              <FormLabel>Project ID</FormLabel>
               <FormControl>
                 <Input
-                  {...form.register("leaderCode")}
+                  {...form.register("projectId")}
                   className="border rounded-md px-3 py-2 w-full"
                 />
               </FormControl>
               <FormMessage>
-                {form.formState.errors.leaderCode?.message}
+                {form.formState.errors.projectId?.message}
               </FormMessage>
             </FormItem>
 
             <FormItem>
-              <FormLabel>Sub Leader Code</FormLabel>
+              <FormLabel>Assignee Code</FormLabel>
               <FormControl>
                 <Input
-                  {...form.register("subLeaderCode")}
+                  {...form.register("assigneeCode")}
                   className="border rounded-md px-3 py-2 w-full"
                 />
               </FormControl>
               <FormMessage>
-                {form.formState.errors.subLeaderCode?.message}
+                {form.formState.errors.assigneeCode?.message}
+              </FormMessage>
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Due Date</FormLabel>
+              <FormControl>
+                <Input
+                  type="date"
+                  {...form.register("dueDate")}
+                  className="border rounded-md px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage>
+                {form.formState.errors.dueDate?.message}
               </FormMessage>
             </FormItem>
 

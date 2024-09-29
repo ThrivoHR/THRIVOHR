@@ -4,6 +4,7 @@ import {
   DeleteProjectResType,
   DeleteProjectType,
   EditProjectMemberResType,
+  GetMemberResponseType,
   ProjectFilterSchemaType,
   ProjectListResType,
   UpdateProjectResType,
@@ -51,6 +52,11 @@ const apiProjectRequest = {
     http.put<EditProjectMemberResType>(
         `/api/v1/project/edit-member?ProjetId=${ProjetId}&EmployeeCode=${EmployeeCode}&IsRemove=${IsRemove}`,
         {}
+    ),
+
+    getProjectAllMember: (ProjectId: string) =>
+    http.get<GetMemberResponseType>(
+        `/api/v1/project/get-all-member?ProjectId=${ProjectId}`
     ),
 };
 

@@ -68,7 +68,7 @@ export default function RewardTable() {
   const [selectedReward, setSelectedReward] =
     useState<RewardAndDisciplinarySchemaType | null>(null);
 
-  const handleFilterChange = (newFilter: EmployeeFilterType) => {
+  const handleFilterChange = (newFilter: RewardAndDisciplinaryFilterType) => {
     setFilter(newFilter);
     setPage(1);
     setShowTable(true);

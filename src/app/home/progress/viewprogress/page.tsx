@@ -30,11 +30,18 @@ import ProjectFilter from "./filterProject";
 import { Progress } from "@/components/ui/progress";
 import { AddProjectModal } from "./addProject";
 import { CirclePlus, Trash, Edit3 } from "lucide-react"; // Import Edit icon
-import { EditProjectModal } from "./editAbsent";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { EditProjectModal } from "./editProject";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import ProjectChart from "./chart";
 
-export default function AbsentTable() {
+export default function ProjectTable() {
   const [loading, setLoading] = useState(false);
   const [project, setProject] = useState<ProjectSchemaType[]>([]);
   const [selectedProject, setSelectedProject] =
@@ -54,6 +61,8 @@ export default function AbsentTable() {
   const [editMemberModalOpen, setEditMemberModalOpen] = useState(false);
   const [employeeCode, setEmployeeCode] = useState<string>("");
   const [isRemove, setIsRemove] = useState<boolean>(false);
+  const [members, setMembers] = useState<any[]>([]);
+  const [isMemberDialogOpen, setIsMemberDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
@@ -69,6 +78,22 @@ export default function AbsentTable() {
     };
     fetch();
   }, [filter]);
+
+  const [membersLoading, setMembersLoading] = useState(false);
+
+  const fetchMembers = async (projectId: string) => {
+    setMembersLoading(true);
+    try {
+      const data = await apiProjectRequest.getProjectAllMember(projectId);
+      setMembers(data.payload.value);
+      console.log("zzz", members);
+    } catch (error) {
+      console.error("Error fetching members:", error);
+    } finally {
+      setMembersLoading(false);
+      setIsMemberDialogOpen(true); // Open dialog after loading
+    }
+  };
 
   const handleFilterChange = (newFilter: ProjectFilterSchemaType) => {
     setFilter(newFilter);
@@ -86,6 +111,8 @@ export default function AbsentTable() {
   const closeStatusModal = () => {
     setStatusModalOpen(false);
   };
+
+  const closeMemberDialog = () => setIsMemberDialogOpen(false);
 
   const handleDelete = async () => {
     if (!projectToDelete) return;
@@ -116,7 +143,6 @@ export default function AbsentTable() {
     setModalOpen(false);
   };
 
-  // Open delete confirmation dialog
   const openDeleteDialog = (project: ProjectSchemaType) => {
     setProjectToDelete(project);
     setShowDeleteDialog(true);
@@ -165,8 +191,14 @@ export default function AbsentTable() {
   const handleEditMember = async () => {
     if (selectedProject) {
       try {
-        await apiProjectRequest.editMember(selectedProject.id, employeeCode, isRemove);
-        console.log(`Member updated. EmployeeCode: ${employeeCode}, Removed: ${isRemove}`);
+        await apiProjectRequest.editMember(
+          selectedProject.id,
+          employeeCode,
+          isRemove
+        );
+        console.log(
+          `Member updated. EmployeeCode: ${employeeCode}, Removed: ${isRemove}`
+        );
         closeEditMemberModal();
       } catch (error) {
         console.error("Error editing member:", error);
@@ -184,7 +216,6 @@ export default function AbsentTable() {
         </Button>
       </div>
       <AddProjectModal isOpen={isModalOpen} onClose={closeModal} />
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading ? (
           <LoadingAnimate />
@@ -207,11 +238,10 @@ export default function AbsentTable() {
                     variant="ghost"
                     onClick={(e) => {
                       e.stopPropagation();
-                      openEditModal(proj); // Open edit modal on click
+                      openEditModal(proj);
                     }}
                   >
                     <Edit3 className="h-4 w-4 text-blue-500" />{" "}
-                    {/* Edit button */}
                   </Button>
                   <Button
                     variant="ghost"
@@ -252,6 +282,9 @@ export default function AbsentTable() {
                 <AlertDialogTitle>Project Details</AlertDialogTitle>
                 <AlertDialogDescription className="font-medium space-y-2 text-base">
                   <p>
+                    <strong>ID:</strong> {selectedProject.id}
+                  </p>
+                  <p>
                     <strong>Name:</strong> {selectedProject.name}
                   </p>
                   <p>
@@ -268,6 +301,12 @@ export default function AbsentTable() {
                   <p>
                     <strong>Total Employees:</strong>{" "}
                     {selectedProject.totalEmployee}
+                    <Button
+                      variant="link"
+                      onClick={() => fetchMembers(selectedProject.id)}
+                    >
+                      View Details
+                    </Button>
                   </p>
                   <p>
                     <strong>Total Tasks:</strong> {selectedProject.totalTask}
@@ -278,8 +317,12 @@ export default function AbsentTable() {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <Button variant="secondary" onClick={openStatusModal}>Change status</Button>
-                <Button variant="secondary" onClick={openEditMemberModal}>Edit member</Button>
+                <Button variant="secondary" onClick={openStatusModal}>
+                  Change status
+                </Button>
+                <Button variant="secondary" onClick={openEditMemberModal}>
+                  Edit member
+                </Button>
                 <AlertDialogCancel onClick={closeDialog}>
                   Close
                 </AlertDialogCancel>
@@ -350,7 +393,10 @@ export default function AbsentTable() {
         </AlertDialog>
 
         {/* Modal to edit member */}
-        <AlertDialog open={editMemberModalOpen} onOpenChange={setEditMemberModalOpen}>
+        <AlertDialog
+          open={editMemberModalOpen}
+          onOpenChange={setEditMemberModalOpen}
+        >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Edit Member</AlertDialogTitle>
@@ -375,12 +421,65 @@ export default function AbsentTable() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogAction onClick={handleEditMember}>OK</AlertDialogAction>
-              <AlertDialogCancel onClick={closeEditMemberModal}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleEditMember}>
+                OK
+              </AlertDialogAction>
+              <AlertDialogCancel onClick={closeEditMemberModal}>
+                Cancel
+              </AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={isMemberDialogOpen} onOpenChange={closeMemberDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Project Members</AlertDialogTitle>
+              {membersLoading ? (
+                <LoadingAnimate />
+              ) : (
+                <AlertDialogDescription className="space-y-2 text-base">
+                  <h3>Member:</h3>
+                  <ul>
+                    {members.length > 0 ? (
+                      members.map((member, index) => (
+                        <li key={index}>{member}</li> // Displaying member name directly
+                      ))
+                    ) : (
+                      <li>No members found.</li>
+                    )}
+                  </ul>
+                </AlertDialogDescription>
+              )}
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={closeMemberDialog}>
+                Close
+              </AlertDialogCancel>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
       </div>
+
+      <>
+  {loading ? (
+    <></>
+  ) : (
+    <Card className="mt-8">
+      <CardHeader>
+        <CardTitle>Chart Overview</CardTitle>
+        <CardDescription>
+          Overview of project progress and total tasks
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="h-80">
+          <ProjectChart projects={project} />
+        </div>
+      </CardContent>
+    </Card>
+  )}
+</>
     </div>
   );
 }
