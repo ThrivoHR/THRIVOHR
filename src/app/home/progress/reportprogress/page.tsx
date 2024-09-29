@@ -37,12 +37,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProjectTaskFilterType, ProjectTaskType } from "@/schemaValidation/projectTask.schema";
+import {
+  ProjectTaskFilterType,
+  ProjectTaskType,
+} from "@/schemaValidation/projectTask.schema";
 import apiProjectTaskRequest from "@/apiRequest/projectTask";
 import ProjectTaskFilter from "./filterProjectTask";
 import { AddProjectTaskModal } from "./addProjectTask";
 import { EditProjectTaskModal } from "./editProjectTask";
 import { Input } from "@/components/ui/input";
+import { TaskHistoryType } from "@/schemaValidation/taskHistory.schema";
+import apiTaskHistoryRequest from "@/apiRequest/taskHistory";
+import dayjs from "dayjs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function RewardTable() {
   const [loading, setLoading] = useState(false);
@@ -64,15 +71,26 @@ export default function RewardTable() {
 
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<number>(0);
-  const [selectedTask, setSelectedTask] = useState<ProjectTaskType | null>(null);
+  const [selectedTask, setSelectedTask] = useState<ProjectTaskType | null>(
+    null
+  );
 
   // New states for handling assignee change and due date reset
-  const [isChangeAssigneeModalOpen, setIsChangeAssigneeModalOpen] = useState(false);
+  const [isChangeAssigneeModalOpen, setIsChangeAssigneeModalOpen] =
+    useState(false);
   const [isResetDateModalOpen, setIsResetDateModalOpen] = useState(false);
   const [newAssigneeCode, setNewAssigneeCode] = useState<string>("");
   const [newDueDate, setNewDueDate] = useState<string>("");
-  const [taskIdForChangeAssignee, setTaskIdForChangeAssignee] = useState<string>("");
+  const [taskIdForChangeAssignee, setTaskIdForChangeAssignee] =
+    useState<string>("");
   const [taskIdForResetDate, setTaskIdForResetDate] = useState<string>("");
+
+  const [taskHistory, setTaskHistory] = useState<TaskHistoryType[] | null>(
+    null
+  );
+
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   const handleFilterChange = (newFilter: ProjectTaskFilterType) => {
     setFilter(newFilter);
@@ -85,7 +103,11 @@ export default function RewardTable() {
       const fetch = async () => {
         setLoading(true);
         try {
-          const data = await apiProjectTaskRequest.getProjectTask(page, pageSize, filter);
+          const data = await apiProjectTaskRequest.getProjectTask(
+            page,
+            pageSize,
+            filter
+          );
           setTask(data.payload.value.data);
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -122,7 +144,10 @@ export default function RewardTable() {
   const saveUpdatedData = async () => {
     if (selectedTask) {
       try {
-        await apiProjectTaskRequest.changeStatus(selectedTask.id, selectedStatus);
+        await apiProjectTaskRequest.changeStatus(
+          selectedTask.id,
+          selectedStatus
+        );
         console.log("Contract status updated successfully");
         closeUpdateDialog();
       } catch (error) {
@@ -175,7 +200,10 @@ export default function RewardTable() {
   const confirmChangeAssignee = async () => {
     if (selectedTask) {
       try {
-        await apiProjectTaskRequest.changeAssignee(taskIdForChangeAssignee, newAssigneeCode);
+        await apiProjectTaskRequest.changeAssignee(
+          taskIdForChangeAssignee,
+          newAssigneeCode
+        );
         console.log("Assignee updated successfully");
         setIsChangeAssigneeModalOpen(false);
         setNewAssigneeCode(""); // Reset input
@@ -189,15 +217,37 @@ export default function RewardTable() {
   const confirmResetDate = async () => {
     if (selectedTask) {
       try {
-        const response = await apiProjectTaskRequest.resetDueDate(taskIdForResetDate, newDueDate);
-        console.log(response)
+        const response = await apiProjectTaskRequest.resetDueDate(
+          taskIdForResetDate,
+          newDueDate
+        );
+        console.log(response);
         console.log("Due date reset successfully");
         setIsResetDateModalOpen(false);
-        setNewDueDate(""); // Reset input
-        setTaskIdForResetDate(""); // Reset input
+        setNewDueDate("");
+        setTaskIdForResetDate("");
       } catch (error) {
         console.error("Error resetting due date:", error);
       }
+    }
+  };
+
+  const handleTaskHistory = async (task: ProjectTaskType) => {
+    setLoading(true); // Show loader
+    try {
+      const taskId = task.id.toString(); // Convert the task id to string if needed
+      const response = await apiTaskHistoryRequest.getTaskHistory(
+        page,
+        pageSize,
+        { TaskId: taskId }
+      );
+      setTaskHistory(response.payload.value.data); // Set the task history data
+      setSelectedTaskId(taskId); // Store the selected task id
+      setIsHistoryDialogOpen(true); // Open the history dialog
+    } catch (error) {
+      console.error("Error fetching task history:", error);
+    } finally {
+      setLoading(false); // Stop the loader
     }
   };
 
@@ -209,7 +259,10 @@ export default function RewardTable() {
           <CirclePlus size={16} />
           &nbsp; Add
         </Button>
-        <Button variant="secondary" onClick={() => setShowTable((prev) => !prev)}>
+        <Button
+          variant="secondary"
+          onClick={() => setShowTable((prev) => !prev)}
+        >
           {showTable ? (
             <div className="flex items-center">
               <EyeOff size={20} />
@@ -241,7 +294,8 @@ export default function RewardTable() {
                       handleEdit,
                       handleChangeStatus,
                       handleChangeAssignee,
-                      handleResetDate
+                      handleResetDate,
+                      handleTaskHistory
                     )}
                     data={task}
                   />
@@ -249,7 +303,9 @@ export default function RewardTable() {
                     <div>
                       <select
                         value={pageSize}
-                        onChange={(e) => handleChangePageSize(Number(e.target.value))}
+                        onChange={(e) =>
+                          handleChangePageSize(Number(e.target.value))
+                        }
                         className="px-4 py-2 border rounded-lg"
                       >
                         <option value={5}>5 rows</option>
@@ -294,7 +350,85 @@ export default function RewardTable() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+            <AlertDialogAction onClick={confirmDelete}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={isHistoryDialogOpen}
+        onOpenChange={setIsHistoryDialogOpen}
+      >
+        <AlertDialogContent className="w-[1000px] max-w-[90vw] h-auto">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Task History for Task ID: {selectedTaskId}
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogDescription>
+            {loading ? (
+              <LoadingAnimate />
+            ) : taskHistory && taskHistory.length > 0 ? (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Updated By</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Old Due Date</TableHead>
+                      <TableHead>New Due Date</TableHead>
+                      <TableHead>Old Status</TableHead>
+                      <TableHead>New Status</TableHead>
+                      <TableHead>Old Assignee</TableHead>
+                      <TableHead>New Assignee</TableHead>
+                      <TableHead>Change Description</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {taskHistory.map((historyItem) => (
+                      <TableRow key={historyItem.id}>
+                        <TableCell>
+                          {historyItem.changedByName || "N/A"}
+                        </TableCell>
+                        <TableCell>
+                          {dayjs(historyItem.changeDate).format("DD/MM/YYYY")}
+                        </TableCell>
+                        <TableCell>
+                          {historyItem.oldDueDate
+                            ? dayjs(historyItem.oldDueDate).format("DD/MM/YYYY")
+                            : "N/A"}
+                        </TableCell>
+                        <TableCell>
+                          {historyItem.newDueDate
+                            ? dayjs(historyItem.newDueDate).format("DD/MM/YYYY")
+                            : "N/A"}
+                        </TableCell>
+                        <TableCell>{historyItem.oldStatus || "N/A"}</TableCell>
+                        <TableCell>{historyItem.newStatus || "N/A"}</TableCell>
+                        <TableCell>
+                          {historyItem.oldAssigneeName || "N/A"}
+                        </TableCell>
+                        <TableCell>
+                          {historyItem.newAssigneeName || "N/A"}
+                        </TableCell>
+                        <TableCell>
+                          {historyItem.changeDescription || "N/A"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              <div>No history found for this task.</div>
+            )}
+          </AlertDialogDescription>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsHistoryDialogOpen(false)}>
+              Close
+            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -311,7 +445,10 @@ export default function RewardTable() {
       )}
 
       {selectedTask && (
-        <AlertDialog open={isStatusModalOpen} onOpenChange={setUpdateDialogOpen}>
+        <AlertDialog
+          open={isStatusModalOpen}
+          onOpenChange={setUpdateDialogOpen}
+        >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Update Status</AlertDialogTitle>
@@ -332,8 +469,12 @@ export default function RewardTable() {
               </SelectContent>
             </Select>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={closeUpdateDialog}>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={saveUpdatedData}>Update</AlertDialogAction>
+              <AlertDialogCancel onClick={closeUpdateDialog}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={saveUpdatedData}>
+                Update
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
@@ -341,7 +482,10 @@ export default function RewardTable() {
 
       {/* Change Assignee Dialog */}
       {selectedTask && (
-        <AlertDialog open={isChangeAssigneeModalOpen} onOpenChange={setIsChangeAssigneeModalOpen}>
+        <AlertDialog
+          open={isChangeAssigneeModalOpen}
+          onOpenChange={setIsChangeAssigneeModalOpen}
+        >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Change Assignee</AlertDialogTitle>
@@ -363,8 +507,14 @@ export default function RewardTable() {
               />
             </AlertDialogDescription>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setIsChangeAssigneeModalOpen(false)}>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={confirmChangeAssignee}>Confirm</AlertDialogAction>
+              <AlertDialogCancel
+                onClick={() => setIsChangeAssigneeModalOpen(false)}
+              >
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={confirmChangeAssignee}>
+                Confirm
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
@@ -372,7 +522,10 @@ export default function RewardTable() {
 
       {/* Reset Date Dialog */}
       {selectedTask && (
-        <AlertDialog open={isResetDateModalOpen} onOpenChange={setIsResetDateModalOpen}>
+        <AlertDialog
+          open={isResetDateModalOpen}
+          onOpenChange={setIsResetDateModalOpen}
+        >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Reset Due Date</AlertDialogTitle>
@@ -393,8 +546,12 @@ export default function RewardTable() {
               />
             </AlertDialogDescription>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setIsResetDateModalOpen(false)}>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={confirmResetDate}>Confirm</AlertDialogAction>
+              <AlertDialogCancel onClick={() => setIsResetDateModalOpen(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={confirmResetDate}>
+                Confirm
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

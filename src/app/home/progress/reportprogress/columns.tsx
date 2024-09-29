@@ -13,6 +13,8 @@ import {
 import { ArrowUpDown } from "lucide-react";
 import { RewardAndDisciplinarySchemaType } from "@/schemaValidation/rewardAndDisciplinary.schema";
 import { ProjectTaskType } from "@/schemaValidation/projectTask.schema";
+import dayjs from "dayjs";
+import { TaskHistoryType } from "@/schemaValidation/taskHistory.schema";
 
 export const columns = (
   handleDelete: (task: ProjectTaskType) => void,
@@ -20,6 +22,7 @@ export const columns = (
   handleChangeStatus: (task: ProjectTaskType) => void,
   handleChangeAssignee: (task: ProjectTaskType) => void,
   handleResetDate: (task: ProjectTaskType) => void,
+  handleTaskHistory: (task: ProjectTaskType) => void,
 
 ): ColumnDef<ProjectTaskType>[] => [
   {
@@ -37,6 +40,7 @@ export const columns = (
   {
     accessorKey: "dueDate",
     header: "Due Date",
+    cell: ({ row }) => dayjs(row.original.dueDate).format("DD/MM/YYYY"),
   },
   {
     accessorKey: "status",
@@ -72,6 +76,9 @@ export const columns = (
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleResetDate(row.original)}>
                 Reset due date
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleTaskHistory(row.original)}>
+                View task history
               </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
