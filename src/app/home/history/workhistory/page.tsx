@@ -23,6 +23,8 @@ import {
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import LoadingAnimate from "@/components/Loading";
+import Image from "next/image";
+import none from "/public/nothing-here-.jpg";
 
 export default function HistoryTable() {
   const [loading, setLoading] = useState(false);
@@ -127,10 +129,12 @@ export default function HistoryTable() {
       </div>
       <AddHistoryModal isOpen={isModalOpen} onClose={closeModal} />
 
-      {showTable && (
+      {showTable ? (
         <>
           {loading ? (
-            <div><LoadingAnimate/></div>
+            <div>
+              <LoadingAnimate />
+            </div>
           ) : (
             <>
               {trainingHistory.length > 0 ? (
@@ -175,6 +179,11 @@ export default function HistoryTable() {
             </>
           )}
         </>
+      ) : (
+        <div className="flex items-center justify-center flex-col">
+          <Image src={none} alt="nothing" width={400} height={300}/>
+          <p>Nothing here, start by pressing Show Table button above</p>
+        </div>
       )}
 
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>

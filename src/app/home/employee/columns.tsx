@@ -33,6 +33,18 @@ export const columns = (
     ),
   },
   {
+    accessorKey: "imageUrl",
+    header: "Image",
+    cell: ({ row }) => {
+      const imageUrl = row.original.imageUrl;
+      return imageUrl ? (
+        <>
+          <Image src={imageUrl} alt="Image Preview" className="w-full h-auto" width={80} height={80} />
+        </>
+      ) : null;
+    },
+  },
+  {
     accessorKey: "fullName",
     header: ({ column }) => (
       <Button
@@ -69,33 +81,7 @@ export const columns = (
     accessorKey: "manager",
     header: "Manager",
   },
-  {
-    accessorKey: "imageUrl",
-    header: "Image",
-    cell: ({ row }) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const [open, setOpen] = useState(false);
-      const imageUrl = row.original.imageUrl;
-      return imageUrl ? (
-        <>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button variant="link">
-                View
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-              </DialogHeader>
-              <DialogDescription>
-                <Image src={imageUrl} alt="Image Preview" className="w-full h-auto" width={300} height={300} />
-              </DialogDescription>
-            </DialogContent>
-          </Dialog>
-        </>
-      ) : null;
-    },
-  },
+
   {
     id: "actions",
     header: "Actions",

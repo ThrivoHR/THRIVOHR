@@ -25,6 +25,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import Image from "next/image";
+import none from "/public/nothing-here-.jpg";
 
 export default function Contract() {
   const [loading, setLoading] = useState(false);
@@ -113,6 +115,7 @@ export default function Contract() {
     if (showTable) {
       fetchData(filter);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, showTable]);
 
   return (
@@ -139,13 +142,15 @@ export default function Contract() {
         </Button>
       </div>
       <AddApplicationFormModal isOpen={isModalOpen} onClose={closeModal} />
-      {loading ? (
-        <div>
-          <LoadingAnimate />
-        </div>
-      ) : (
-        showTable && (
-          <>
+     
+      {showTable ? (
+        <>
+          {loading ? (
+            <div>
+              <LoadingAnimate />
+            </div>
+          ) : (
+            <>
             {application.length > 0 ? (
               <>
                 <DataTable columns={Columns(handleEdit)} data={application} />
@@ -183,8 +188,14 @@ export default function Contract() {
             ) : (
               <div>No applications found.</div>
             )}
-          </>
-        )
+            </>
+          )}
+        </>
+      ) : (
+        <div className="flex items-center justify-center flex-col">
+          <Image src={none} alt="nothing" width={400} height={300}/>
+          <p>Nothing here, start by pressing Show Table button above</p>
+        </div>
       )}
 
       {selectedApplication && (

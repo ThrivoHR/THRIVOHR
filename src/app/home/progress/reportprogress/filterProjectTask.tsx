@@ -126,8 +126,8 @@ export default function ProjectTaskFilter({ onFilter }: ProjectTaskFilterProps) 
                 <SelectValue placeholder="Select Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="0">Pending</SelectItem>
-                <SelectItem value="1">Approved</SelectItem>
+                <SelectItem value="0">Not Started</SelectItem>
+                <SelectItem value="1">Completed</SelectItem>
                 <SelectItem value="2">Rejected</SelectItem>
                 <SelectItem value="3">Completed</SelectItem>
               </SelectContent>

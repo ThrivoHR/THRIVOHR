@@ -1,12 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import apiEmployeeRequest from "@/apiRequest/employee";
-import {
-  EmployeeFilterType,
-  EmployeeSchemaType,
-  UpdateEmployeeType,
-} from "@/schemaValidation/employee.schema";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import {
@@ -20,15 +14,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { CirclePlus, Divide, Eye, EyeOff } from "lucide-react";
+import { CirclePlus, Eye, EyeOff } from "lucide-react";
 import LoadingAnimate from "@/components/Loading";
-import * as XLSX from "xlsx";
-import {
-  RewardAndDisciplinaryFilterType,
-  RewardAndDisciplinarySchemaType,
-  UpdateRewardAndDisciplinaryType,
-} from "@/schemaValidation/rewardAndDisciplinary.schema";
-import { apiRewardAndDisciplinaryRequest } from "@/apiRequest/rewardAndDisciplinary";
 import {
   Select,
   SelectContent,
@@ -49,9 +36,20 @@ import { Input } from "@/components/ui/input";
 import { TaskHistoryType } from "@/schemaValidation/taskHistory.schema";
 import apiTaskHistoryRequest from "@/apiRequest/taskHistory";
 import dayjs from "dayjs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useProject } from "@/app/project-context";
 
-export default function RewardTable() {
+export default function ProjectTaskTable() {
+
+  const { projectId , projectName} = useProject();
+
   const [loading, setLoading] = useState(false);
   const [task, setTask] = useState<ProjectTaskType[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -75,7 +73,6 @@ export default function RewardTable() {
     null
   );
 
-  // New states for handling assignee change and due date reset
   const [isChangeAssigneeModalOpen, setIsChangeAssigneeModalOpen] =
     useState(false);
   const [isResetDateModalOpen, setIsResetDateModalOpen] = useState(false);
@@ -98,26 +95,29 @@ export default function RewardTable() {
     setShowTable(true);
   };
 
+  const fetch = async () => {
+    setLoading(true);
+    try {
+      const data = await apiProjectTaskRequest.getProjectTask(
+        page,
+        pageSize,
+        { ...filter, ProjectId: projectId ?? undefined }
+      );
+      setTask(data.payload.value.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setTask([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
+    if (!projectId) return;
     if (showTable) {
-      const fetch = async () => {
-        setLoading(true);
-        try {
-          const data = await apiProjectTaskRequest.getProjectTask(
-            page,
-            pageSize,
-            filter
-          );
-          setTask(data.payload.value.data);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          setTask([]);
-        } finally {
-          setLoading(false);
-        }
-      };
       fetch();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, filter, showTable]);
 
   const handleDelete = (task: ProjectTaskType) => {
@@ -137,6 +137,7 @@ export default function RewardTable() {
       } finally {
         setDialogOpen(false);
         setSelectedTask(null);
+        await fetch();
       }
     }
   };
@@ -150,6 +151,7 @@ export default function RewardTable() {
         );
         console.log("Contract status updated successfully");
         closeUpdateDialog();
+        await fetch();
       } catch (error) {
         console.error("Error updating contract status:", error);
       }
@@ -207,7 +209,8 @@ export default function RewardTable() {
         console.log("Assignee updated successfully");
         setIsChangeAssigneeModalOpen(false);
         setNewAssigneeCode(""); // Reset input
-        setTaskIdForChangeAssignee(""); // Reset input
+        setTaskIdForChangeAssignee(""); 
+        await fetch();
       } catch (error) {
         console.error("Error updating assignee:", error);
       }
@@ -226,6 +229,7 @@ export default function RewardTable() {
         setIsResetDateModalOpen(false);
         setNewDueDate("");
         setTaskIdForResetDate("");
+        await fetch();
       } catch (error) {
         console.error("Error resetting due date:", error);
       }
@@ -241,13 +245,14 @@ export default function RewardTable() {
         pageSize,
         { TaskId: taskId }
       );
-      setTaskHistory(response.payload.value.data); // Set the task history data
-      setSelectedTaskId(taskId); // Store the selected task id
-      setIsHistoryDialogOpen(true); // Open the history dialog
+      setTaskHistory(response.payload.value.data);
+      setSelectedTaskId(taskId);
+      setIsHistoryDialogOpen(true);
+      await fetch();
     } catch (error) {
       console.error("Error fetching task history:", error);
     } finally {
-      setLoading(false); // Stop the loader
+      setLoading(false);
     }
   };
 
@@ -278,67 +283,78 @@ export default function RewardTable() {
       </div>
       <AddProjectTaskModal isOpen={isModalOpen} onClose={closeModal} />
 
-      {showTable ? (
-        <>
-          {loading ? (
-            <div>
-              <LoadingAnimate />
-            </div>
-          ) : (
-            <>
-              {task.length > 0 ? (
-                <>
-                  <DataTable
-                    columns={columns(
-                      handleDelete,
-                      handleEdit,
-                      handleChangeStatus,
-                      handleChangeAssignee,
-                      handleResetDate,
-                      handleTaskHistory
-                    )}
-                    data={task}
-                  />
-                  <div className="flex justify-between items-center p-4">
-                    <div>
-                      <select
-                        value={pageSize}
-                        onChange={(e) =>
-                          handleChangePageSize(Number(e.target.value))
-                        }
-                        className="px-4 py-2 border rounded-lg"
-                      >
-                        <option value={5}>5 rows</option>
-                        <option value={10}>10 rows</option>
-                      </select>
-                    </div>
-                    <div>
-                      <button
-                        onClick={() => handleChangePage(Math.max(page - 1, 1))}
-                        disabled={page === 1}
-                        className="px-3 py-2 border rounded-lg text-sm"
-                      >
-                        Previous
-                      </button>
-                      <span className="mx-4">Page {page}</span>
-                      <button
-                        onClick={() => handleChangePage(page + 1)}
-                        className="px-4 py-2 border rounded-lg text-sm"
-                      >
-                        Next
-                      </button>
-                    </div>
+      {!projectId ? (
+  <div className="text-center py-4">
+    Please select a project from View project to view tasks.
+  </div>
+) : (
+  <>
+    {showTable ? (
+      <>
+        {loading ? (
+          <div>
+            <LoadingAnimate />
+          </div>
+        ) : (
+          <>
+            {task.length > 0 ? (
+              <>
+              <p className="text-xl mb-3">Tasks for {projectName}:</p>
+                <DataTable
+                  columns={columns(
+                    handleDelete,
+                    handleEdit,
+                    handleChangeStatus,
+                    handleChangeAssignee,
+                    handleResetDate,
+                    handleTaskHistory
+                  )}
+                  data={task}
+                />
+                <div className="flex justify-between items-center p-4">
+                  <div>
+                    <select
+                      value={pageSize}
+                      onChange={(e) =>
+                        handleChangePageSize(Number(e.target.value))
+                      }
+                      className="px-4 py-2 border rounded-lg"
+                    >
+                      <option value={5}>5 rows</option>
+                      <option value={10}>10 rows</option>
+                    </select>
                   </div>
-                </>
-              ) : (
-                <div>No employees found.</div>
-              )}
-            </>
-          )}
-        </>
-      ) : (
-        <>Nothing</>
-      )}
+                  <div>
+                    <button
+                      onClick={() => handleChangePage(Math.max(page - 1, 1))}
+                      disabled={page === 1}
+                      className="px-3 py-2 border rounded-lg text-sm"
+                    >
+                      Previous
+                    </button>
+                    <span className="mx-4">Page {page}</span>
+                    <button
+                      onClick={() => handleChangePage(page + 1)}
+                      className="px-4 py-2 border rounded-lg text-sm"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div>No tasks found.</div>
+            )}
+          </>
+        )}
+      </>
+    ) : (
+      <div className="text-center py-4">
+        Click the Show Table button to view tasks.
+      </div>
+    )}
+  </>
+)}
 
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <AlertDialogContent>
@@ -454,20 +470,29 @@ export default function RewardTable() {
               <AlertDialogTitle>Update Status</AlertDialogTitle>
             </AlertDialogHeader>
             <Select
-              value={selectedStatus.toString()}
+              value={selectedStatus.toString()} // Ensure value is string
               onValueChange={(value) => setSelectedStatus(Number(value))}
             >
               <SelectTrigger className="w-full">
-                <SelectValue>Select status</SelectValue>
+                <SelectValue>
+                  {selectedStatus === 0
+                    ? "Not Started"
+                    : selectedStatus === 1
+                    ? "In Progress"
+                    : selectedStatus === 2
+                    ? "Completed"
+                    : "Select status"}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="0">Pending</SelectItem>
-                  <SelectItem value="1">Approved</SelectItem>
-                  <SelectItem value="2">Rejected</SelectItem>
+                  <SelectItem value="0">Not Started</SelectItem>
+                  <SelectItem value="1">In Progress</SelectItem>
+                  <SelectItem value="2">Completed</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
+
             <AlertDialogFooter>
               <AlertDialogCancel onClick={closeUpdateDialog}>
                 Cancel

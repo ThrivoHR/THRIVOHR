@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import AppProvider from "./app-provider";
+import { ProjectProvider } from "./project-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Toaster position="top-center" reverseOrder={false} />
-        <AppProvider>{children}</AppProvider>
+        <ProjectProvider>
+          <AppProvider>{children}</AppProvider>
+        </ProjectProvider>
       </body>
     </html>
   );

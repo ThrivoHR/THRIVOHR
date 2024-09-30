@@ -40,8 +40,12 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import ProjectChart from "./chart";
+import { useProject } from "@/app/project-context";
+import toast from "react-hot-toast";
 
 export default function ProjectTable() {
+  const { setProjectId, setProjectName } = useProject();
+
   const [loading, setLoading] = useState(false);
   const [project, setProject] = useState<ProjectSchemaType[]>([]);
   const [selectedProject, setSelectedProject] =
@@ -100,8 +104,13 @@ export default function ProjectTable() {
   };
 
   const handleCardClick = (project: ProjectSchemaType) => {
+    setProjectId(project.id);
+    setProjectName(project.name);
     setSelectedProject(project);
     setShowDialog(true); // Open the alert dialog
+    toast.success(
+      `Please go to the "Project Task" to view tasks for ${project.name}`,{duration:2000}
+    );
   };
 
   const openStatusModal = () => {
@@ -462,24 +471,24 @@ export default function ProjectTable() {
       </div>
 
       <>
-  {loading ? (
-    <></>
-  ) : (
-    <Card className="mt-8">
-      <CardHeader>
-        <CardTitle>Chart Overview</CardTitle>
-        <CardDescription>
-          Overview of project progress and total tasks
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="h-80">
-          <ProjectChart projects={project} />
-        </div>
-      </CardContent>
-    </Card>
-  )}
-</>
+        {loading ? (
+          <></>
+        ) : (
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle>Chart Overview</CardTitle>
+              <CardDescription>
+                Overview of project progress and total tasks
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ProjectChart projects={project} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </>
     </div>
   );
 }

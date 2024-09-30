@@ -26,6 +26,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import toast from "react-hot-toast";
+import Image from "next/image";
+import none from "/public/nothing-here-.jpg";
+
 
 export default function UnionTable() {
   const [loading, setLoading] = useState(false);
@@ -135,7 +138,7 @@ export default function UnionTable() {
       </div>
       <AddUnionModal isOpen={isModalOpen} onClose={closeModal} />
 
-      {showTable && (
+      {showTable ? (
         <>
           {loading ? (
             <div>
@@ -143,7 +146,7 @@ export default function UnionTable() {
             </div>
           ) : (
             <>
-              {union.length > 0 ? (
+                            {union.length > 0 ? (
                 <>
                   <DataTable columns={columns(handleUpdate)} data={union} />
                   <div className="flex justify-between items-center p-4">
@@ -184,6 +187,11 @@ export default function UnionTable() {
             </>
           )}
         </>
+      ) : (
+        <div className="flex items-center justify-center flex-col">
+          <Image src={none} alt="nothing" width={400} height={300}/>
+          <p>Nothing here, start by pressing Show Table button above</p>
+        </div>
       )}
 
       {selectedUnion && (

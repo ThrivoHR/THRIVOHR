@@ -27,6 +27,8 @@ import { AddContractModal } from "./addContract";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, Eye, EyeOff } from "lucide-react";
 import LoadingAnimate from "@/components/Loading";
+import Image from "next/image";
+import none from "/public/nothing-here-.jpg";
 
 export default function Contract() {
   const [loading, setLoading] = useState(false);
@@ -155,6 +157,7 @@ export default function Contract() {
     if (showTable) {
       fetchData(filter); 
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, showTable,filter]); 
 
   return (
@@ -169,12 +172,15 @@ export default function Contract() {
       </div>
       <AddContractModal isOpen={isModalOpen} onClose={closeModal} />
 
-      {loading ? (
-        <div><LoadingAnimate/></div>
-      ) : (
-        showTable && (
-          <>
-            {contract.length > 0 ? (
+      {showTable ? (
+        <>
+          {loading ? (
+            <div>
+              <LoadingAnimate />
+            </div>
+          ) : (
+            <>
+              {contract.length > 0 ? (
               <>
                 <DataTable columns={Columns(handleDelete, handleEdit, handleOpenModal)} data={contract} />
                 <div className="flex justify-between items-center p-4">
@@ -209,8 +215,14 @@ export default function Contract() {
             ) : (
               <div>No contracts found.</div>
             )}
-          </>
-        )
+            </>
+          )}
+        </>
+      ) : (
+        <div className="flex items-center justify-center flex-col">
+          <Image src={none} alt="nothing" width={400} height={300}/>
+          <p>Nothing here, start by pressing Show Table button above</p>
+        </div>
       )}
 
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>

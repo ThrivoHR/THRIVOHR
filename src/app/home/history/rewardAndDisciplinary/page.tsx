@@ -40,6 +40,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
+import none from "/public/nothing-here-.jpg";
 
 export default function RewardTable() {
   const [loading, setLoading] = useState(false);
@@ -256,7 +258,10 @@ export default function RewardTable() {
           )}
         </>
       ) : (
-        <>Nothing</>
+        <div className="flex items-center justify-center flex-col">
+          <Image src={none} alt="nothing" width={400} height={300}/>
+          <p>Nothing here, start by pressing Show Table button above</p>
+        </div>
       )}
 
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>

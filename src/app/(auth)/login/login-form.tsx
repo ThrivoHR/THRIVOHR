@@ -23,19 +23,81 @@ import { handleErrorApi } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 
+// Define the saveSession function
+function saveSession(token: string, refreshToken: string) {
+  localStorage.setItem("sessionToken", token);
+  localStorage.setItem("refreshToken", refreshToken);
+}
+
+// Define the useAuth hook outside the component
+function useAuth() {
+  useEffect(() => {
+    let runCount = 0;
+    const maxRuns = 2; // Maximum number of refresh runs allowed
+    const intervalDuration = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+    const interval = setInterval(() => {
+      if (runCount < maxRuns) {
+        refreshSession();
+        runCount += 1; // Increment the run count
+      } else {
+        clearInterval(interval); // Stop the interval after max runs
+        console.log("Refresh interval stopped after 2 runs");
+      }
+    }, intervalDuration);
+
+    return () => {
+      clearInterval(interval); // Cleanup interval on unmount
+    };
+  }, []);
+
+  const refreshSession = async () => {
+    const token = localStorage.getItem("sessionToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    if (token && refreshToken) {
+      try {
+        const refreshResult = await authApiRequest.refresh({
+          token,
+          refreshToken,
+        });
+
+        const payload = refreshResult.payload as {
+          value: { token: string; refreshToken: string };
+        };
+        const newToken = payload.value.token;
+        const newRefreshToken = payload.value.refreshToken;
+
+        if (newToken) {
+          localStorage.setItem("sessionToken", newToken);
+          localStorage.setItem("refreshToken", newRefreshToken);
+          await authApiRequest.auth({
+            sessionToken: newToken,
+          });
+          console.log("Session refreshed and auth re-run");
+        }
+      } catch (error) {
+        console.error("Token refresh failed", error);
+      }
+    }
+  };
+}
+
 export default function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const forbiddenChars = /^[^a-zA-Z]*$/;
 
   const formSchema = z.object({
-    employeeCode: z.string()
+    employeeCode: z
+      .string()
       .length(6, "Employee Code must be 6 characters")
-      .refine(value => forbiddenChars.test(value), {
+      .refine((value) => forbiddenChars.test(value), {
         message: "Employee Code must not contain special characters",
       }),
     password: z.string().nonempty("Password is required"),
   });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,40 +106,8 @@ export default function LoginForm() {
     },
   });
 
-  function saveSession(token: string, refreshToken: string) {
-    localStorage.setItem("token", token);
-    localStorage.setItem("refreshToken", refreshToken);
-  }
-
-  useEffect(() => {
-    const refreshSession = async () => {
-      const token = localStorage.getItem("sessionToken");
-      const refreshToken = localStorage.getItem("refreshToken");
-      if (token && refreshToken) {
-        try {
-          const refreshResult = await authApiRequest.refresh({
-            token,
-            refreshToken,
-          });
-          const payload = refreshResult.payload as { value: { token: string; refreshToken: string } };
-          const newToken = payload.value.token;
-          const newRefreshToken = (refreshResult.payload as { value: { token: string; refreshToken: string } }).value.refreshToken;
-          if (newToken) {
-            localStorage.setItem("sessionToken", newToken);
-            localStorage.setItem("refreshToken", newRefreshToken);
-            await authApiRequest.auth({
-              sessionToken: newToken,
-            });
-            console.log("Session refreshed and auth re-run");
-          }
-        } catch (error) {
-          console.error("Token refresh failed", error);
-        }
-      }
-    };
-    const interval = setInterval(refreshSession, 600000);
-    return () => clearInterval(interval);
-  }, []);
+  // Call the useAuth function to initiate session refresh
+  useAuth();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
@@ -131,7 +161,10 @@ export default function LoginForm() {
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-8"
+                >
                   <FormField
                     control={form.control}
                     name="employeeCode"
@@ -159,7 +192,11 @@ export default function LoginForm() {
                     )}
                   />
                   <Separator className="my-4" />
-                  <Button type="submit" className="w-full bg-blue-500/80 hover:bg-blue-500/70" disabled={loading}>
+                  <Button
+                    type="submit"
+                    className="w-full bg-blue-500/80 hover:bg-blue-500/70"
+                    disabled={loading}
+                  >
                     {loading ? (
                       <>
                         <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />

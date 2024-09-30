@@ -25,9 +25,11 @@ import { Button } from "@/components/ui/button";
 import { AddEmployeeModal } from "./addEmployee";
 import { CirclePlus, Divide, Eye, EyeOff } from "lucide-react";
 import LoadingAnimate from "@/components/Loading";
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
 import apiImageRequest from "@/apiRequest/image";
 import toast from "react-hot-toast";
+import Image from "next/image";
+import none from "/public/nothing-here-.jpg";
 
 export default function EmployeeTable() {
   const [loading, setLoading] = useState(false);
@@ -143,9 +145,9 @@ export default function EmployeeTable() {
   };
 
   const handleImage = async (employee: EmployeeSchemaType) => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
     input.onchange = async () => {
       const file = input.files?.[0];
       if (file) {
@@ -153,7 +155,7 @@ export default function EmployeeTable() {
         formData.append("EmployeeCode", employee.employeeCode.toString());
         formData.append("FormFile", file); // 'FormFile' as per the API's requirement
         try {
-          const response = await apiImageRequest.uploadImage(formData);
+          await apiImageRequest.uploadImage(formData);
           toast.success("Image uploaded successfully!");
         } catch (error) {
           console.error("Error uploading image:", error);
@@ -163,8 +165,6 @@ export default function EmployeeTable() {
     };
     input.click();
   };
-  
-  
 
   const handleEdit = (rowData: EmployeeSchemaType) => {
     const transformedData = transformRowToUpdateEmployee(rowData);
@@ -191,20 +191,24 @@ export default function EmployeeTable() {
       position: employee.position,
       address: employee.address.fullAddress,
     }));
-  
+
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Employees");
     XLSX.writeFile(workbook, "EmployeeData.xlsx");
   };
-  
+
   return (
     <div>
-      <EmployeeFilter onFilter={handleFilterChange} employees={employees} onExport={handleExport}/>
+      <EmployeeFilter
+        onFilter={handleFilterChange}
+        employees={employees}
+        onExport={handleExport}
+      />
       <div className="flex items-center py-3 space-x-2">
         <Button className="ml-auto" onClick={openModal}>
-          <CirclePlus size={16} />&nbsp;
-          Add
+          <CirclePlus size={16} />
+          &nbsp; Add
         </Button>
         <Button
           variant="secondary"
@@ -212,11 +216,13 @@ export default function EmployeeTable() {
         >
           {showTable ? (
             <div className="flex items-center">
-              <EyeOff size={20} />&nbsp; Hide Table
+              <EyeOff size={20} />
+              &nbsp; Hide Table
             </div>
           ) : (
             <div className="flex items-center">
-              <Eye size={20} />&nbsp; Show Table
+              <Eye size={20} />
+              &nbsp; Show Table
             </div>
           )}
         </Button>
@@ -275,7 +281,10 @@ export default function EmployeeTable() {
           )}
         </>
       ) : (
-        <>Nothing</>
+        <div className="flex items-center justify-center flex-col">
+          <Image src={none} alt="nothing" width={400} height={300}/>
+          <p>Nothing here, start by pressing Show Table button above</p>
+        </div>
       )}
 
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>

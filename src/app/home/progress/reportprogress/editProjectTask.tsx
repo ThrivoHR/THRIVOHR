@@ -99,7 +99,7 @@ export function EditProjectTaskModal({
             onSubmit={form.handleSubmit(handleEdit)}
             className="grid grid-cols-1 md:grid-cols-3 gap-4"
           >
-            <FormItem>
+            {/* <FormItem>
               <FormLabel>Task ID</FormLabel>
               <FormControl>
                 <Input
@@ -111,7 +111,7 @@ export function EditProjectTaskModal({
               <FormMessage>
                 {form.formState.errors.taskId?.message}
               </FormMessage>
-            </FormItem>
+            </FormItem> */}
 
             <FormItem>
               <FormLabel>Name</FormLabel>

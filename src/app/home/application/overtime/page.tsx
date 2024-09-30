@@ -7,27 +7,13 @@ import { Columns } from "./columns";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, Eye, EyeOff } from "lucide-react";
 import LoadingAnimate from "@/components/Loading";
-import apiApplicationFormRequest from "@/apiRequest/applicationForm";
-import {
-  ApplicationFormFilterType,
-  ApplicationFormSchemaType,
-  UpdateStatusType,
-} from "@/schemaValidation/applicationForm.schema";
-import ApplicationFormFilter from "./filterOvertime";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Import Select components
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { OvertimeFilterType, OvertimeType } from "@/schemaValidation/overtime.schema";
 import { AddOvertimeModal } from "./addOvertime";
 import apiOvertimeRequest from "@/apiRequest/overtime";
 import OvertimeFilter from "./filterOvertime";
+
+import Image from "next/image";
+import none from "/public/nothing-here-.jpg";
 
 export default function Overtime() {
   const [loading, setLoading] = useState(false);
@@ -83,6 +69,7 @@ export default function Overtime() {
     if (showTable) {
       fetchData(filter);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, showTable]);
 
   return (
@@ -108,13 +95,15 @@ export default function Overtime() {
         </Button>
       </div>
       <AddOvertimeModal isOpen={isModalOpen} onClose={closeModal} />
-      {loading ? (
-        <div>
-          <LoadingAnimate />
-        </div>
-      ) : (
-        showTable && (
-          <>
+      
+      {showTable ? (
+        <>
+          {loading ? (
+            <div>
+              <LoadingAnimate />
+            </div>
+          ) : (
+            <>
             {overtime.length > 0 ? (
               <>
                 <DataTable columns={Columns()} data={overtime} />
@@ -152,8 +141,14 @@ export default function Overtime() {
             ) : (
               <div>No applications found.</div>
             )}
-          </>
-        )
+            </>
+          )}
+        </>
+      ) : (
+        <div className="flex items-center justify-center flex-col">
+          <Image src={none} alt="nothing" width={400} height={300}/>
+          <p>Nothing here, start by pressing Show Table button above</p>
+        </div>
       )}
     </div>
   );
