@@ -80,7 +80,7 @@ export const columns = (
         <>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button variant="link" className="text-blue-600 underline">
+              <Button variant="link">
                 View
               </Button>
             </DialogTrigger>
