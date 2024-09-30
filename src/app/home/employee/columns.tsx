@@ -11,10 +11,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDown } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import Image from "next/image";
+import { useState } from "react";
 
 export const columns = (
   handleDelete: (employee: EmployeeSchemaType) => void,
-  handleEdit: (employee: EmployeeSchemaType) => void
+  handleEdit: (employee: EmployeeSchemaType) => void,
+  handleImage: (employee: EmployeeSchemaType) => void,
 ): ColumnDef<EmployeeSchemaType>[] => [
   {
     accessorKey: "employeeCode",
@@ -49,18 +53,6 @@ export const columns = (
     accessorKey: "email",
     header: "Email",
   },
-  // {
-  //   accessorKey: "phoneNumber",
-  //   header: "Phone Number",
-  // },
-  // {
-  //   accessorKey: "taxCode",
-  //   header: "Tax Code",
-  // },
-  // {
-  //   accessorKey: "bankAccount",
-  //   header: "Bank Account",
-  // },
   {
     accessorKey: "address.fullAddress",
     header: "Full Address",
@@ -73,13 +65,36 @@ export const columns = (
     accessorKey: "position",
     header: "Position",
   },
-  // {
-  //   accessorKey: "dateOfBirth",
-  //   header: "Date of Birth",
-  // },
   {
     accessorKey: "manager",
     header: "Manager",
+  },
+  {
+    accessorKey: "imageUrl",
+    header: "Image",
+    cell: ({ row }) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [open, setOpen] = useState(false);
+      const imageUrl = row.original.imageUrl;
+      return imageUrl ? (
+        <>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button variant="link" className="text-blue-600 underline">
+                View
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+              </DialogHeader>
+              <DialogDescription>
+                <Image src={imageUrl} alt="Image Preview" className="w-full h-auto" width={300} height={300} />
+              </DialogDescription>
+            </DialogContent>
+          </Dialog>
+        </>
+      ) : null;
+    },
   },
   {
     id: "actions",
@@ -100,7 +115,9 @@ export const columns = (
             <DropdownMenuItem onClick={() => handleDelete(employeeData)}>
               Delete
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => handleImage(employeeData)}>
+              Upload Image
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

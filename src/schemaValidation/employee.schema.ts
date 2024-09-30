@@ -34,6 +34,8 @@ export const EmployeeSchema = z.object({
   religion:z.string(),
   ethnicity:z.string(),
   manager: z.string(),
+  numberOfLeave:z.number(),
+  imageUrl:z.string(),
 });
 
 export const EmployeePageSchema = z.object({

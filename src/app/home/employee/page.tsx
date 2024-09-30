@@ -26,6 +26,8 @@ import { AddEmployeeModal } from "./addEmployee";
 import { CirclePlus, Divide, Eye, EyeOff } from "lucide-react";
 import LoadingAnimate from "@/components/Loading";
 import * as XLSX from 'xlsx';
+import apiImageRequest from "@/apiRequest/image";
+import toast from "react-hot-toast";
 
 export default function EmployeeTable() {
   const [loading, setLoading] = useState(false);
@@ -140,6 +142,30 @@ export default function EmployeeTable() {
     };
   };
 
+  const handleImage = async (employee: EmployeeSchemaType) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append("EmployeeCode", employee.employeeCode.toString());
+        formData.append("FormFile", file); // 'FormFile' as per the API's requirement
+        try {
+          const response = await apiImageRequest.uploadImage(formData);
+          toast.success("Image uploaded successfully!");
+        } catch (error) {
+          console.error("Error uploading image:", error);
+          toast.error("Failed to upload image.");
+        }
+      }
+    };
+    input.click();
+  };
+  
+  
+
   const handleEdit = (rowData: EmployeeSchemaType) => {
     const transformedData = transformRowToUpdateEmployee(rowData);
     setEmployeeData(transformedData);
@@ -208,7 +234,7 @@ export default function EmployeeTable() {
               {employees.length > 0 ? (
                 <>
                   <DataTable
-                    columns={columns(handleDelete, handleEdit)}
+                    columns={columns(handleDelete, handleEdit, handleImage)}
                     data={employees}
                   />
                   <div className="flex justify-between items-center p-4">

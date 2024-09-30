@@ -132,7 +132,6 @@ export default function EmployeeFilter({
   };
 
   const handleExportClick = () => {
-    // Trigger the export function passed from the parent
     onExport();
   };
 
