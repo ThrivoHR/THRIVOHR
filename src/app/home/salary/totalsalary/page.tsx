@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import Filter from "@/components/Filter";
 import { Button } from "@/components/ui/button";
 import { EyeOff } from "lucide-react";
+import dayjs from "dayjs";
 
 type Employee = {
   id: string;
@@ -33,26 +34,29 @@ type Employee = {
 
 const columns = ["ID", "Full Name", "Total salary", "Date of pay"];
 
+
+
 const employees: Employee[] = [
   {
     id: "EMP001",
     fullName: "John Doe",
     total: 10000,
-    dateOfPay: "2023-01-15",
+    dateOfPay: dayjs("2022-11-11").format("DD/MM/YYYY"),
   },
   {
     id: "EMP002",
     fullName: "Jane Doe",
     total: 10000,
-    dateOfPay: "2022-11-20",
+    dateOfPay: dayjs("2023-09-12").format("DD/MM/YYYY"),
   },
   {
     id: "EMP003",
     fullName: "Bob Smith",
     total: 10000,
-    dateOfPay: "2023-03-05",
+    dateOfPay: dayjs("2023-03-05").format("DD/MM/YYYY"),
   },
 ];
+
 
 export default function Employee() {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
@@ -109,7 +113,7 @@ export default function Employee() {
             ID: employee.id,
             "Full Name": employee.fullName,
             "Total salary": employee.total,
-            "Date of pay": employee.dateOfPay,
+            "Date of pay": dayjs(employee.dateOfPay).format("DD/MM/YYYY"), // Explicitly format here
           }))}
           onEditClick={handleEditClick}
           onDeleteClick={handleDeleteClick}

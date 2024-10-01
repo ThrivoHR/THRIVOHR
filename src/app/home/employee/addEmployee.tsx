@@ -50,11 +50,13 @@ const employeeSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   fullName: z.string().min(1, "Full name is required"),
-  identityNumber: z.string().min(1, "Identity number is required"),
+  identityNumber: z.string().length(12, "Identity number must be 12 characters").min(1, "Identity number is required"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
-  phoneNumber: z.string().min(1, "Phone number is required"),
-  taxCode: z.string().min(1, "Tax code is required"),
-  bankAccount: z.string().min(1, "Bank account is required"),
+  phoneNumber: z.string().length(10, "Phone number must be 10 characters").min(1, "Phone number is required"),
+  taxCode: z.string().min(1, "Tax code is required").length(10, "Tax code must be 10 characters"),
+  bankAccount: z.string()
+    .min(8, "Bank account must be at least 8 characters")
+    .max(15, "Bank account must not exceed 15 characters"),
   email: z.string().email("Invalid email address"),
   sex: z.boolean(),
   religion: z.string().min(1, "Religion is required"),
