@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { OvertimeType } from "@/schemaValidation/overtime.schema";
+import dayjs from "dayjs";
 
 export const Columns = (
 ): ColumnDef<OvertimeType>[] => [
@@ -15,6 +16,7 @@ export const Columns = (
   {
     accessorKey: "date",
     header: "Date",
+    cell: ({ row }) => dayjs(row.original.date).format('DD/MM/YYYY'),
   },
   {
     accessorKey: "from",

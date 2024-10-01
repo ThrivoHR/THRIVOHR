@@ -252,7 +252,7 @@ export default function RewardTable() {
                   </div>
                 </>
               ) : (
-                <div>No employees found.</div>
+                <div>No reward and disciplinary found.</div>
               )}
             </>
           )}

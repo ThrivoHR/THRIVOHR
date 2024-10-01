@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDown } from "lucide-react";
 import { RewardAndDisciplinarySchemaType } from "@/schemaValidation/rewardAndDisciplinary.schema";
+import dayjs from "dayjs";
 
 export const columns = (
   handleDelete: (reward: RewardAndDisciplinarySchemaType) => void,
@@ -29,6 +30,7 @@ export const columns = (
   {
     accessorKey: "date",
     header: "Date",
+    cell: ({ row }) => dayjs(row.original.date).format('DD/MM/YYYY'),
   },
   {
     accessorKey: "formOfAction",

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,29 +6,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { ApplicationFormSchemaType } from "@/schemaValidation/applicationForm.schema";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogTrigger,
-  AlertDialogAction,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
+import dayjs from "dayjs";
 
 // Status string to number mapping
 const statusMap: { [key: string]: number } = {
@@ -76,6 +57,7 @@ export const Columns = (
   {
     accessorKey: "dateOfBirth",
     header: "Date Of Birth",
+    cell: ({ row }) => dayjs(row.original.dateOfBirth).format('DD/MM/YYYY'),
   },
   {
     accessorKey: "address",

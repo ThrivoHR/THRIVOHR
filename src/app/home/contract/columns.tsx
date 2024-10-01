@@ -14,6 +14,7 @@ import {
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import apiContractRequest from "@/apiRequest/contract";
 import { Badge } from "@/components/ui/badge";
+import dayjs from "dayjs";
 
 export const Columns = (
   handleDelete: (contract: ContractSchemaType) => void,
@@ -51,10 +52,12 @@ export const Columns = (
   {
     accessorKey: "startDate",
     header: "Start Date",
+    cell: ({ row }) => dayjs(row.original.startDate).format('DD/MM/YYYY'),
   },
   {
     accessorKey: "endDate",
     header: "End Date",
+    cell: ({ row }) => dayjs(row.original.endDate).format('DD/MM/YYYY'),
   },
   {
     accessorKey: "notes",

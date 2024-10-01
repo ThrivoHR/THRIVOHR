@@ -32,23 +32,20 @@ function saveSession(token: string, refreshToken: string) {
 // Define the useAuth hook outside the component
 function useAuth() {
   useEffect(() => {
-    let runCount = 0;
-    const maxRuns = 2; // Maximum number of refresh runs allowed
-    const intervalDuration = 5 * 60 * 1000; // 5 minutes in milliseconds
+    let refreshCompleted = false; // Track if the refresh has been completed
+    const intervalDuration = 2 * 60 * 1000; // 2 minutes in milliseconds
 
-    const interval = setInterval(() => {
-      if (runCount < maxRuns) {
-        refreshSession();
-        runCount += 1; // Increment the run count
-      } else {
-        clearInterval(interval); // Stop the interval after max runs
-        console.log("Refresh interval stopped after 2 runs");
-      }
-    }, intervalDuration);
+    if (!refreshCompleted) {
+      const timeout = setTimeout(() => {
+        refreshSession(); // Call the refresh function
+        refreshCompleted = true; // Mark refresh as complete after one execution
+        console.log("Session refresh has been executed and will not run again");
+      }, intervalDuration);
 
-    return () => {
-      clearInterval(interval); // Cleanup interval on unmount
-    };
+      return () => {
+        clearTimeout(timeout); // Cleanup on unmount
+      };
+    }
   }, []);
 
   const refreshSession = async () => {

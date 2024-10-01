@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UnionSchemaType } from "@/schemaValidation/union.schema";
+import dayjs from "dayjs";
 
 export const columns = (
   handleUpdate: (union: UnionSchemaType, id:number) => void
@@ -26,6 +27,7 @@ export const columns = (
   {
     accessorKey:"dateJoined",
     header: "Date joined",
+    cell: ({ row }) => dayjs(row.original.dateJoined).format('DD/MM/YYYY'),
   },
   {
     id: "actions",
