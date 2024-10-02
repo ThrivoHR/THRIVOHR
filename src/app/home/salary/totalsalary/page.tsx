@@ -24,24 +24,22 @@ import LoadingAnimate from "@/components/Loading";
 import Image from "next/image";
 import none from "/public/nothing-here-.jpg";
 import apiSalaryRequest from "@/apiRequest/salary";
-import { SalaryType } from "@/schemaValidation/salary.schema";
+import { SalaryFilterType, SalaryType } from "@/schemaValidation/salary.schema";
+import SalaryFilter from "./filterSalary";
 
 export default function HistoryTable() {
   const [loading, setLoading] = useState(false);
   const [salary, setSalary] = useState<SalaryType[]>([]);
-  // const [dialogOpen, setDialogOpen] = useState(false);
-  // const [selectedHistory, setSelectedHistory] = useState<TrainingHistorySchemaType | null>(null);
-  // const [filter, setFilter] = useState<TrainingHistoryFilterType | null>(null);
+  const [filter, setFilter] = useState<SalaryFilterType | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [isModalOpen, setModalOpen] = useState(false);
   const [showTable, setShowTable] = useState(false);
 
-  // const handleFilterChange = (newFilter: TrainingHistoryFilterType) => {
-  //   setFilter(newFilter);
-  //   setPage(1);
-  //   setShowTable(true); // Show table when filter is applied
-  // };
+  const handleFilterChange = (newFilter: SalaryFilterType) => {
+    setFilter(newFilter);
+    setPage(1);
+    setShowTable(true); // Show table when filter is applied
+  };
 
   useEffect(() => {
     if (showTable) {
@@ -51,6 +49,7 @@ export default function HistoryTable() {
           const data = await apiSalaryRequest.getSalary(
             page,
             pageSize,
+            filter
           );
           setSalary(data.payload.value.data);
         } catch (error) {
@@ -63,7 +62,7 @@ export default function HistoryTable() {
 
       fetch();
     }
-  }, [page, pageSize, showTable]);
+  }, [page, pageSize, showTable, filter]);
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -74,18 +73,10 @@ export default function HistoryTable() {
     setPage(1);
   };
 
-  const openModal = () => {
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-  };
-
   return (
     <div>
-      {/* <HistoryFilter onFilter={handleFilterChange} /> */}
-      <div className="flex items-center py-3 space-x-2">
+      <SalaryFilter onFilter={handleFilterChange} />
+      <div className="flex items-center py-3 space-x-2 flex-row-reverse">
         <Button variant="secondary" onClick={() => setShowTable(prev => !prev)}>
           {showTable ? (
             <div className="flex items-center">

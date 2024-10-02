@@ -20,14 +20,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
@@ -38,6 +30,7 @@ import { CreateProjectType } from "@/schemaValidation/project.schema";
 import apiProjectRequest from "@/apiRequest/project";
 import { CreateProjectTaskType } from "@/schemaValidation/projectTask.schema";
 import apiProjectTaskRequest from "@/apiRequest/projectTask";
+import { useProject } from "@/app/project-context";
 
 interface AddProjectTaskModalProps {
   isOpen: boolean;
@@ -53,13 +46,15 @@ const projectTaskSchema = z.object({
 });
 
 export function AddProjectTaskModal({ isOpen, onClose}: AddProjectTaskModalProps) {
+  const { projectId , projectName} = useProject();
+
   const [loading, setLoading] = useState(false);
   const form = useForm<CreateProjectTaskType>({
     resolver: zodResolver(projectTaskSchema),
     defaultValues: {
       name: "",
       description: "",
-      projectId: "",
+      projectId: projectId || "",
       assigneeCode: "",
       dueDate: "",
     },
@@ -88,9 +83,9 @@ export function AddProjectTaskModal({ isOpen, onClose}: AddProjectTaskModalProps
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent className="w-[900px] max-w-6xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Add new project</AlertDialogTitle>
+          <AlertDialogTitle>Add new project task</AlertDialogTitle>
           <AlertDialogDescription>
-            Fill in the details below to add a new project.
+            Fill in the details below to add a new task for {projectName}.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Form {...form}>

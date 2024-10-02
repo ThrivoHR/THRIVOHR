@@ -29,57 +29,6 @@ function saveSession(token: string, refreshToken: string) {
   localStorage.setItem("refreshToken", refreshToken);
 }
 
-// Define the useAuth hook outside the component
-function useAuth() {
-  useEffect(() => {
-    let refreshCompleted = false; // Track if the refresh has been completed
-    const intervalDuration = 2 * 60 * 1000; // 2 minutes in milliseconds
-
-    if (!refreshCompleted) {
-      const timeout = setTimeout(() => {
-        refreshSession(); // Call the refresh function
-        refreshCompleted = true; // Mark refresh as complete after one execution
-        console.log("Session refresh has been executed and will not run again");
-      }, intervalDuration);
-
-      return () => {
-        clearTimeout(timeout); // Cleanup on unmount
-      };
-    }
-  }, []);
-
-  const refreshSession = async () => {
-    const token = localStorage.getItem("sessionToken");
-    const refreshToken = localStorage.getItem("refreshToken");
-
-    if (token && refreshToken) {
-      try {
-        const refreshResult = await authApiRequest.refresh({
-          token,
-          refreshToken,
-        });
-
-        const payload = refreshResult.payload as {
-          value: { token: string; refreshToken: string };
-        };
-        const newToken = payload.value.token;
-        const newRefreshToken = payload.value.refreshToken;
-
-        if (newToken) {
-          localStorage.setItem("sessionToken", newToken);
-          localStorage.setItem("refreshToken", newRefreshToken);
-          await authApiRequest.auth({
-            sessionToken: newToken,
-          });
-          console.log("Session refreshed and auth re-run");
-        }
-      } catch (error) {
-        console.error("Token refresh failed", error);
-      }
-    }
-  };
-}
-
 export default function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -103,8 +52,16 @@ export default function LoginForm() {
     },
   });
 
-  // Call the useAuth function to initiate session refresh
-  useAuth();
+  // Logout logic after 10 minutes
+  const autoLogout = (token: string) => {
+    setTimeout(async () => {
+      await authApiRequest.logoutFromNextClientToNextServer(true);
+      localStorage.removeItem("sessionToken");
+      localStorage.removeItem("refreshToken");
+      toast("Session expired, please log in again.");
+      router.push("/login");
+    }, 600000);
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
@@ -117,9 +74,9 @@ export default function LoginForm() {
           sessionToken: token,
         });
         toast.success("Login successful!");
+        autoLogout(token); // Set auto logout after 10 minutes
       }
       router.push("/home/employee");
-      console.log(result);
     } catch (error: any) {
       handleErrorApi({
         error,

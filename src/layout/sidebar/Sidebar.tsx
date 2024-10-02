@@ -218,7 +218,7 @@ export default function Sidebar() {
                       handleNavigation("/home/salary/deductionreport")
                     }
                   >
-                    Deduction report
+                    Deduction
                   </Link>
                   <Link
                     href="/home/salary/totalsalary"
