@@ -33,7 +33,6 @@ import none from "/public/nothing-here-.jpg";
 export default function UnionTable() {
   const [loading, setLoading] = useState(false);
   const [union, setUnion] = useState<UnionSchemaType[]>([]);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedUnion, setSelectedUnion] = useState<UnionSchemaType | null>(
     null
   );
@@ -52,22 +51,25 @@ export default function UnionTable() {
     setShowTable(true); // Show table when filter is applied
   };
 
+
+  const fetchUnion = async () => {
+    setLoading(true);
+    try {
+      const data = await apiUnionRequest.getUnion(page, pageSize, filter);
+      setUnion(data.payload.value.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setUnion([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (showTable) {
-      const fetchUnion = async () => {
-        setLoading(true);
-        try {
-          const data = await apiUnionRequest.getUnion(page, pageSize, filter);
-          setUnion(data.payload.value.data);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          setUnion([]);
-        } finally {
-          setLoading(false);
-        }
-      };
       fetchUnion();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, filter, showTable]);
 
   const handleUpdate = (union: UnionSchemaType) => {
@@ -106,6 +108,7 @@ export default function UnionTable() {
         setUpdateDialogOpen(false); // Close the dialog after saving
         setSelectedUnion(null); // Clear the selected union
         toast.success("Union updated successfully!");
+        await fetchUnion();
       } catch (error) {
         toast.error("Error updating union");
         console.error("Error updating union:", error);

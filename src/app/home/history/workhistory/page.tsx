@@ -43,27 +43,28 @@ export default function HistoryTable() {
     setShowTable(true); // Show table when filter is applied
   };
 
+  const fetchTrainingHistory = async () => {
+    setLoading(true);
+    try {
+      const data = await apiTrainingHistoryRequest.getListTrainingHistory(
+        page,
+        pageSize,
+        filter
+      );
+      setTrainingHistory(data.payload.value.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setTrainingHistory([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (showTable) {
-      const fetchTrainingHistory = async () => {
-        setLoading(true);
-        try {
-          const data = await apiTrainingHistoryRequest.getListTrainingHistory(
-            page,
-            pageSize,
-            filter
-          );
-          setTrainingHistory(data.payload.value.data);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          setTrainingHistory([]);
-        } finally {
-          setLoading(false);
-        }
-      };
-
       fetchTrainingHistory();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, filter, showTable]); // Fetch data when showTable changes
 
   const handleDelete = (training: TrainingHistorySchemaType) => {
@@ -80,6 +81,7 @@ export default function HistoryTable() {
         await apiTrainingHistoryRequest.deleteTrainingHistory(selectedHistory.id);
         setTrainingHistory(prev => prev.filter(emp => emp.id !== selectedHistory.id));
         console.log("Deleted training history:", selectedHistory.id);
+        await fetchTrainingHistory();
       } catch (error) {
         console.error("Error deleting training history:", error);
       } finally {

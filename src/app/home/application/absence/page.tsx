@@ -78,26 +78,28 @@ export default function AbsentTable() {
     setIsStatusModalOpen(true);
   };
 
+  const fetch = async () => {
+    setLoading(true);
+    try {
+      const data = await apiAbsentFormRequest.getAbsentForm(
+        page,
+        pageSize,
+        filter
+      );
+      setAbsent(data.payload.value.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setAbsent([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (showTable) {
-      const fetch = async () => {
-        setLoading(true);
-        try {
-          const data = await apiAbsentFormRequest.getAbsentForm(
-            page,
-            pageSize,
-            filter
-          );
-          setAbsent(data.payload.value.data);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          setAbsent([]);
-        } finally {
-          setLoading(false);
-        }
-      };
       fetch();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, filter, showTable]);
 
   const handleChangePage = (newPage: number) => {
@@ -142,6 +144,7 @@ export default function AbsentTable() {
         );
         console.log("Contract status updated successfully");
         closeUpdateDialog();
+        await fetch();
       } catch (error) {
         console.error("Error updating contract status:", error);
       }

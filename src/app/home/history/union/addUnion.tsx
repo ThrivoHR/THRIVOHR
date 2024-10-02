@@ -25,9 +25,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { handleErrorApi } from "@/lib/utils";
 import toast from "react-hot-toast";
-import { CreateTrainingHistoryType } from "@/schemaValidation/trainingHistory.schema";
-import apiTrainingHistoryRequest from "@/apiRequest/trainingHistory";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { CreateUnionType } from "@/schemaValidation/union.schema";
 import apiUnionRequest from "@/apiRequest/union";
 
@@ -40,7 +37,6 @@ const unionSchema = z.object({
   employeeCode: z.string().nonempty("Employee code is required"),
   title: z.string().nonempty("Title is required"),
   dateJoined: z.string().nonempty("Date joined is required"),
-
 });
 
 export function AddUnionModal({ isOpen, onClose }: AddUnionModalProps) {
@@ -61,6 +57,7 @@ export function AddUnionModal({ isOpen, onClose }: AddUnionModalProps) {
       const result = await apiUnionRequest.createUnion(data);
       toast.success("Added successfully!");
       console.log(result);
+      window.location.reload();
     } catch (error: any) {
       const errorMessage = error?.payload?.detail || "An error occurred";
       handleErrorApi({

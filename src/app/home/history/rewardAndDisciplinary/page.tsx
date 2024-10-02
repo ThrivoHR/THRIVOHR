@@ -76,27 +76,29 @@ export default function RewardTable() {
     setShowTable(true);
   };
 
+  const fetch = async () => {
+    setLoading(true);
+    try {
+      const data =
+        await apiRewardAndDisciplinaryRequest.getRewardAndDisciplinary(
+          page,
+          pageSize,
+          filter
+        );
+      setReward(data.payload.value.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setReward([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (showTable) {
-      const fetch = async () => {
-        setLoading(true);
-        try {
-          const data =
-            await apiRewardAndDisciplinaryRequest.getRewardAndDisciplinary(
-              page,
-              pageSize,
-              filter
-            );
-          setReward(data.payload.value.data);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          setReward([]);
-        } finally {
-          setLoading(false);
-        }
-      };
       fetch();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, filter, showTable]);
 
   const handleDelete = (reward: RewardAndDisciplinarySchemaType) => {
@@ -113,6 +115,7 @@ export default function RewardTable() {
         const id = selectedReward.id.toString();
         await apiRewardAndDisciplinaryRequest.DeleteRewardAndDisciplinary(id);
         setReward((prev) => prev.filter((emp) => emp.id !== id));
+        await fetch();
         console.log("Deleted employee:", id);
       } catch (error) {
         console.error("Error deleting employee:", error);
@@ -135,6 +138,7 @@ export default function RewardTable() {
         );
         console.log("Contract status updated successfully");
         closeUpdateDialog();
+        await fetch();
       } catch (error) {
         console.error("Error updating contract status:", error);
       }

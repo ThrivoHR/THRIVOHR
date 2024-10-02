@@ -69,10 +69,10 @@ export function AddRewardModal({ isOpen, onClose }: AddRewardModalProps) {
   const handleAdd = async (data: CreateRewardAndDisciplinaryType) => {
     setLoading(true);
     try {
-      const result =
         await apiRewardAndDisciplinaryRequest.CreateRewardAndDisciplinary(data);
       toast.success("Reward/Disciplinary action added successfully!");
       form.reset();
+      window.location.reload();
     } catch (error: any) {
       const errorMessage = error?.payload?.detail || "An error occurred";
       handleErrorApi({

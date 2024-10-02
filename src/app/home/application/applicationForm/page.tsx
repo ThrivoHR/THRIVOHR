@@ -104,7 +104,7 @@ export default function Contract() {
         );
         console.log("Contract status updated successfully");
         closeUpdateDialog();
-        fetchData(filter); // Refresh the data after update
+        await fetchData(filter); // Refresh the data after update
       } catch (error) {
         console.error("Error updating contract status:", error);
       }

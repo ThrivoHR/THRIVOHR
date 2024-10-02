@@ -72,7 +72,6 @@ export function AddHistoryModal({ isOpen, onClose }: AddEmployeeModalProps) {
       toast.success("Added successfully!");
       console.log(result);
     } catch (error: any) {
-      // Extracting the error message from the response
       const errorMessage = error?.payload?.detail || "An error occurred";
       handleErrorApi({
         error,
@@ -82,6 +81,7 @@ export function AddHistoryModal({ isOpen, onClose }: AddEmployeeModalProps) {
     } finally {
       setLoading(false);
       onClose();
+      window.location.reload();
     }
   };
   

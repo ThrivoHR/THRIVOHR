@@ -27,10 +27,10 @@ export default function OvertimeFilter({
 }: OvertimeFilterProps) {
   const [filters, setFilters] = useState<OvertimeFilterType>({
     EmployeeId: "",
-    Amount: 0,
+    Amount: undefined,
     Date: "",
-    From: 0,
-    To: 0,
+    From: undefined,
+    To: undefined,
     IsPaid: false,
     Reason: "",
     Status: 0,
@@ -61,20 +61,20 @@ export default function OvertimeFilter({
   const handleReset = () => {
     setFilters({
       EmployeeId: "",
-      Amount: 0,
+      Amount: undefined,
       Date: "",
-      From: 0,
-      To: 0,
+      From: undefined,
+      To: undefined,
       IsPaid: false,
       Reason: "",
       Status: 0,
     });
     onFilter({
       EmployeeId: "",
-      Amount: 0,
+      Amount: undefined,
       Date: "",
-      From: 0,
-      To: 0,
+      From: undefined,
+      To: undefined,
       IsPaid: false,
       Reason: "",
       Status: 0,

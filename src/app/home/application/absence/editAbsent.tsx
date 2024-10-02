@@ -70,6 +70,7 @@ export function EditAbsentModal({
       toast.success("Employee edited successfully!");
       console.log(result);
       onClose();
+      window.location.reload();
     } catch (error: any) {
       const errorMessage = error?.payload?.detail || "An error occurred";
       handleErrorApi({

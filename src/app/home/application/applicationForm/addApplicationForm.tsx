@@ -117,6 +117,7 @@ export function AddApplicationFormModal({
       toast.success("Application added successfully!");
       console.log(result);
       onClose();
+      window.location.reload();
     } catch (error: any) {
       const errorMessage = error?.payload?.detail || "An error occurred";
       handleErrorApi({
