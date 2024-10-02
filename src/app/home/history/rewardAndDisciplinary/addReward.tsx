@@ -69,7 +69,8 @@ export function AddRewardModal({ isOpen, onClose }: AddRewardModalProps) {
   const handleAdd = async (data: CreateRewardAndDisciplinaryType) => {
     setLoading(true);
     try {
-      const result = await apiRewardAndDisciplinaryRequest.CreateRewardAndDisciplinary(data);
+      const result =
+        await apiRewardAndDisciplinaryRequest.CreateRewardAndDisciplinary(data);
       toast.success("Reward/Disciplinary action added successfully!");
       form.reset();
     } catch (error: any) {
@@ -99,7 +100,6 @@ export function AddRewardModal({ isOpen, onClose }: AddRewardModalProps) {
             onSubmit={form.handleSubmit(handleAdd)}
             className="grid grid-cols-1 md:grid-cols-3 gap-4"
           >
-            {/* Employee ID */}
             <FormItem>
               <FormLabel>Employee ID</FormLabel>
               <FormControl>
@@ -108,7 +108,9 @@ export function AddRewardModal({ isOpen, onClose }: AddRewardModalProps) {
                   className="border rounded-md px-3 py-2 w-full"
                 />
               </FormControl>
-              <FormMessage>{form.formState.errors.employeeId?.message}</FormMessage>
+              <FormMessage>
+                {form.formState.errors.employeeId?.message}
+              </FormMessage>
             </FormItem>
 
             {/* Date */}
@@ -129,22 +131,38 @@ export function AddRewardModal({ isOpen, onClose }: AddRewardModalProps) {
               <FormLabel>Form of Action</FormLabel>
               <FormControl>
                 <Select
-                  onValueChange={(value) => form.setValue("formOfAction", parseInt(value))}
+                  onValueChange={(value) =>
+                    form.setValue("formOfAction", parseInt(value))
+                  }
                   defaultValue="0"
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select form of action" />
                   </SelectTrigger>
                   <SelectContent>
-                    {[...Array(8)].map((_, i) => (
-                      <SelectItem key={i} value={i.toString()}>
-                        {i}
+                    {[
+                      { label: "Warning", value: 0 },
+                      { label: "Dismissal", value: 1 },
+                      { label: "Promotion", value: 2 },
+                      { label: "Demotion", value: 3 },
+                      { label: "Suspension", value: 4 },
+                      { label: "Bonus", value: 5 },
+                      { label: "Fine", value: 6 },
+                      { label: "Salary Increase", value: 7 },
+                    ].map((item) => (
+                      <SelectItem
+                        key={item.value}
+                        value={item.value.toString()}
+                      >
+                        {item.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </FormControl>
-              <FormMessage>{form.formState.errors.formOfAction?.message}</FormMessage>
+              <FormMessage>
+                {form.formState.errors.formOfAction?.message}
+              </FormMessage>
             </FormItem>
 
             {/* Amount */}
@@ -191,7 +209,9 @@ export function AddRewardModal({ isOpen, onClose }: AddRewardModalProps) {
                   </SelectContent>
                 </Select>
               </FormControl>
-              <FormMessage>{form.formState.errors.isRewards?.message}</FormMessage>
+              <FormMessage>
+                {form.formState.errors.isRewards?.message}
+              </FormMessage>
             </FormItem>
 
             {/* Status */}
@@ -199,7 +219,9 @@ export function AddRewardModal({ isOpen, onClose }: AddRewardModalProps) {
               <FormLabel>Status</FormLabel>
               <FormControl>
                 <Select
-                  onValueChange={(value) => form.setValue("status", parseInt(value))}
+                  onValueChange={(value) =>
+                    form.setValue("status", parseInt(value))
+                  }
                   defaultValue="0"
                 >
                   <SelectTrigger>

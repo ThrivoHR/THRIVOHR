@@ -20,10 +20,6 @@ export const columns = (
   handleOpenModal: (reward: RewardAndDisciplinarySchemaType) => void,
 ): ColumnDef<RewardAndDisciplinarySchemaType>[] => [
   {
-    accessorKey: "employeeId",
-    header: "Employee ID",
-  },
-  {
     accessorKey: "employeeName",
     header: "Employee Name",
   },

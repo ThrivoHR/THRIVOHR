@@ -81,14 +81,11 @@ export default function ProjectTaskTable() {
   const [taskIdForChangeAssignee, setTaskIdForChangeAssignee] =
     useState<string>("");
   const [taskIdForResetDate, setTaskIdForResetDate] = useState<string>("");
-
   const [taskHistory, setTaskHistory] = useState<TaskHistoryType[] | null>(
     null
   );
-
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-
   const handleFilterChange = (newFilter: ProjectTaskFilterType) => {
     setFilter(newFilter);
     setPage(1);

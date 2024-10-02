@@ -59,13 +59,13 @@ export const Columns = (
     header: "End Date",
     cell: ({ row }) => dayjs(row.original.endDate).format('DD/MM/YYYY'),
   },
-  {
-    accessorKey: "notes",
-    header: "Notes",
-  },
+
   {
     accessorKey: "duration",
     header: "Duration",
+    cell: ({ row }) => {
+      return <span>{row.original.duration} months</span>;
+    }
   },
   {
     accessorKey: "isNoExpiry",
@@ -78,6 +78,10 @@ export const Columns = (
         <Badge variant="outline">Available</Badge>
       );
     },
+  },
+  {
+    accessorKey: "notes",
+    header: "Notes",
   },
   {
     id: "actions",

@@ -210,24 +210,6 @@ export default function Sidebar() {
                     Raise
                   </Link>
                   <Link
-                    href="/home/salary/bonus"
-                    className={`${linkClasses("/home/salary/bonus")} pl-16`}
-                    onClick={() => handleNavigation("/home/salary/bonus")}
-                  >
-                    Bonus
-                  </Link>
-                  <Link
-                    href="/home/salary/overtimesalary"
-                    className={`${linkClasses(
-                      "/home/salary/overtimesalary"
-                    )} pl-16`}
-                    onClick={() =>
-                      handleNavigation("/home/salary/overtimesalary")
-                    }
-                  >
-                    Overtime salary
-                  </Link>
-                  <Link
                     href="/home/salary/deductionreport"
                     className={`${linkClasses(
                       "/home/salary/deductionreport"

@@ -47,34 +47,34 @@ export default function EmployeeTable() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [showTable, setShowTable] = useState(false); // Default to false so table is initially hidden
 
-  // Handle filter change and ensure table is shown
   const handleFilterChange = (newFilter: EmployeeFilterType) => {
     setFilter(newFilter);
     setPage(1);
-    setShowTable(true); // Show table when filter is applied
+    setShowTable(true);
+  };
+
+  const fetchEmployees = async () => {
+    setLoading(true);
+    try {
+      const data = await apiEmployeeRequest.getListEmployee(
+        page,
+        pageSize,
+        filter
+      );
+      setEmployees(data.payload.value.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setEmployees([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     if (showTable) {
-      const fetchEmployees = async () => {
-        setLoading(true);
-        try {
-          const data = await apiEmployeeRequest.getListEmployee(
-            page,
-            pageSize,
-            filter
-          );
-          setEmployees(data.payload.value.data);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          setEmployees([]);
-        } finally {
-          setLoading(false);
-        }
-      };
-
       fetchEmployees();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, filter, showTable]);
 
   const handleDelete = (employee: EmployeeSchemaType) => {
@@ -83,6 +83,7 @@ export default function EmployeeTable() {
       employeeCode: employee.employeeCode.toString(),
     });
     setDialogOpen(true);
+    
   };
 
   const confirmDelete = async () => {
@@ -96,6 +97,7 @@ export default function EmployeeTable() {
         setEmployees((prev) =>
           prev.filter((emp) => emp.employeeCode !== employeeCodeString)
         );
+        await fetchEmployees();
         console.log("Deleted employee:", employeeCodeString);
       } catch (error) {
         console.error("Error deleting employee:", error);
@@ -157,6 +159,7 @@ export default function EmployeeTable() {
         try {
           await apiImageRequest.uploadImage(formData);
           toast.success("Image uploaded successfully!");
+          await fetchEmployees();
         } catch (error) {
           console.error("Error uploading image:", error);
           toast.error("Failed to upload image.");

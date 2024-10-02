@@ -1,211 +1,161 @@
 "use client";
 
-import { useState } from "react";
-import DataTable from "@/components/Table";
+import { useEffect, useState } from "react";
+import apiTrainingHistoryRequest from "@/apiRequest/trainingHistory";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import Filter from "@/components/Filter";
+  TrainingHistoryFilterType,
+  TrainingHistorySchemaType,
+} from "@/schemaValidation/trainingHistory.schema";
 import { Button } from "@/components/ui/button";
-import { EyeOff } from "lucide-react";
-import dayjs from "dayjs";
+import { CirclePlus, Eye, EyeOff } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
+import LoadingAnimate from "@/components/Loading";
+import Image from "next/image";
+import none from "/public/nothing-here-.jpg";
+import apiSalaryRequest from "@/apiRequest/salary";
+import { SalaryType } from "@/schemaValidation/salary.schema";
 
-type Employee = {
-  id: string;
-  fullName: string;
-  total: number;
-  dateOfPay: string;
-};
+export default function HistoryTable() {
+  const [loading, setLoading] = useState(false);
+  const [salary, setSalary] = useState<SalaryType[]>([]);
+  // const [dialogOpen, setDialogOpen] = useState(false);
+  // const [selectedHistory, setSelectedHistory] = useState<TrainingHistorySchemaType | null>(null);
+  // const [filter, setFilter] = useState<TrainingHistoryFilterType | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [showTable, setShowTable] = useState(false);
 
-const columns = ["ID", "Full Name", "Total salary", "Date of pay"];
+  // const handleFilterChange = (newFilter: TrainingHistoryFilterType) => {
+  //   setFilter(newFilter);
+  //   setPage(1);
+  //   setShowTable(true); // Show table when filter is applied
+  // };
 
+  useEffect(() => {
+    if (showTable) {
+      const fetch = async () => {
+        setLoading(true);
+        try {
+          const data = await apiSalaryRequest.getSalary(
+            page,
+            pageSize,
+          );
+          setSalary(data.payload.value.data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          setSalary([]);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-
-const employees: Employee[] = [
-  {
-    id: "EMP001",
-    fullName: "John Doe",
-    total: 10000,
-    dateOfPay: dayjs("2022-11-11").format("DD/MM/YYYY"),
-  },
-  {
-    id: "EMP002",
-    fullName: "Jane Doe",
-    total: 10000,
-    dateOfPay: dayjs("2023-09-12").format("DD/MM/YYYY"),
-  },
-  {
-    id: "EMP003",
-    fullName: "Bob Smith",
-    total: 10000,
-    dateOfPay: dayjs("2023-03-05").format("DD/MM/YYYY"),
-  },
-];
-
-
-export default function Employee() {
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
-    null
-  );
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dialogType, setDialogType] = useState<"edit" | "delete" | null>(null);
-
-  const handleEditClick = (row: Record<string, React.ReactNode>) => {
-    const employee = employees.find((emp) => emp.id === row["ID"])!;
-    setSelectedEmployee(employee);
-    setDialogType("edit");
-    setIsDialogOpen(true);
-  };
-
-  const handleDeleteClick = (row: Record<string, React.ReactNode>) => {
-    const employee = employees.find((emp) => emp.id === row["ID"])!;
-    setSelectedEmployee(employee);
-    setDialogType("delete");
-    setIsDialogOpen(true);
-  };
-
-  const closeDialog = () => {
-    setIsDialogOpen(false);
-    setSelectedEmployee(null);
-    setDialogType(null);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (selectedEmployee) {
-      const { name, value } = e.target;
-      setSelectedEmployee({ ...selectedEmployee, [name]: value });
+      fetch();
     }
+  }, [page, pageSize, showTable]);
+
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangePageSize = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setPage(1);
+  };
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
   };
 
   return (
     <div>
-      <div>
-        <Filter />
-      </div>
-      <div className="flex justify-end items-center py-3 space-x-2">
-          <Button>Add new total salary</Button>
-          <Button variant="secondary">
+      {/* <HistoryFilter onFilter={handleFilterChange} /> */}
+      <div className="flex items-center py-3 space-x-2">
+        <Button variant="secondary" onClick={() => setShowTable(prev => !prev)}>
+          {showTable ? (
             <div className="flex items-center">
-              <EyeOff size={20} />
-              &nbsp; Hide Table
+              <EyeOff size={20} /> &nbsp; Hide Table
             </div>
-          </Button>
-        </div>
-      <div className="border rounded-lg w-full h-[80vh] flex flex-col">
-        <DataTable
-          columns={columns}
-          data={employees.map((employee) => ({
-            ID: employee.id,
-            "Full Name": employee.fullName,
-            "Total salary": employee.total,
-            "Date of pay": dayjs(employee.dateOfPay).format("DD/MM/YYYY"), // Explicitly format here
-          }))}
-          onEditClick={handleEditClick}
-          onDeleteClick={handleDeleteClick}
-        />
-        <div className="pagination">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink>3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-        {selectedEmployee && (
-          <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
-            <DialogContent className="w-full max-w-4xl h-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {dialogType === "edit" && "Edit Employee"}
-                  {dialogType === "delete" && "Delete Employee"}
-                </DialogTitle>
-                <DialogClose />
-              </DialogHeader>
-              <div className="p-4 bg-white">
-                {dialogType === "edit" && (
-                  <form className="grid grid-cols-1 gap-4">
-                    <div className="flex flex-col">
-                      <label>ID:</label>
-                      <Input
-                        type="text"
-                        name="id"
-                        value={selectedEmployee.id}
-                        readOnly
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label>Full Name:</label>
-                      <Input
-                        type="text"
-                        name="fullName"
-                        value={selectedEmployee.fullName}
-                        onChange={handleInputChange}
-                        className="p-2 border rounded"
-                      />
-                    </div>
-                  </form>
-                )}
-                {dialogType === "delete" && (
-                  <p>
-                    Are you sure you want to delete employee{" "}
-                    {selectedEmployee.fullName} with ID {selectedEmployee.id}?
-                  </p>
-                )}
-              </div>
-              <DialogFooter>
-                <button
-                  className="mt-4 px-4 py-2 bg-blue-300 text-white rounded"
-                  onClick={closeDialog}
-                >
-                  Close
-                </button>
-                {dialogType === "edit" && (
-                  <button className="mt-4 px-4 py-2 bg-green-500 text-white rounded">
-                    Save Changes
-                  </button>
-                )}
-                {dialogType === "delete" && (
-                  <button className="mt-4 px-4 py-2 bg-red-500 text-white rounded">
-                    Confirm Delete
-                  </button>
-                )}
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
+          ) : (
+            <div className="flex items-center">
+              <Eye size={20} /> &nbsp; Show Table
+            </div>
+          )}
+        </Button>
       </div>
+      {/* <AddHistoryModal isOpen={isModalOpen} onClose={closeModal} /> */}
+
+      {showTable ? (
+        <>
+          {loading ? (
+            <div>
+              <LoadingAnimate />
+            </div>
+          ) : (
+            <>
+              {salary.length > 0 ? (
+                <>
+                  <DataTable
+                    columns={columns()}
+                    data={salary}
+                  />
+                  <div className="flex justify-between items-center p-4">
+                    <div>
+                      <select
+                        value={pageSize}
+                        onChange={(e) => handleChangePageSize(Number(e.target.value))}
+                        className="px-4 py-2 border rounded-lg"
+                      >
+                        <option value={5}>5 rows</option>
+                        <option value={10}>10 rows</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <button
+                        onClick={() => handleChangePage(Math.max(page - 1, 1))}
+                        disabled={page === 1}
+                        className="px-3 py-2 border rounded-lg text-sm"
+                      >
+                        Previous
+                      </button>
+                      <span className="mx-4">Page {page}</span>
+                      <button
+                        onClick={() => handleChangePage(page + 1)}
+                        className="px-4 py-2 border rounded-lg text-sm"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div>No career history found.</div>
+              )}
+            </>
+          )}
+        </>
+      ) : (
+        <div className="flex items-center justify-center flex-col">
+          <Image src={none} alt="nothing" width={400} height={300}/>
+          <p>Nothing here, start by pressing Show Table button above</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -57,12 +57,33 @@ export default function Contract() {
     setDialogOpen(true);
   };
 
+  const fetchData = async (filterParam: ContractFilterType | null) => {
+    setLoading(true);
+    try {
+      const [contractData, departmentData, positionData] = await Promise.all([
+        apiContractRequest.getListContract(page, pageSize, filterParam),
+        apiDepartmentRequest.getDepartment(),
+        apiPositionRequest.getPosition(),
+      ]);
+      setContract(contractData.payload.value.data);
+      console.log("Fetched contracts:", contractData.payload.value.data);
+      setDepartments(departmentData.payload.value);
+      setPositions(positionData.payload.value);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setContract([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const confirmDelete = async () => {
     if (selectedContract) {
       try {
         const contractCodeString = selectedContract.id.toString();
         await apiContractRequest.deleteContract(contractCodeString, contractCodeString);
         setContract((prev) => prev.filter((c) => c.id !== contractCodeString));
+        await fetchData(filter);
         console.log("Deleted contract:", contractCodeString);
       } catch (error) {
         console.error("Error deleting contract:", error);
@@ -86,6 +107,7 @@ export default function Contract() {
       },
     });
     setEditModalOpen(true);
+    fetchData(filter);
   };
 
   const handleChangePage = (newPage: number) => {
@@ -117,6 +139,7 @@ export default function Contract() {
         console.log("Contract ended successfully");
         setIsEndModalOpen(false);
         setSelectedContract(null);
+        await fetchData(filter);
       } catch (error) {
         console.error("Error ending contract:", error);
       }
@@ -131,26 +154,6 @@ export default function Contract() {
   const getPositionId = (positionName: string | undefined): number => {
     const entry = Object.entries(positions).find(([, name]) => name === positionName);
     return entry ? parseInt(entry[0]) : 0;
-  };
-
-  const fetchData = async (filterParam: ContractFilterType | null) => {
-    setLoading(true);
-    try {
-      const [contractData, departmentData, positionData] = await Promise.all([
-        apiContractRequest.getListContract(page, pageSize, filterParam),
-        apiDepartmentRequest.getDepartment(),
-        apiPositionRequest.getPosition(),
-      ]);
-      setContract(contractData.payload.value.data);
-      console.log("Fetched contracts:", contractData.payload.value.data);
-      setDepartments(departmentData.payload.value);
-      setPositions(positionData.payload.value);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setContract([]);
-    } finally {
-      setLoading(false);
-    }
   };
 
   useEffect(() => {

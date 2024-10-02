@@ -99,8 +99,6 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
               value={filters.EmployeeCode}
               onChange={handleChange}
             />
-
-            {/* Select for isRewards */}
             <Select
               name="IsRewards"
               onValueChange={(value) =>
@@ -129,14 +127,14 @@ export default function EmployeeFilter({ onFilter }: EmployeeFilterProps) {
                 <SelectValue placeholder="Select Form of Action" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="0">Action 0</SelectItem>
-                <SelectItem value="1">Action 1</SelectItem>
-                <SelectItem value="2">Action 2</SelectItem>
-                <SelectItem value="3">Action 3</SelectItem>
-                <SelectItem value="4">Action 4</SelectItem>
-                <SelectItem value="5">Action 5</SelectItem>
-                <SelectItem value="6">Action 6</SelectItem>
-                <SelectItem value="7">Action 7</SelectItem>
+                <SelectItem value="0">Warning</SelectItem>
+                <SelectItem value="1">Dismissal</SelectItem>
+                <SelectItem value="2">Promotion</SelectItem>
+                <SelectItem value="3">Demotion</SelectItem>
+                <SelectItem value="4">Suspension</SelectItem>
+                <SelectItem value="5">Bonus</SelectItem>
+                <SelectItem value="6">Fine</SelectItem>
+                <SelectItem value="7">Salary Increase </SelectItem>
               </SelectContent>
             </Select>
 
