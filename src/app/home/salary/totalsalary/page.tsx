@@ -136,7 +136,7 @@ export default function HistoryTable() {
                   </div>
                 </>
               ) : (
-                <div>No career history found.</div>
+                <div>Nothing found.</div>
               )}
             </>
           )}
