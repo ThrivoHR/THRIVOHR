@@ -231,6 +231,16 @@ export default function Sidebar() {
                   </Link>
                 </AccordionContent>
               </AccordionItem>
+              <Link
+                href="/home/attendence"
+                className={`flex font-medium items-center gap-3 rounded-sm px-3 !pl-3 py-4 cursor-pointer ${linkClasses(
+                  "/employee"
+                )}`}
+                onClick={() => handleNavigation("/employee")}
+              >
+                <UserIcon className="w-3 h-3" />
+                Attendence
+              </Link>
             </Accordion>
           </nav>
         </div>
