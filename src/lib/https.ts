@@ -70,6 +70,7 @@ const request = async <Response>(
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
         "Content-Security-Policy": "default-src 'self'; media-src 'self' blob:",
+        "Permissions-Policy": "camera=(self)",
       };
   if (isClient()) {
     const sessionToken = localStorage.getItem("sessionToken");
