@@ -8,7 +8,7 @@ function LogoutLogic() {
   const pathname = usePathname();
 
   const searchParams = useSearchParams();
-  const sessionToken = searchParams.get("sessionToken");
+  const sessionToken = searchParams ? searchParams.get("sessionToken") : null;
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
