@@ -234,9 +234,9 @@ export default function Sidebar() {
               <Link
                 href="/home/attendence"
                 className={`flex font-medium items-center gap-3 rounded-sm px-3 !pl-3 py-4 cursor-pointer ${linkClasses(
-                  "/employee"
+                  "/home/attendence"
                 )}`}
-                onClick={() => handleNavigation("/employee")}
+                onClick={() => handleNavigation("/home/attendence")}
               >
                 <UserIcon className="w-3 h-3" />
                 Attendence
