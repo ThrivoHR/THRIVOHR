@@ -2,15 +2,16 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import apiFaceRequest from "@/apiRequest/face"; // Import the API request module
 import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function Camera() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [employeeCode, setEmployeeCode] = useState<string>("");
+  const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
 
   useEffect(() => {
     const startCamera = async () => {
@@ -51,58 +52,66 @@ export default function Camera() {
         canvasRef.current.height
       );
     }
-    // Convert canvas image to data URL and set the captured image state
     const dataUrl = canvasRef.current.toDataURL("image/jpeg");
     setCapturedImage(dataUrl);
 
-    canvasRef.current.toBlob(async (blob) => {
+    canvasRef.current.toBlob((blob) => {
       if (blob) {
-        try {
-          const formData = new FormData();
-          formData.append("image", blob, "captured_image.jpg");
-          formData.append("employeeCode", employeeCode); // Add employee code
-
-          // Send the image to the Face API endpoint
-          await sendToFaceApi(formData);
-          
-          // Optionally, you can also call DetectImage API
-          await sendToDetectImageApi(formData);
-
-        } catch (error) {
-          console.error("Error sending the image to the API: ", error);
-          toast.error("Failed to send the image to the API.");
-        }
+        setCapturedBlob(blob);
+        // Create FormData and send to Face API
+        const formData = new FormData();
+        formData.append("image", blob, "captured_image.jpg");
+        sendToFaceApi(formData, employeeCode);
       }
     }, "image/jpeg");
   };
 
-  const sendToFaceApi = async (formData: FormData) => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://owl-touched-slug.ngrok-free.app';
+
+  const sendToFaceApi = async (formData: FormData, employeeCode: string) => {
     try {
-      const response = await apiFaceRequest.Face(formData);
-      if (response.payload) {
-        toast.success("Image successfully sent to Face API.");
-        console.log("Face API response:", response.payload);
-      } else {
-        toast.error("Face API did not return a valid response.");
-      }
+      const url = `${apiUrl}/api/v1/face-recognition?employeeCode=${encodeURIComponent(employeeCode)}`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors',
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+      toast.success("Image successfully sent to Face API.");
+      console.log("Face API response:", data);
     } catch (error) {
       console.error("Error sending image to Face API:", error);
-      toast.error("Failed to send image to Face API.");
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     }
   };
 
-  const sendToDetectImageApi = async (formData: FormData) => {
+  const sendToDetectImageApi = async () => {
+    if (!capturedBlob) {
+      toast.error("No image captured. Please capture an image first.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", capturedBlob, "captured_image.jpg");
+
     try {
-      const response = await apiFaceRequest.DetectImage(formData);
-      if (response) {
-        toast.success("Image successfully sent to Detect Image API.");
-        console.log("Detect Image API response:", response);
-      } else {
-        toast.error("Detect Image API did not return a valid response.");
-      }
+      const url = `${process.env.NEXT_PUBLIC_URL}/api/v1/face-recognition/detect`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors',
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+      toast.success("Image successfully sent to Detect Image API.");
+      console.log("Detect Image API response:", data);
     } catch (error) {
       console.error("Error sending image to Detect Image API:", error);
-      toast.error("Failed to send image to Detect Image API.");
     }
   };
 
@@ -129,12 +138,20 @@ export default function Camera() {
         height="480"
         style={{ display: "none" }}
       ></canvas>
-      <button
-        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
-        onClick={handleCapture}
-      >
-        Capture
-      </button>
+      <div className="mt-4 space-x-4">
+        <Button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={handleCapture}
+        >
+          Capture
+        </Button>
+        <Button
+          className="bg-green-500 text-white px-4 py-2 rounded"
+          onClick={sendToDetectImageApi}
+        >
+          Detect
+        </Button>
+      </div>
       {capturedImage && (
         <div className="mt-4">
           <h2 className="text-lg font-medium mb-2">Captured Image</h2>
