@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import apiFaceRequest from "@/apiRequest/face";
 
 export default function Camera() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -42,6 +43,11 @@ export default function Camera() {
       toast.error("Please enter an employee code and ensure camera access.");
       return;
     }
+
+    // Set the canvas size to match the desired image resolution
+    canvasRef.current.width = 640;
+    canvasRef.current.height = 480;
+
     const context = canvasRef.current.getContext("2d");
     if (context) {
       context.drawImage(
@@ -52,7 +58,7 @@ export default function Camera() {
         canvasRef.current.height
       );
     }
-    const dataUrl = canvasRef.current.toDataURL("image/jpeg");
+    const dataUrl = canvasRef.current.toDataURL("image/png");
     setCapturedImage(dataUrl);
 
     canvasRef.current.toBlob((blob) => {
@@ -60,10 +66,10 @@ export default function Camera() {
         setCapturedBlob(blob);
         // Create FormData and send to Face API
         const formData = new FormData();
-        formData.append("image", blob, "captured_image.jpg");
+        formData.append("image", blob, "captured_image.png");
         sendToFaceApi(formData, employeeCode);
       }
-    }, "image/jpeg");
+    }, "image/png");
   };
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://owl-touched-slug.ngrok-free.app';
@@ -79,12 +85,16 @@ export default function Camera() {
         credentials: 'include',
       });
 
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+
       const data = await response.json();
       toast.success("Image successfully sent to Face API.");
       console.log("Face API response:", data);
     } catch (error) {
       console.error("Error sending image to Face API:", error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      // toast.error(`Error processing request: ${error.message}`);
     }
   };
 
@@ -95,11 +105,10 @@ export default function Camera() {
     }
 
     const formData = new FormData();
-    formData.append("image", capturedBlob, "captured_image.jpg");
+    formData.append("image", capturedBlob, "captured_image.png");
 
     try {
       const url = `${process.env.NEXT_PUBLIC_URL}/api/v1/face-recognition/detect`;
-
       const response = await fetch(url, {
         method: 'POST',
         body: formData,
@@ -107,13 +116,44 @@ export default function Camera() {
         credentials: 'include',
       });
 
-      const data = await response.json();
-      toast.success("Image successfully sent to Detect Image API.");
-      console.log("Detect Image API response:", data);
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+
+      toast.success(`Image successfully sent to Detect API. Response: ${response}`);
+      console.log("Detect Image API response:", response);
     } catch (error) {
       console.error("Error sending image to Detect Image API:", error);
+      // toast.error(`Error processing request: ${error.message}`);
     }
   };
+
+  const handleCheckIn = async () => {
+    if (!capturedBlob || !employeeCode) {
+      toast.error("Please capture an image and enter an employee code.");
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append("image", capturedBlob, "captured_image.png");
+    formData.append("IsCheckIn", "true"); // Set IsCheckIn to true for Check-In
+    await apiFaceRequest.Face(formData);
+  };
+  
+  const handleCheckOut = async () => {
+    if (!capturedBlob || !employeeCode) {
+      toast.error("Please capture an image and enter an employee code.");
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append("image", capturedBlob, "captured_image.png");
+    formData.append("IsCheckIn", "false"); // Set IsCheckIn to false for Check-Out
+    await apiFaceRequest.Face(formData);
+  };
+  
+
+  
 
   return (
     <div className="flex justify-center items-center flex-col">
@@ -134,8 +174,6 @@ export default function Camera() {
       ></video>
       <canvas
         ref={canvasRef}
-        width="640"
-        height="480"
         style={{ display: "none" }}
       ></canvas>
       <div className="mt-4 space-x-4">
@@ -151,6 +189,18 @@ export default function Camera() {
         >
           Detect
         </Button>
+        <Button
+            className="bg-green-500 text-white px-4 py-2 rounded"
+            onClick={handleCheckIn}
+          >
+            Check In
+          </Button>
+          <Button
+            className="bg-red-500 text-white px-4 py-2 rounded"
+            onClick={handleCheckOut}
+          >
+            Check Out
+          </Button>
       </div>
       {capturedImage && (
         <div className="mt-4">
