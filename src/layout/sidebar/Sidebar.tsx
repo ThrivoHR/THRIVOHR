@@ -231,16 +231,37 @@ export default function Sidebar() {
                   </Link>
                 </AccordionContent>
               </AccordionItem>
-              <Link
-                href="/home/attendence"
-                className={`flex font-medium items-center gap-3 rounded-sm px-3 !pl-3 py-4 cursor-pointer ${linkClasses(
-                  "/home/attendence"
-                )}`}
-                onClick={() => handleNavigation("/home/attendence")}
-              >
-                <UserIcon className="w-3 h-3" />
-                Attendence
-              </Link>
+
+              <AccordionItem value="face">
+                <AccordionTrigger className="font-medium hover:text-gray-700 hover:bg-gray-100 focus:bg-light-blue-100 focus:text-blue-800">
+                  <div className="flex items-center gap-3 rounded-lg px-3 text-gray-900 transition-all cursor-pointer">
+                    <UserIcon className="w-4 h-4" />
+                    Attendance
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <Link
+                    href="/home/attendence/faceRegister"
+                    className={`${linkClasses(
+                      "/home/attendence/faceRegister"
+                    )} pl-16`}
+                    onClick={() =>
+                      handleNavigation("/home/attendence/faceRegister")
+                    }
+                  >
+                    Face Register
+                  </Link>
+                  <Link
+                    href="/home/attendence/checkInOut"
+                    className={`${linkClasses(
+                      "/home/attendence/checkInOut"
+                    )} pl-16`}
+                    onClick={() => handleNavigation("/home/attendence/checkInOut")}
+                  >
+                    Check-in/Check-out
+                  </Link>
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
           </nav>
         </div>
