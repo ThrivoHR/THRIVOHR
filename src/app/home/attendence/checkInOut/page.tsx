@@ -88,10 +88,20 @@ export default function FaceManagement() {
       toast.error("No image captured. Please ensure the camera is accessible.");
       return;
     }
+  
     const formData = new FormData();
     formData.append("image", capturedBlob, "captured_image.png");
     formData.append("IsCheckIn", "true");
-    await apiFaceRequest.Face(formData);
+  
+    try {
+      const response = await apiFaceRequest.Face(formData);
+      if (response.status == 200)
+      toast.success(`${response.payload.value || ''}`);
+    } 
+    catch (error) {
+      console.error("Error during check-in:", error);
+      toast.error(`Check-in failed`);
+    }
   };
   
   const handleCheckOut = async () => {
@@ -99,12 +109,22 @@ export default function FaceManagement() {
       toast.error("No image captured. Please ensure the camera is accessible.");
       return;
     }
-    
+  
     const formData = new FormData();
     formData.append("image", capturedBlob, "captured_image.png");
     formData.append("IsCheckIn", "false");
-    await apiFaceRequest.Face(formData);
+  
+    try {
+      const response = await apiFaceRequest.Face(formData);
+      if (response.status == 200) {
+        toast.success(`${response.payload.value || ''}`);
+      }
+    } catch (error) {
+      console.error("Error during check-out:", error);
+      toast.error(`Check-out failed`);
+    }
   };
+  
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);

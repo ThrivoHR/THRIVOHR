@@ -82,77 +82,70 @@ export default function Camera() {
         body: formData,
         mode: 'no-cors',
         credentials: 'include',
+        headers: {"Access-Control-Allow-Credentials": "true"}
       });
-
       if (!response.ok) {
         throw new Error(`Server responded with status: ${response.status}`);
       }
-      const data = await response.json();
       toast.success("Image successfully sent to Face API.");
-      console.log("Face API response:", data);
     } catch (error) {
       console.error("Error sending image to Face API:", error);
       toast(`Error processing request: ${(error as Error).message}`);
     }
   };
 
-  const sendToDetectImageApi = async () => {
-    if (!capturedBlob) {
-      toast.error("No image captured. Please capture an image first.");
-      return;
-    }
+  // const sendToDetectImageApi = async () => {
+  //   if (!capturedBlob) {
+  //     toast.error("No image captured. Please capture an image first.");
+  //     return;
+  //   }
+  //   const formData = new FormData();
+  //   formData.append("image", capturedBlob, "captured_image.png");
+  //   try {
+  //     const url = `${process.env.NEXT_PUBLIC_URL}/api/v1/face-recognition/detect`;
+  //     const response = await fetch(url, {
+  //       method: 'POST',
+  //       body: formData,
+  //       mode: 'no-cors',
+  //       credentials: 'include',
+  //     });
 
-    const formData = new FormData();
-    formData.append("image", capturedBlob, "captured_image.png");
+  //     if (!response.ok) {
+  //       throw new Error(`Server responded with status: ${response.status}`);
+  //     }
+  //     toast.success(`Image successfully sent to Detect API. Response: ${response}`);
+      
+  //   } catch (error) {
+  //     console.error("Error sending image to Detect Image API:", error);
+  //     // console.log("Detect Image API response:", response);
+  //     // toast.error(`Error processing request: ${error.message}`);
+  //   }
+  // };
 
-    try {
-      const url = `${process.env.NEXT_PUBLIC_URL}/api/v1/face-recognition/detect`;
-      const response = await fetch(url, {
-        method: 'POST',
-        body: formData,
-        mode: 'no-cors',
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Server responded with status: ${response.status}`);
-      }
-
-      toast.success(`Image successfully sent to Detect API. Response: ${response}`);
-      console.log("Detect Image API response:", response);
-    } catch (error) {
-      console.error("Error sending image to Detect Image API:", error);
-      // toast.error(`Error processing request: ${error.message}`);
-    }
-  };
-
-  const handleCheckIn = async () => {
-    if (!capturedBlob || !employeeCode) {
-      toast.error("Please capture an image and enter an employee code.");
-      return;
-    }
+  // const handleCheckIn = async () => {
+  //   if (!capturedBlob || !employeeCode) {
+  //     toast.error("Please capture an image and enter an employee code.");
+  //     return;
+  //   }
   
-    const formData = new FormData();
-    formData.append("image", capturedBlob, "captured_image.png");
-    formData.append("IsCheckIn", "true"); // Set IsCheckIn to true for Check-In
-    await apiFaceRequest.Face(formData);
-  };
+  //   const formData = new FormData();
+  //   formData.append("image", capturedBlob, "captured_image.png");
+  //   formData.append("IsCheckIn", "true"); // Set IsCheckIn to true for Check-In
+  //   await apiFaceRequest.Face(formData);
+  // };
   
-  const handleCheckOut = async () => {
-    if (!capturedBlob || !employeeCode) {
-      toast.error("Please capture an image and enter an employee code.");
-      return;
-    }
+  // const handleCheckOut = async () => {
+  //   if (!capturedBlob || !employeeCode) {
+  //     toast.error("Please capture an image and enter an employee code.");
+  //     return;
+  //   }
   
-    const formData = new FormData();
-    formData.append("image", capturedBlob, "captured_image.png");
-    formData.append("IsCheckIn", "false");
-    await apiFaceRequest.Face(formData);
-  };
+  //   const formData = new FormData();
+  //   formData.append("image", capturedBlob, "captured_image.png");
+  //   formData.append("IsCheckIn", "false");
+  //   await apiFaceRequest.Face(formData);
+  // };
   
-
-  
-
   return (
     <div className="flex justify-center items-center flex-col">
       <h1 className="text-xl font-semibold mb-4">Camera</h1>
