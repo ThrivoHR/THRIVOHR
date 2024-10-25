@@ -72,27 +72,20 @@ export default function Camera() {
     }, "image/png");
   };
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://owl-touched-slug.ngrok-free.app';
-
   const sendToFaceApi = async (formData: FormData, employeeCode: string) => {
     try {
-      const url = `${apiUrl}/api/v1/face-recognition?employeeCode=${encodeURIComponent(employeeCode)}`;
-      const response = await fetch(url, {
-        method: 'POST',
-        body: formData,
-        mode: 'no-cors',
-        credentials: 'include',
-        headers: {"Access-Control-Allow-Credentials": "true"}
-      });
-      if (!response.ok) {
+      formData.append("employeeCode", employeeCode);
+      const response = await apiFaceRequest.faceRegister(formData);
+      if (response.status !== 200) {
         throw new Error(`Server responded with status: ${response.status}`);
       }
-      toast.success("Image successfully sent to Face API.");
+      toast.success("Face registered successfully.");
     } catch (error) {
       console.error("Error sending image to Face API:", error);
-      toast(`Error processing request: ${(error as Error).message}`);
+      toast.error(`Error`);
     }
   };
+  
 
   // const sendToDetectImageApi = async () => {
   //   if (!capturedBlob) {

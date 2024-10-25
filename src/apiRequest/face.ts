@@ -26,6 +26,9 @@ const apiFaceRequest = {
         http.get<FaceListResType>(
           `/api/v1/face?PageSize=${PageSize}&PageNumber=${PageNumber}`
         ),
+
+        faceRegister: (body: any) =>
+        http.post<ApiResponse<any>>(`/api/v1/face/register`, body),
   };
   
   export default apiFaceRequest;

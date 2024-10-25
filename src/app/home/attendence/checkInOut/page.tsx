@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import apiFaceRequest from "@/apiRequest/face";
@@ -25,7 +25,9 @@ export default function FaceManagement() {
   useEffect(() => {
     const startCamera = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.play();
@@ -44,23 +46,24 @@ export default function FaceManagement() {
     };
   }, []);
 
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await apiFaceRequest.getList(pageSize, page);
+      setFace(data.payload.value.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setFace([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [pageSize, page]);
+
   useEffect(() => {
     if (showTable) {
-      const fetch = async () => {
-        setLoading(true);
-        try {
-          const data = await apiFaceRequest.getList(pageSize, page);
-          setFace(data.payload.value.data);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          setFace([]);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetch();
+      fetchData();
     }
-  }, [page, pageSize, showTable]);
+  }, [page, pageSize, showTable, fetchData]);
 
   const captureImage = () => {
     if (!videoRef.current || !canvasRef.current) {
@@ -72,7 +75,13 @@ export default function FaceManagement() {
 
     const context = canvasRef.current.getContext("2d");
     if (context) {
-      context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
+      context.drawImage(
+        videoRef.current,
+        0,
+        0,
+        canvasRef.current.width,
+        canvasRef.current.height
+      );
     }
 
     canvasRef.current.toBlob((blob) => {
@@ -88,43 +97,48 @@ export default function FaceManagement() {
       toast.error("No image captured. Please ensure the camera is accessible.");
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("image", capturedBlob, "captured_image.png");
     formData.append("IsCheckIn", "true");
-  
+
     try {
       const response = await apiFaceRequest.Face(formData);
-      if (response.status == 200)
-      toast.success(`${response.payload.value || ''}`);
-    } 
-    catch (error) {
+      if (response.status === 200) {
+        toast.success(`${response.payload.value || ""}`);
+        if (showTable) {
+          await fetchData(); // Re-fetch data when check-in is successful
+        }
+      }
+    } catch (error) {
       console.error("Error during check-in:", error);
-      toast.error(`Check-in failed`);
+      toast.error("Check-in failed");
     }
   };
-  
+
   const handleCheckOut = async () => {
     if (!capturedBlob) {
       toast.error("No image captured. Please ensure the camera is accessible.");
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("image", capturedBlob, "captured_image.png");
     formData.append("IsCheckIn", "false");
-  
+
     try {
       const response = await apiFaceRequest.Face(formData);
-      if (response.status == 200) {
-        toast.success(`${response.payload.value || ''}`);
+      if (response.status === 200) {
+        toast.success(`${response.payload.value || ""}`);
+        if (showTable) {
+          await fetchData(); // Re-fetch data when check-out is successful
+        }
       }
     } catch (error) {
       console.error("Error during check-out:", error);
-      toast.error(`Check-out failed`);
+      toast.error("Check-out failed");
     }
   };
-  
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -136,43 +150,44 @@ export default function FaceManagement() {
   };
 
   return (
-    <div >
-      <h1 className="text-xl font-semibold mb-4">Check-in/Check-out</h1>
-      <video
-        ref={videoRef}
-        width="320"
-        height="240"
-        autoPlay
-        style={{ transform: "scaleX(-1)" }}
-      ></video>
-      <canvas
-        ref={canvasRef}
-        style={{ display: "none" }}
-      ></canvas>
-
-      <div className="mt-4 space-x-4">
-        <Button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={captureImage}
-        >
-          Capture
-        </Button>
-        <Button
-          className="bg-green-500 text-white px-4 py-2 rounded"
-          onClick={handleCheckIn}
-        >
-          Check In
-        </Button>
-        <Button
-          className="bg-red-500 text-white px-4 py-2 rounded"
-          onClick={handleCheckOut}
-        >
-          Check Out
-        </Button>
+    <div className="flex flex-col">
+      <div className="self-center text-center">
+        <h1 className="text-xl font-semibold mb-4">Check-in/Check-out</h1>
+        <video
+          ref={videoRef}
+          width="320"
+          height="240"
+          autoPlay
+          style={{ transform: "scaleX(-1)" }}
+        ></video>
+        <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
+        <div className="mt-4 space-x-4">
+          <Button
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+            onClick={captureImage}
+          >
+            Capture
+          </Button>
+          <Button
+            className="bg-green-500 text-white px-4 py-2 rounded"
+            onClick={handleCheckIn}
+          >
+            Check In
+          </Button>
+          <Button
+            className="bg-red-500 text-white px-4 py-2 rounded"
+            onClick={handleCheckOut}
+          >
+            Check Out
+          </Button>
+        </div>
       </div>
-
+  
       <div className="flex items-center py-3 space-x-2 mt-6">
-        <Button variant="secondary" onClick={() => setShowTable(prev => !prev)}>
+        <Button
+          variant="secondary"
+          onClick={() => setShowTable((prev) => !prev)}
+        >
           {showTable ? (
             <div className="flex items-center">
               <EyeOff size={20} /> &nbsp; Hide Table
@@ -184,7 +199,7 @@ export default function FaceManagement() {
           )}
         </Button>
       </div>
-
+  
       {showTable ? (
         <>
           {loading ? (
@@ -195,22 +210,21 @@ export default function FaceManagement() {
             <>
               {face && face.length > 0 ? (
                 <>
-                  <DataTable
-                    columns={columns()}
-                    data={face}
-                  />
+                  <DataTable columns={columns()} data={face} />
                   <div className="flex justify-between items-center p-4">
                     <div>
                       <select
                         value={pageSize}
-                        onChange={(e) => handleChangePageSize(Number(e.target.value))}
+                        onChange={(e) =>
+                          handleChangePageSize(Number(e.target.value))
+                        }
                         className="px-4 py-2 border rounded-lg"
                       >
                         <option value={5}>5 rows</option>
                         <option value={10}>10 rows</option>
                       </select>
                     </div>
-
+  
                     <div>
                       <button
                         onClick={() => handleChangePage(Math.max(page - 1, 1))}
@@ -243,4 +257,5 @@ export default function FaceManagement() {
       )}
     </div>
   );
+  
 }
