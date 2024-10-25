@@ -16,12 +16,10 @@ export const columns = (
   {
     accessorKey: "checkIn",
     header: "Check-In",
-    cell: ({ row }) => dayjs(row.original.checkIn).format('hh/mm/ss'),
   },
   {
     accessorKey: "checkOut",
     header: "Check-Out",
-    cell: ({ row }) => dayjs(row.original.checkOut).format('hh/mm/ss'),
   },
   {
     accessorKey: "note",
